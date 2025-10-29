@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:main_app/Gorouter/deeplink.dart';
 import 'package:main_app/SignUp_and_Login/SignIn.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 void main() async {
    WidgetsFlutterBinding.ensureInitialized();
 
@@ -11,7 +13,13 @@ void main() async {
 
   runApp(Nutri());
 }
-
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp.router(
+      routerConfig: router,
+      debugShowCheckedModeBanner: false,
+    );
+  }
 class Nutri extends StatefulWidget {
   @override
   State<Nutri> createState() => _NutriState();
