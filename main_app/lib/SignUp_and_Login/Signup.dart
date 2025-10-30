@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'SignIn.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:main_app/GoogleAuth/google_auth.dart';
 
 
 class Signup extends StatefulWidget {
@@ -72,66 +70,6 @@ class SignupState extends State<Signup> {
   }
 
 
-Future<void> _googleSignUp() async {
-  setState(() => isLoading = true);
-
-  try {
-    // Google sign-in
-    final googleUser = await GoogleSignIn().signIn();
-    if (googleUser == null) return;
-
-    final googleAuth = await googleUser.authentication;
-
-    // Supabase auth with Google
-    final res = await supabase.auth.signInWithIdToken(
-      provider: OAuthProvider.google,
-      idToken: googleAuth.idToken!,
-      accessToken: googleAuth.accessToken!,
-    );
-
-    final user = res.user;
-    if (user == null) return;
-
-    // Check profile in Supabase
-    final profile = await supabase
-        .from('profiles')
-        .select()
-        .eq('id', user.id)
-        .maybeSingle();
-
-    // Insert new user if not exists
-    if (profile == null) {
-      final names = (googleUser.displayName ?? '').split(' ');
-      await supabase.from('profiles').insert({
-        'id': user.id,
-        'email': user.email,
-        'first_name': names.isNotEmpty ? names.first : '',
-        'last_name': names.length > 1 ? names.last : '',
-        'avatar_url': googleUser.photoUrl,
-        'created_at': DateTime.now().toIso8601String(),
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Welcome ${googleUser.displayName}!')),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Logged in successfully!')),
-      );
-    }
-
-    // Navigate to Signin
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const Signin()),
-    );
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Google sign-in failed: $e')),
-    );
-  } finally {
-    setState(() => isLoading = false);
-  }
-}
 
 
   @override
@@ -424,7 +362,8 @@ Future<void> _googleSignUp() async {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton(
-                      onPressed: _googleSignUp,
+                      onPressed: 
+                     (){},
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [

@@ -13,6 +13,8 @@ void main() async {
 
   runApp(Nutri());
 }
+
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
@@ -20,6 +22,9 @@ void main() async {
       debugShowCheckedModeBanner: false,
     );
   }
+
+
+  
 class Nutri extends StatefulWidget {
   @override
   State<Nutri> createState() => _NutriState();
