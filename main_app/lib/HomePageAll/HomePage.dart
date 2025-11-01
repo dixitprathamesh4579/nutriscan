@@ -4,6 +4,7 @@ import 'package:main_app/HomePageAll/calories_banner.dart';
 import 'package:main_app/HomePageAll/fat-carbs.dart';
 import 'package:main_app/HomePageAll/healthy-drink-food.dart';
 import 'package:main_app/Profile/user_profile.dart';
+import 'package:main_app/Scanner/ScanPageSwitcher.dart';
 import 'package:main_app/Scanner/ScannerCamera.dart';
 
 class HomePage extends StatefulWidget {
@@ -33,7 +34,7 @@ class Homepagestate extends State<HomePage> {
         ),
       ),
       Center(child: Text("Progress Page", style: TextStyle(fontSize: 24))),
-      ScannerCamera(),
+      ScanPageSwitcher(),
       Center(child: Text("History Page", style: TextStyle(fontSize: 24))),
       UserProfile(),
     ];

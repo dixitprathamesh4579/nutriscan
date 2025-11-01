@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:main_app/HomePageAll/HomePage.dart';
 import 'package:main_app/Scanned_Output_page.dart/open_food_fact_api_call.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-
 class ScannerCamera extends StatefulWidget {
-  const ScannerCamera({super.key});
+ final VoidCallback? onSwitch;
+  const ScannerCamera({super.key, this.onSwitch});
+
 
   @override
   State<ScannerCamera> createState() => ScannerCamerastate();
@@ -15,6 +15,9 @@ class ScannerCamera extends StatefulWidget {
 
 class ScannerCamerastate extends State<ScannerCamera> {
   static String? scannedBarcode;
+  List<bool> isSelected = [false, true];
+
+  
   Widget _buildUi() {
     final screenwidth = MediaQuery.of(context).size.width;
     final screenheight = MediaQuery.of(context).size.height;
@@ -65,20 +68,10 @@ class ScannerCamerastate extends State<ScannerCamera> {
       }
     }
 
+
+
+
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        toolbarHeight: screenheight * 0.04,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => HomePage()),
-            );
-          },
-          icon: Icon(Icons.arrow_back_ios_new),
-        ),
-      ),
       body: SafeArea(
         child: SizedBox.expand(
           child: Container(
@@ -87,7 +80,29 @@ class ScannerCamerastate extends State<ScannerCamera> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(height: screenheight * 0.05),
+                    ToggleButtons(
+        isSelected: isSelected,
+        borderRadius: BorderRadius.circular(12),
+        color: Colors.grey,
+        selectedColor: Colors.white,
+        fillColor: Colors.blue[300],
+        constraints: BoxConstraints(minWidth: 70, minHeight: 30),
+        onPressed: (index) {
+          setState(() {
+            for (int i = 0; i < isSelected.length; i++) {
+              isSelected[i] = (i == index);
+            }
+          });
+
+          if (index == 0) {
+             widget.onSwitch?.call();
+          }
+        },
+        children: const [
+          Text("Product"),
+          Text("Barcode"),
+        ],
+      ),
                 Text(
                   'Scanner',
                   style: TextStyle(
@@ -96,18 +111,16 @@ class ScannerCamerastate extends State<ScannerCamera> {
                     color: Colors.black,
                   ),
                 ),
-                SizedBox(height: screenheight * 0.07),
                 Text(
-                  'Scan Barcode From Product',
+                  'Scan Barcode',
                   style: GoogleFonts.poppins(
                     fontSize: screenwidth * 0.05,
                     color: Colors.grey,
                   ),
                 ),
-                SizedBox(height: screenheight * 0.02),
                 SizedBox(
-                  height: screenheight * 0.25,
-                  width: screenwidth * 0.9,
+                  height: screenheight * 0.50,
+                  width: screenwidth * 0.90,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(15),
                     child: MobileScanner(
@@ -127,19 +140,33 @@ class ScannerCamerastate extends State<ScannerCamera> {
                     ),
                   ),
                 ),
-                SizedBox(height: screenheight * 0.05),
+                SizedBox(height: screenheight * 0.01),
 
-                if (scannedBarcode != null)
-                  Text(
-                    "Scanned: $scannedBarcode",
-                    style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-
-                SizedBox(height: screenheight * 0.10),
+               Container(
+          width: screenwidth * 0.61,
+          height: screenheight * 0.05,
+          padding: EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [const Color.fromARGB(255, 187, 131, 239), const Color.fromARGB(255, 166, 106, 234)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(20),
+          ),
+           alignment: Alignment.center,
+          child:
+              Text(
+                'Align the barcode inside the frame',
+                 textAlign: TextAlign.center, 
+                style: GoogleFonts.poppins(
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+               ),
+                SizedBox(height: screenheight * 0.01),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(
