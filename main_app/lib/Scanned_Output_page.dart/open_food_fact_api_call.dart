@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:main_app/HomePageAll/HomePage.dart';
 import 'dart:convert';
 import 'package:main_app/Scanner/ScannerCamera.dart';
 
@@ -16,6 +17,7 @@ class _OpenFoodState extends State<OpenFood> {
   bool isLoading = true;
   String? code = ScannerCamerastate.scannedBarcode;
   String veganStatus = "Unknown";
+
   @override
   void initState() {
     super.initState();
@@ -25,7 +27,7 @@ class _OpenFoodState extends State<OpenFood> {
   Future<void> fetchproducts() async {
     print("Fetching Product...");
     final uri = Uri.parse(
-      "https://world.openfoodfacts.org/api/v2/product/$code.json",
+      "https://world.openfoodfacts.org/api/v2/product/028400003001.json",
     );
     final response = await http.get(
       uri,
@@ -85,7 +87,7 @@ class _OpenFoodState extends State<OpenFood> {
         ),
       );
     } else {
-      return Text('Unlnown');
+      return Text('Unknown');
     }
   }
 
@@ -157,16 +159,30 @@ class _OpenFoodState extends State<OpenFood> {
     final screenheight = MediaQuery.of(context).size.height;
     final screenwidth = MediaQuery.of(context).size.width;
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HomePage()),
+            );
+          },
+          icon: Icon(Icons.arrow_back_ios_new),
+        ),
+        backgroundColor: Colors.white,
+        toolbarHeight: 30,
+      ),
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
       body: SafeArea(
-        child: isLoading
-            ? Center(child: CircularProgressIndicator())
-            : product == null
-            ? const Center(child: Text('Product Not Found'))
-            : Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: SingleChildScrollView(
+        child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          child: isLoading
+              ? Center(child: CircularProgressIndicator())
+              : product == null
+              ? const Center(child: Text('Product Not Found'))
+              : Padding(
+                  padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -200,7 +216,7 @@ class _OpenFoodState extends State<OpenFood> {
                         style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
                       ),
                       Row(
-                        children: [Text("Ingrediants : "), ingredientsWidget()],
+                        children: [Text("Ingredients : "), ingredientsWidget()],
                       ),
                       const SizedBox(height: 8),
                       Row(
@@ -212,7 +228,7 @@ class _OpenFoodState extends State<OpenFood> {
                     ],
                   ),
                 ),
-              ),
+        ),
       ),
     );
   }

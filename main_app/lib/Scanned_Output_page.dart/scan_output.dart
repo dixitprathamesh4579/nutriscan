@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:main_app/Scanner/ScannerCamera.dart';
 
 class scan_output extends StatefulWidget {
   @override
@@ -7,6 +8,13 @@ class scan_output extends StatefulWidget {
 }
 
 class scan_outputState extends State<scan_output> {
+
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenheight = MediaQuery.of(context).size.height;
@@ -16,7 +24,7 @@ class scan_outputState extends State<scan_output> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pushReplacement((context),MaterialPageRoute(builder: (context)=>ScannerCamera()));
           },
           icon: Icon(Icons.arrow_back_ios_new),
         ),

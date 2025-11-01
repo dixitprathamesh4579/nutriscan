@@ -4,6 +4,7 @@ import 'package:main_app/Scanned_Output_page.dart/open_food_fact_api_call.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'dart:async';
 class ScannerCamera extends StatefulWidget {
  final VoidCallback? onSwitch;
   const ScannerCamera({super.key, this.onSwitch});
@@ -15,13 +16,9 @@ class ScannerCamera extends StatefulWidget {
 
 class ScannerCamerastate extends State<ScannerCamera> {
   static String? scannedBarcode;
+  bool cameraPaused = false;
   List<bool> isSelected = [false, true];
-
-  
-  Widget _buildUi() {
-    final screenwidth = MediaQuery.of(context).size.width;
-    final screenheight = MediaQuery.of(context).size.height;
-    final MobileScannerController controller = MobileScannerController(
+  final MobileScannerController controller = MobileScannerController(
       formats: [
         BarcodeFormat.code128,
         BarcodeFormat.ean13,
@@ -32,7 +29,22 @@ class ScannerCamerastate extends State<ScannerCamera> {
         BarcodeFormat.itf,
       ],
     );
-    Future<void> _pickimageandscan() async {
+
+ @override
+void initState() {
+  super.initState();
+}
+
+
+      @override
+  void dispose() {
+    controller.dispose(); 
+    super.dispose();
+  }
+  
+
+
+Future<void> _pickimageandscan() async {
       final ImagePicker picker = ImagePicker();
       final XFile? pickedfile = await picker.pickImage(
         source: ImageSource.gallery,
@@ -69,9 +81,12 @@ class ScannerCamerastate extends State<ScannerCamera> {
     }
 
 
-
-
+  Widget build(BuildContext context) {
+    final screenwidth = MediaQuery.of(context).size.width;
+        final screenheight = MediaQuery.of(context).size.height;
     return Scaffold(
+       resizeToAvoidBottomInset: true,
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: SizedBox.expand(
           child: Container(
@@ -118,6 +133,7 @@ class ScannerCamerastate extends State<ScannerCamera> {
                     color: Colors.grey,
                   ),
                 ),
+               
                 SizedBox(
                   height: screenheight * 0.50,
                   width: screenwidth * 0.90,
@@ -126,6 +142,7 @@ class ScannerCamerastate extends State<ScannerCamera> {
                     child: MobileScanner(
                       controller: controller,
                       onDetect: (BarcodeCapture capture) {
+                        controller.stop();
                         final List<Barcode> barcodes = capture.barcodes;
                         for (final barcode in barcodes) {
                           setState(() {
@@ -134,14 +151,13 @@ class ScannerCamerastate extends State<ScannerCamera> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) => OpenFood()),
-                          );
+                          ).then((_) => controller.start());
                         }
                       },
                     ),
                   ),
                 ),
                 SizedBox(height: screenheight * 0.01),
-
                Container(
           width: screenwidth * 0.61,
           height: screenheight * 0.05,
@@ -195,19 +211,5 @@ class ScannerCamerastate extends State<ScannerCamera> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final screenwidth = MediaQuery.of(context).size.width;
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Container(
-          width: screenwidth,
-          color: Colors.white,
-          child: _buildUi(),
-        ),
-      ),
-    );
-  }
 }
+
