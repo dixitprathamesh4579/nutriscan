@@ -22,12 +22,14 @@ class _OpenFoodState extends State<OpenFood> {
   void initState() {
     super.initState();
     fetchproducts();
+      fetchAlternatives();
+  
   }
 
   Future<void> fetchproducts() async {
     print("Fetching Product...");
     final uri = Uri.parse(
-      "https://world.openfoodfacts.org/api/v2/product/028400003001.json",
+      "https://world.openfoodfacts.org/api/v2/product/$code.json",
     );
     final response = await http.get(
       uri,
@@ -61,29 +63,88 @@ class _OpenFoodState extends State<OpenFood> {
     }
   }
 
+  List<dynamic> alternativeProducts = [];
+  bool loadingAlternatives = true;
+
+  Future<void> fetchAlternatives() async {
+    if (product == null) return;
+
+    String? category =
+        product?["categories_tags"] != null &&
+            product!["categories_tags"].isNotEmpty
+        ? product!["categories_tags"][0].replaceAll("en:", "")
+        : null;
+
+    if (category == null) return;
+
+    final uri = Uri.parse(
+      "https://world.openfoodfacts.org/category/$category.json?fields=product_name,image_url,nutriscore_grade,brands&nutrition_grades=a&sort_by=popularity&page_size=5",
+    );
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      setState(() {
+        alternativeProducts = data["products"] ?? [];
+        loadingAlternatives = false;
+      });
+    } else {
+      setState(() => loadingAlternatives = false);
+    }
+  }
+
   Widget vegStatus() {
     if (product != null && product!["ingredients_analysis_tags"] != null) {
-      List<dynamic> tags = product!["ingredients_analysis_tags"];
+      List tags = product!["ingredients_analysis_tags"];
+
+      if (tags.contains("en:vegan")) {
+        return Text(
+          "Vegan",
+          style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+        );
+      }
       if (tags.contains("en:vegetarian")) {
-        veganStatus = "Vegetarian";
-        return Text(veganStatus, style: TextStyle(color: Colors.green));
-      } else if (tags.contains("en:non-vegetarian")) {
-        veganStatus = "Non Vegetarian";
-        return Text(veganStatus, style: TextStyle(color: Colors.red));
+        return Text(
+          "Vegetarian",
+          style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+        );
+      }
+      if (tags.contains("en:non-vegetarian")) {
+        return Text(
+          "Non-Vegetarian",
+          style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+        );
+      }
+      if (tags.contains("en:non-vegan")) {
+        return Text(
+          "Non-Vegan",
+          style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+        );
       }
     }
+
     return Text("Unknown", style: TextStyle(color: Colors.grey));
   }
 
   Widget ingredientsWidget() {
     final screenwidth = MediaQuery.of(context).size.width;
+    final screenheight = MediaQuery.of(context).size.height;
 
     if (product != null && product!["ingredients_text"] != null) {
-      return SizedBox(
-        width: screenwidth * 0.71,
-        child: Text(
-          "${product!["ingredients_text"] ?? "Unknown"}",
-          style: TextStyle(fontSize: 10, fontWeight: FontWeight.w500),
+      return Container(
+        width: screenwidth * 0.9,
+        height: screenheight * 0.1,
+        padding: EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: const Color.fromARGB(255, 116, 116, 116)),
+        ),
+        child: SingleChildScrollView(
+          child: Text(
+            "${product!["ingredients_text"] ?? "Unknown"}",
+            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w500),
+          ),
         ),
       );
     } else {
@@ -95,40 +156,54 @@ class _OpenFoodState extends State<OpenFood> {
     final screenwidth = MediaQuery.of(context).size.width;
     final screenheight = MediaQuery.of(context).size.height;
     final nutriments = product?["nutriments"];
+    String formatValue(dynamic value) {
+      if (value == null) return "N/A";
+
+      try {
+        double numValue = double.parse(value.toString());
+        return numValue.toStringAsFixed(2);
+      } catch (e) {
+        return value.toString();
+      }
+    }
 
     if (product != null && nutriments != null) {
-      return Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        elevation: 0,
-        color: Colors.white,
-        margin: EdgeInsets.all(8),
-        child: Padding(
-          padding: EdgeInsets.all(screenwidth * 0.02),
+      return Container(
+        width: screenwidth * 0.9,
+        height: screenheight * 0.1,
+        padding: EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: const Color.fromARGB(255, 116, 116, 116)),
+        ),
+        child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+
             children: [
-              Text('Nutritional Level Per 100g'),
-              SizedBox(height: screenheight * 0.02),
               _rowItem(
                 "Energy :",
-                "${nutriments["energy-kcal_100g"] ?? "N/A"} kcal",
+                "${formatValue(nutriments["energy-kcal_100g"])} kcal",
               ),
-              _rowItem("Fat", "${nutriments["fat_100g"] ?? "N/A"} g"),
+              _rowItem("Fat :", "${formatValue(nutriments["fat_100g"])} g"),
               _rowItem(
                 "Saturated Fat :",
-                "${nutriments["saturated-fat_100g"] ?? "N/A"} g",
+                "${formatValue(nutriments["saturated-fat_100g"])} g",
               ),
               _rowItem(
                 "Carbohydrates :",
-                "${nutriments["carbohydrates_100g"] ?? "N/A"} g",
+                "${formatValue(nutriments["carbohydrates_100g"])} g",
               ),
-              _rowItem("Sugars :", "${nutriments["sugars_100g"] ?? "N/A"} g"),
-              _rowItem("Fiber :", "${nutriments["fiber_100g"] ?? "N/A"} g"),
+              _rowItem(
+                "Sugars :",
+                "${formatValue(nutriments["sugars_100g"])} g",
+              ),
+              _rowItem("Fiber :", "${formatValue(nutriments["fiber_100g"])} g"),
               _rowItem(
                 "Protein :",
-                "${nutriments["proteins_100g"] ?? "N/A"} g",
+                "${formatValue(nutriments["proteins_100g"])} g",
               ),
-              _rowItem("Salt :", "${nutriments["salt_100g"] ?? "N/A"} g"),
+              _rowItem("Salt :", "${formatValue(nutriments["salt_100g"])} g"),
             ],
           ),
         ),
@@ -150,6 +225,42 @@ class _OpenFoodState extends State<OpenFood> {
             style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget alternativeProductsWidget() {
+    final screenwidth = MediaQuery.of(context).size.width;
+    final screenheight = MediaQuery.of(context).size.height;
+    if (loadingAlternatives) {
+      return Center(child: CircularProgressIndicator());
+    }
+
+    if (alternativeProducts.isEmpty) {
+      return Text("No healthier alternatives found.");
+    }
+
+    return Container(
+      width: screenwidth * 0.9,
+      height: screenheight * 0.17,
+      padding: EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: const Color.fromARGB(255, 116, 116, 116)),
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: alternativeProducts.map((item) {
+            return ListTile(
+              leading: item["image_url"] != null
+                  ? Image.network(item["image_url"], width: 50)
+                  : Icon(Icons.image_not_supported),
+              title: Text(item["product_name"] ?? "Unknown"),
+              subtitle: Text("Brand: ${item["brands"] ?? "Unknown"}"),
+            );
+          }).toList(),
+        ),
       ),
     );
   }
@@ -187,27 +298,36 @@ class _OpenFoodState extends State<OpenFood> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       if (product!["image_url"] != null)
-                        SizedBox(
-                          height: screenheight * 0.25,
+                        Container(
                           width: screenwidth * 0.9,
-                          child: Align(
-                            alignment: AlignmentGeometry.center,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(15),
-                              child: Image.network(
-                                product!['image_url'],
-                                height: 150,
-                              ),
+                          height: screenheight * 0.2,
+                          padding: EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: const Color.fromARGB(255, 116, 116, 116),
                             ),
+                          ),
+                          child: Image.network(
+                            product!['image_url'],
+                            height: 150,
                           ),
                         ),
                       SizedBox(height: screenheight * 0.01),
-                      Row(children: [Text("Veganstatus : "), vegStatus()]),
-                      SizedBox(height: screenheight * 0.02),
+                      Row(
+                        children: [
+                          Text(
+                            "Veganstatus : ",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          vegStatus(),
+                        ],
+                      ),
+                      SizedBox(height: screenheight * 0.01),
                       Text(
                         product!["product_name"] ?? "No Name",
                         style: GoogleFonts.poppins(
-                          fontSize: 22,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -215,18 +335,59 @@ class _OpenFoodState extends State<OpenFood> {
                         "Brand : ${product!["brands"] ?? "Unknown"}",
                         style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
                       ),
-                      Row(
-                        children: [Text("Ingredients : "), ingredientsWidget()],
+                      SizedBox(height: screenheight * 0.01),
+                      Text(
+                        "Ingradients Used",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
                       ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Text("Nutritions : "),
-                          NutritionalItemsWidget(),
-                        ],
+
+                      ingredientsWidget(),
+
+                      SizedBox(height: screenheight * 0.01),
+
+                      Text(
+                        "Nutritional Level Per 100g",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
                       ),
+                      NutritionalItemsWidget(),
+                      SizedBox(height: screenheight * 0.01),
+                      Text(
+                        "Alternatives",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                      alternativeProductsWidget(),
+                      SizedBox(height: screenheight*0.01),
+                       ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 100,
+                      vertical: 15,
+                    ),
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadiusGeometry.circular(20),
+                    ),
+                  ),
+                  onPressed: () {
+                  },
+                  child: Text(
+                    'ADD',
+                    style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                  ),
+                ),
                     ],
                   ),
+                  
                 ),
         ),
       ),
