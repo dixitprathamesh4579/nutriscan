@@ -5,6 +5,7 @@ import 'package:main_app/HomePageAll/fat-carbs.dart';
 import 'package:main_app/HomePageAll/healthy-drink-food.dart';
 import 'package:main_app/Profile/user_profile.dart';
 import 'package:main_app/Scanner/ScanPageSwitcher.dart';
+import 'package:main_app/Scanner/ScannerCamera.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -46,7 +47,7 @@ class Homepagestate extends State<HomePage> {
       ),
       body: IndexedStack(index: _currentIndex, children: _pages),
 
-      bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar:SizedBox(height: 85,child:  BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _currentIndex,
         onTap: (index) {
@@ -60,7 +61,8 @@ class Homepagestate extends State<HomePage> {
         showUnselectedLabels: true,
         backgroundColor: Colors.white,
         elevation: 0,
-        iconSize: 28,
+        iconSize: 25,
+        
 
         items: [
           BottomNavigationBarItem(
@@ -75,8 +77,8 @@ class Homepagestate extends State<HomePage> {
           ),
 
           BottomNavigationBarItem(
-            icon: Image.asset('assets/images/scan.png', height: 45),
-            activeIcon: Image.asset('assets/images/scan.png', height: 45),
+            icon: Image.asset('assets/images/scan.png', height: 36),
+            activeIcon: Image.asset('assets/images/scan.png', height: 36),
             label: 'Scan',
           ),
           BottomNavigationBarItem(
@@ -90,6 +92,7 @@ class Homepagestate extends State<HomePage> {
             label: 'Profile',
           ),
         ],
+      ),
       ),
     );
   }

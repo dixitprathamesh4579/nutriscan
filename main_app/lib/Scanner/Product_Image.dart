@@ -63,7 +63,7 @@ class _ProductImageCapturePageState extends State<ProductImageCapturePage> {
         color: Colors.grey,
         selectedColor: Colors.white,
         fillColor: Colors.blue[300],
-        constraints: BoxConstraints(minWidth: 70, minHeight: 30),
+        constraints: BoxConstraints(minWidth: 60, minHeight: 25),
         onPressed: (index) {
           setState(() {
             for (int i = 0; i < isSelected.length; i++) {
@@ -83,7 +83,7 @@ class _ProductImageCapturePageState extends State<ProductImageCapturePage> {
                 Text(
                   'Scanner',
                   style: TextStyle(
-                    fontSize: screenwidth * 0.12,
+                    fontSize: screenwidth * 0.08,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
@@ -96,7 +96,7 @@ class _ProductImageCapturePageState extends State<ProductImageCapturePage> {
                   ),
                 ),
                 SizedBox(
-                  height: screenheight * 0.50,
+                  height: screenheight * 0.48,
                   width: screenwidth * 0.90,
                   child: ClipRRect(
               borderRadius: BorderRadius.circular(15),
@@ -109,10 +109,10 @@ class _ProductImageCapturePageState extends State<ProductImageCapturePage> {
               ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(
-                      horizontal: 100,
-                      vertical: 15,
+                      horizontal: 90,
+                      vertical: 10,
                     ),
-                    backgroundColor: const Color.fromARGB(255, 195, 146, 241),
+                    backgroundColor: const Color.fromARGB(255, 184, 120, 243),
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadiusGeometry.circular(20),
@@ -127,12 +127,11 @@ class _ProductImageCapturePageState extends State<ProductImageCapturePage> {
 
                 SizedBox(height: screenheight * 0.01),
 
-        
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(
-                      horizontal: 100,
-                      vertical: 15,
+                      horizontal: 90,
+                      vertical: 10,
                     ),
                     backgroundColor: Colors.blue,
                     foregroundColor: Colors.white,

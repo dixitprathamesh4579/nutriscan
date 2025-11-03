@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:main_app/HomePageAll/HomePage.dart';
@@ -17,19 +18,68 @@ class _OpenFoodState extends State<OpenFood> {
   bool isLoading = true;
   String? code = ScannerCamerastate.scannedBarcode;
   String veganStatus = "Unknown";
+  List<String> riskyIngredients = [];
 
   @override
   void initState() {
     super.initState();
     fetchproducts();
-      fetchAlternatives();
-  
+  }
+
+  String getProcessedLevel() {
+    final nova = product?["nova_group"];
+
+    if (nova == null) {
+      return "Unknown (not available)";
+    }
+
+    switch (nova) {
+      case 1:
+        return "- Unprocessed / Minimally Processed";
+      case 2:
+        return "- Processed Culinary Ingredients";
+      case 3:
+        return "- Processed Food";
+      case 4:
+        return "- Ultra-Processed Food";
+      default:
+        return "Unknown";
+    }
+  }
+
+  String getSugarLevel() {
+    final sugar = product?["nutriments"]?["sugars_100g"];
+    if (sugar == null) return "Unknown";
+
+    double val = double.tryParse(sugar.toString()) ?? 0;
+
+    if (val < 5) return "Low Sugar";
+    if (val <= 22.5) return "Medium Sugar";
+    return "High Sugar";
+  }
+
+  String getFatLevel() {
+    final fat = product?["nutriments"]?["fat_100g"];
+    if (fat == null) return "Unknown";
+
+    double val = double.tryParse(fat.toString()) ?? 0;
+
+    if (val < 3) return "Low Fat";
+    if (val <= 17.5) return "Medium Fat";
+    return "High Fat";
+  }
+
+  Color getLevelColor(String level) {
+    if (level.contains("High")) return Colors.red;
+    if (level.contains("Medium")) return Colors.orange;
+    if (level.contains("Low")) return Colors.green;
+    return Colors.grey;
   }
 
   Future<void> fetchproducts() async {
     print("Fetching Product...");
     final uri = Uri.parse(
-      "https://world.openfoodfacts.org/api/v2/product/$code.json",
+      "https://world.openfoodfacts.org/api/v2/product/8901595862962.json",
     );
     final response = await http.get(
       uri,
@@ -54,6 +104,8 @@ class _OpenFoodState extends State<OpenFood> {
           isLoading = false;
         });
       }
+      analyzeIngredients();
+      fetchAlternatives();
     } else {
       print("Error: ${response.statusCode}");
       setState(() {
@@ -66,32 +118,112 @@ class _OpenFoodState extends State<OpenFood> {
   List<dynamic> alternativeProducts = [];
   bool loadingAlternatives = true;
 
-  Future<void> fetchAlternatives() async {
-    if (product == null) return;
+Future<void> fetchAlternatives() async {
+  if (product == null) return;
 
-    String? category =
-        product?["categories_tags"] != null &&
-            product!["categories_tags"].isNotEmpty
-        ? product!["categories_tags"][0].replaceAll("en:", "")
-        : null;
+  String? rawCategory = product?["categories_tags"] != null &&
+          product!["categories_tags"].isNotEmpty
+      ? product!["categories_tags"][0] as String
+      : null;
 
-    if (category == null) return;
+  if (rawCategory == null) return;
 
-    final uri = Uri.parse(
-      "https://world.openfoodfacts.org/category/$category.json?fields=product_name,image_url,nutriscore_grade,brands&nutrition_grades=a&sort_by=popularity&page_size=5",
-    );
+  String category = rawCategory.replaceFirst(RegExp(r'^[a-z]{2}:'), '')
+      .replaceAll('_', ' ')
+      .trim();
 
-    final response = await http.get(uri);
+  String? currentGrade = product?["nutrition_grades"] ?? product?["nutriscore_grade"];
+
+  int gradeRank(String g) {
+    final map = {'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5};
+    return map[g.toLowerCase()] ?? 999;
+  }
+
+  final searchParams = {
+    'action': 'process',
+    'tagtype_0': 'categories',
+    'tag_contains_0': 'contains',
+    'tag_0': category,
+
+    'tagtype_1': 'countries',
+    'tag_contains_1': 'contains',
+    'tag_1': 'india',
+
+    'page_size': '60',
+    'sort_by': 'unique_scans_n',
+    'fields':
+        'product_name,image_url,nutrition_grades,nutriscore_grade,brands,code,countries_tags',
+    'json': '1',
+    'nocache': '1',
+  };
+
+  final uri = Uri.https('world.openfoodfacts.org', '/cgi/search.pl', searchParams);
+
+  setState(() => loadingAlternatives = true);
+
+  try {
+    final response = await http.get(uri, headers: {
+      'User-Agent': 'MyApp/1.0 (support@yourapp.com)'
+    });
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
+      List<dynamic> products = (data['products'] as List<dynamic>?) ?? [];
+
+      List<dynamic> filtered;
+      if (currentGrade == null || currentGrade.isEmpty) {
+        filtered = products;
+      } else {
+        final int currentRank = gradeRank(currentGrade);
+        filtered = products.where((p) {
+          final String? g = (p['nutrition_grades'] ?? p['nutriscore_grade']) as String?;
+          if (g == null || g.isEmpty) return false;
+          return gradeRank(g) < currentRank;
+        }).toList();
+      }
+
+      final String? thisCode = product?['code'] as String?;
+      filtered.removeWhere((p) => p['code'] == thisCode);
+
+      final alternatives = filtered.take(5).toList();
+
       setState(() {
-        alternativeProducts = data["products"] ?? [];
+        alternativeProducts = alternatives;
         loadingAlternatives = false;
       });
     } else {
       setState(() => loadingAlternatives = false);
     }
+  } catch (e) {
+    setState(() => loadingAlternatives = false);
+  }
+}
+
+
+
+  Future<void> analyzeIngredients() async {
+    final String ingredientText =
+        product?["ingredients_text"]?.toString().toLowerCase() ?? "";
+    if (ingredientText.isEmpty) return;
+
+    final harmfulData = await rootBundle.loadString(
+      "assets/harmful_ingredients.json",
+    );
+    final Map<String, dynamic> harmfulMap = jsonDecode(harmfulData);
+
+    List<String> detected = [];
+
+    harmfulMap.forEach((category, items) {
+      for (var ing in items) {
+        if (ingredientText.contains(ing.toLowerCase())) {
+          detected.add(ing);
+        }
+      }
+    });
+
+    setState(() {
+      riskyIngredients = detected.toSet().toList();
+    });
   }
 
   Widget vegStatus() {
@@ -265,6 +397,40 @@ class _OpenFoodState extends State<OpenFood> {
     );
   }
 
+  Widget harmfulIngredientsWidget() {
+    final screenwidth = MediaQuery.of(context).size.width;
+    if (riskyIngredients.isEmpty) {
+      return Text(
+        "No harmful ingredients detected ",
+        style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+      );
+    }
+
+    return Container(
+      padding: EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.red),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Harmful Ingredients Found:",
+            style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 6, width: screenwidth * 0.9),
+          ...riskyIngredients.map(
+            (ing) => Text(
+              "• $ing",
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenheight = MediaQuery.of(context).size.height;
@@ -335,7 +501,61 @@ class _OpenFoodState extends State<OpenFood> {
                         "Brand : ${product!["brands"] ?? "Unknown"}",
                         style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
                       ),
+
                       SizedBox(height: screenheight * 0.01),
+                      Row(
+                        children: [
+                          Text(
+                            "Processed Level: ",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            getProcessedLevel(),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color:
+                                  getProcessedLevel().contains("Ultra") ||
+                                      getProcessedLevel().contains("Processed")
+                                  ? Colors.red
+                                  : Colors.green,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            "Sugar Level: ",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            getSugarLevel(),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: getLevelColor(getSugarLevel()),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      Row(
+                        children: [
+                          Text(
+                            "Fat Level: ",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            getFatLevel(),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: getLevelColor(getFatLevel()),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: screenheight * 0.01),
+                     
+                      harmfulIngredientsWidget(),
                       Text(
                         "Ingradients Used",
                         style: TextStyle(
@@ -365,29 +585,8 @@ class _OpenFoodState extends State<OpenFood> {
                         ),
                       ),
                       alternativeProductsWidget(),
-                      SizedBox(height: screenheight*0.01),
-                       ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 100,
-                      vertical: 15,
-                    ),
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadiusGeometry.circular(20),
-                    ),
-                  ),
-                  onPressed: () {
-                  },
-                  child: Text(
-                    'ADD',
-                    style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-                  ),
-                ),
                     ],
                   ),
-                  
                 ),
         ),
       ),

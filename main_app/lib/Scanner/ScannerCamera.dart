@@ -101,7 +101,7 @@ Future<void> _pickimageandscan() async {
         color: Colors.grey,
         selectedColor: Colors.white,
         fillColor: Colors.blue[300],
-        constraints: BoxConstraints(minWidth: 70, minHeight: 30),
+        constraints: BoxConstraints(minWidth: 60, minHeight: 25),
         onPressed: (index) {
           setState(() {
             for (int i = 0; i < isSelected.length; i++) {
@@ -121,7 +121,7 @@ Future<void> _pickimageandscan() async {
                 Text(
                   'Scanner',
                   style: TextStyle(
-                    fontSize: screenwidth * 0.12,
+                    fontSize: screenwidth * 0.08,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
@@ -135,14 +135,13 @@ Future<void> _pickimageandscan() async {
                 ),
                
                 SizedBox(
-                  height: screenheight * 0.50,
+                  height: screenheight * 0.48,
                   width: screenwidth * 0.90,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(15),
                     child: MobileScanner(
                       controller: controller,
                       onDetect: (BarcodeCapture capture) {
-                        controller.stop();
                         final List<Barcode> barcodes = capture.barcodes;
                         for (final barcode in barcodes) {
                           setState(() {
@@ -151,7 +150,7 @@ Future<void> _pickimageandscan() async {
                           Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) => OpenFood()),
-                          ).then((_) => controller.start());
+                          );
                         }
                       },
                     ),
@@ -159,8 +158,8 @@ Future<void> _pickimageandscan() async {
                 ),
                 SizedBox(height: screenheight * 0.01),
                Container(
-          width: screenwidth * 0.61,
-          height: screenheight * 0.05,
+          width: screenwidth * 0.71,
+          height: screenheight * 0.058,
           padding: EdgeInsets.all(10),
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -182,12 +181,12 @@ Future<void> _pickimageandscan() async {
                 ),
               ),
                ),
-                SizedBox(height: screenheight * 0.01),
+                SizedBox(height: screenheight * 0.015),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(
-                      horizontal: 100,
-                      vertical: 15,
+                      horizontal: 90,
+                      vertical: 10,
                     ),
                     backgroundColor: Colors.blue,
                     foregroundColor: Colors.white,
