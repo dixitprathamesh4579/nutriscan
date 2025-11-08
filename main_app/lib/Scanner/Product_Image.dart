@@ -60,10 +60,10 @@ class _ProductImageCapturePageState extends State<ProductImageCapturePage> {
                 ToggleButtons(
         isSelected: isSelected,
         borderRadius: BorderRadius.circular(12),
-        color: Colors.grey,
+        color: Colors.black,
         selectedColor: Colors.white,
         fillColor: Colors.blue[300],
-        constraints: BoxConstraints(minWidth: 60, minHeight: 25),
+        constraints: BoxConstraints(minWidth: 70, minHeight: 35),
         onPressed: (index) {
           setState(() {
             for (int i = 0; i < isSelected.length; i++) {
@@ -83,7 +83,7 @@ class _ProductImageCapturePageState extends State<ProductImageCapturePage> {
                 Text(
                   'Scanner',
                   style: TextStyle(
-                    fontSize: screenwidth * 0.08,
+                    fontSize: screenwidth * 0.13,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
@@ -95,8 +95,10 @@ class _ProductImageCapturePageState extends State<ProductImageCapturePage> {
                     color: Colors.grey,
                   ),
                 ),
+                                SizedBox(height:screenheight* 0.01),
+
                 SizedBox(
-                  height: screenheight * 0.48,
+                  height: screenheight * 0.45,
                   width: screenwidth * 0.90,
                   child: ClipRRect(
               borderRadius: BorderRadius.circular(15),
@@ -105,12 +107,12 @@ class _ProductImageCapturePageState extends State<ProductImageCapturePage> {
                   : Center(child: CircularProgressIndicator()),
             ),
           ),
-           SizedBox(height: screenheight * 0.01),
+           SizedBox(height: screenheight * 0.02),
               ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(
-                      horizontal: 90,
-                      vertical: 10,
+                      horizontal: screenwidth * 0.33,
+                      vertical: screenheight * 0.0165,
                     ),
                     backgroundColor: const Color.fromARGB(255, 184, 120, 243),
                     foregroundColor: Colors.white,
@@ -130,8 +132,8 @@ class _ProductImageCapturePageState extends State<ProductImageCapturePage> {
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(
-                      horizontal: 90,
-                      vertical: 10,
+                       horizontal: screenwidth*0.3,
+                      vertical: screenheight*0.02,
                     ),
                     backgroundColor: Colors.blue,
                     foregroundColor: Colors.white,

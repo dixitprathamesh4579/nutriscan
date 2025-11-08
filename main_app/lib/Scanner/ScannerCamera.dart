@@ -98,10 +98,10 @@ Future<void> _pickimageandscan() async {
                     ToggleButtons(
         isSelected: isSelected,
         borderRadius: BorderRadius.circular(12),
-        color: Colors.grey,
+        color: Colors.black,
         selectedColor: Colors.white,
         fillColor: Colors.blue[300],
-        constraints: BoxConstraints(minWidth: 60, minHeight: 25),
+        constraints: BoxConstraints(minWidth: 70, minHeight: 35),
         onPressed: (index) {
           setState(() {
             for (int i = 0; i < isSelected.length; i++) {
@@ -121,7 +121,7 @@ Future<void> _pickimageandscan() async {
                 Text(
                   'Scanner',
                   style: TextStyle(
-                    fontSize: screenwidth * 0.08,
+                    fontSize: screenwidth * 0.13,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
@@ -133,9 +133,11 @@ Future<void> _pickimageandscan() async {
                     color: Colors.grey,
                   ),
                 ),
+                                SizedBox(height:screenheight* 0.01),
+
                
                 SizedBox(
-                  height: screenheight * 0.48,
+                  height: screenheight * 0.45,
                   width: screenwidth * 0.90,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(15),
@@ -156,10 +158,10 @@ Future<void> _pickimageandscan() async {
                     ),
                   ),
                 ),
-                SizedBox(height: screenheight * 0.01),
+                SizedBox(height: screenheight * 0.02),
                Container(
-          width: screenwidth * 0.71,
-          height: screenheight * 0.058,
+          width: screenwidth * 0.81,
+          height: screenheight * 0.055,
           padding: EdgeInsets.all(10),
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -175,18 +177,18 @@ Future<void> _pickimageandscan() async {
                 'Align the barcode inside the frame',
                  textAlign: TextAlign.center, 
                 style: GoogleFonts.poppins(
-                  fontSize: 11.5,
+                  fontSize: 13,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
               ),
                ),
-                SizedBox(height: screenheight * 0.015),
+                SizedBox(height: screenheight * 0.01),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(
-                      horizontal: 90,
-                      vertical: 10,
+                      horizontal: screenwidth*0.3,
+                      vertical: screenheight*0.02,
                     ),
                     backgroundColor: Colors.blue,
                     foregroundColor: Colors.white,
@@ -211,4 +213,3 @@ Future<void> _pickimageandscan() async {
   }
 
 }
-

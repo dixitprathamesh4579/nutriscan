@@ -10,6 +10,7 @@ class Calender extends StatefulWidget {
 
 class Calenderstate extends State<Calender> {
   DateTime today = DateTime.now();
+
   void _OnDaySelected(DateTime day, DateTime focusedDay) {
     setState(() {
       today = day;
@@ -19,28 +20,90 @@ class Calenderstate extends State<Calender> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final screenheight = MediaQuery.of(context).size.height;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final textScale = MediaQuery.of(context).textScaleFactor;
+
     return Column(
       children: [
         Container(
-          width: screenWidth,
-          decoration: BoxDecoration(color: Colors.white),
+          width: screenWidth * 0.95,
+          padding: EdgeInsets.symmetric(
+            vertical: screenHeight * 0.008,
+            horizontal: screenWidth * 0.02,
+          ),
+          decoration: BoxDecoration(
+            color: const Color.fromARGB(255, 217, 226, 246),
+            borderRadius: BorderRadius.circular(screenWidth * 0.03),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.blueGrey.withOpacity(0.15),
+                blurRadius: screenWidth * 0.03,
+                offset: Offset(0, screenHeight * 0.005),
+              ),
+            ],
+          ),
           child: TableCalendar(
-            rowHeight: screenheight * 0.1,
+            rowHeight: screenHeight * 0.09,
             selectedDayPredicate: (day) => isSameDay(day, today),
             focusedDay: today,
             firstDay: DateTime.utc(2024, 01, 01),
-            lastDay: DateTime.utc(2030, 12, 31),
+            lastDay: DateTime.utc(2050, 12, 31),
             onDaySelected: _OnDaySelected,
             calendarFormat: CalendarFormat.week,
+
             headerStyle: HeaderStyle(
               titleCentered: true,
               formatButtonVisible: false,
+              titleTextStyle: TextStyle(
+                fontSize: screenWidth * 0.045 / textScale,
+                fontWeight: FontWeight.bold,
+                color: const Color.fromARGB(255, 41, 162, 255),
+              ),
+              leftChevronIcon: Icon(
+                Icons.chevron_left,
+                color: Color.fromARGB(255, 41, 162, 255),
+                size: screenWidth * 0.06,
+              ),
+              rightChevronIcon: Icon(
+                Icons.chevron_right,
+                color: Color.fromARGB(255, 41, 162, 255),
+                size: screenWidth * 0.06,
+              ),
+            ),
+
+            calendarStyle: CalendarStyle(
+              todayDecoration: BoxDecoration(
+                color: Colors.blueAccent.shade100,
+                shape: BoxShape.circle,
+              ),
+              selectedDecoration: BoxDecoration(
+                color: const Color.fromARGB(255, 72, 169, 243),
+                shape: BoxShape.circle,
+              ),
+              defaultTextStyle: TextStyle(
+                fontSize: screenWidth * 0.035 / textScale,
+                fontWeight: FontWeight.w500,
+              ),
+              weekendTextStyle: TextStyle(
+                color: Colors.redAccent.shade200,
+                fontSize: screenWidth * 0.035 / textScale,
+              ),
             ),
           ),
         ),
-        Text('Selected Day:' + today.toString().split(" ")[0]),
-        Padding(padding: EdgeInsets.all(5)),
+
+        SizedBox(height: screenHeight * 0.015),
+
+        Text(
+          'Selected Day: ${today.toString().split(" ")[0]}',
+          style: TextStyle(
+            fontSize: screenWidth * 0.045 / textScale,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+          ),
+        ),
+
+        SizedBox(height: screenHeight * 0.01),
       ],
     );
   }

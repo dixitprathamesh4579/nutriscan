@@ -4,199 +4,257 @@ import 'package:main_app/Profile/Edit_profile.dart';
 import 'package:main_app/SignUp_and_Login/SignIn.dart';
 
 class UserProfile extends StatefulWidget {
+  @override
   State<UserProfile> createState() => UserProfilestate();
 }
 
 class UserProfilestate extends State<UserProfile> {
   bool isOn = false;
   bool isOn2 = false;
+
   @override
   Widget build(BuildContext context) {
-    final screenheight = MediaQuery.of(context).size.height;
-    final screenwidth = MediaQuery.of(context).size.width;
-    String default_uname = 'name';
-    String uname;
-    String default_gmail = 'nutriscan08@gmail.com';
-    String gmail;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final textScale = MediaQuery.of(context).textScaleFactor;
+
+    String defaultUname = 'John Doe';
+    String defaultGmail = 'nutriscan08@gmail.com';
+
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        toolbarHeight: screenHeight * 0.07,
+        centerTitle: true,
+        title: Text(
+          "Profile",
+          style: GoogleFonts.poppins(
+            color: Colors.black87,
+            fontWeight: FontWeight.w600,
+            fontSize: screenWidth * 0.05 / textScale,
+          ),
+        ),
+      ),
+
       body: SafeArea(
         child: SingleChildScrollView(
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          child: Container(
-            padding: EdgeInsets.all(screenheight * 0.03),
-            width: screenwidth,
-            child: Column(
-              children: [
-                CircleAvatar(
-                  radius: 50,
-                  backgroundImage: AssetImage(
-                    'assets/images/default_profile.png',
-                  ),
-                ),
-                SizedBox(height: screenheight * 0.02),
-                Text(
-                  default_uname,
-                  style: GoogleFonts.poppins(
-                    fontSize: screenwidth * 0.05,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  default_gmail,
-                  style: GoogleFonts.roboto(fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: screenheight * 0.02),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 25),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadiusGeometry.circular(10),
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => EditProfile()),
-                    );
-                  },
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'Edit Profile',
-                        style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(width: screenwidth * 0.05),
-                      Icon(Icons.edit, weight: screenheight * 0.05),
-                    ],
-                  ),
-                ),
-                SizedBox(height: screenheight * 0.03),
-                Divider(color: Colors.black, thickness: 1),
-                SizedBox(height: screenheight * 0.01),
-                Row(
+          padding: EdgeInsets.symmetric(
+            horizontal: screenWidth * 0.06,
+            vertical: screenHeight * 0.02,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Center(
+                child: Column(
                   children: [
-                    Padding(padding: EdgeInsetsGeometry.directional(start: 15)),
-                    Icon(Icons.settings),
-                    SizedBox(width: screenwidth * 0.03),
+                    CircleAvatar(
+                      radius: screenWidth * 0.17,
+                      backgroundColor: Colors.blue.shade50,
+                      backgroundImage: const AssetImage(
+                        'assets/images/default_profile.png',
+                      ),
+                    ),
+                    SizedBox(height: screenHeight * 0.02),
                     Text(
-                      'Settings',
+                      defaultUname,
                       style: GoogleFonts.poppins(
-                        fontWeight: FontWeight.bold,
-                        fontSize: screenwidth * 0.04,
+                        fontSize: screenWidth * 0.05 / textScale,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    Text(
+                      defaultGmail,
+                      style: GoogleFonts.roboto(
+                        fontSize: screenWidth * 0.04 / textScale,
+                        color: Colors.grey.shade600,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],
                 ),
+              ),
 
-                SizedBox(height: screenheight * 0.01),
+              SizedBox(height: screenHeight * 0.03),
 
-                Transform.scale(
-                  scale: 0.9,
-                  child: SwitchListTile(
-                    title: Text('Notifications'),
-                    inactiveThumbColor: Colors.blue[400],
-                    inactiveTrackColor: Colors.blue[200],
-                    activeThumbColor: Colors.blue[300],
-                    activeTrackColor: Colors.blue[500],
-                    value: isOn,
-                    onChanged: (value) {
-                      setState(() {
-                        isOn = value;
-                      });
-                    },
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blueAccent,
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.symmetric(
+                    vertical: screenHeight * 0.018,
+                    horizontal: screenWidth * 0.15,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 2,
+                ),
+                icon: Icon(Icons.edit, size: screenWidth * 0.06),
+                label: Text(
+                  "Edit Profile",
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.w600,
+                    fontSize: screenWidth * 0.045 / textScale,
                   ),
                 ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => EditProfile()),
+                  );
+                },
+              ),
 
-                Transform.scale(
-                  scale: 0.9,
-                  child: SwitchListTile(
-                    title: Text('Theme(Dark/Light)'),
-                    inactiveThumbColor: Colors.blue[400],
-                    inactiveTrackColor: Colors.blue[200],
-                    activeThumbColor: Colors.blue[300],
-                    activeTrackColor: Colors.blue[500],
-                    value: isOn2,
-                    onChanged: (value) {
-                      setState(() {
-                        isOn2 = value;
-                      });
-                    },
+              SizedBox(height: screenHeight * 0.03),
+              Divider(thickness: 1, color: Colors.grey.shade300),
+              SizedBox(height: screenHeight * 0.02),
+
+              Row(
+                children: [
+                  Icon(Icons.settings, color: Colors.blueAccent),
+                  SizedBox(width: screenWidth * 0.03),
+                  Text(
+                    "Settings",
+                    style: GoogleFonts.poppins(
+                      fontSize: screenWidth * 0.045 / textScale,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+
+              SizedBox(height: screenHeight * 0.015),
+
+              _buildSwitchTile(
+                title: "Notifications",
+                value: isOn,
+                onChanged: (value) => setState(() => isOn = value),
+              ),
+
+              _buildSwitchTile(
+                title: "Dark Mode",
+                value: isOn2,
+                onChanged: (value) => setState(() => isOn2 = value),
+              ),
+
+              Divider(thickness: 1, color: Colors.grey.shade300),
+              SizedBox(height: screenHeight * 0.01),
+
+              ListTile(
+                contentPadding: EdgeInsets.symmetric(horizontal: 4),
+                title: Text(
+                  "Clear Scan History",
+                  style: GoogleFonts.poppins(
+                    fontSize: screenWidth * 0.042 / textScale,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-                Divider(color: Colors.black, thickness: 1),
-                Transform.scale(
-                  scale: 0.9,
-                  child: ListTile(
-                    title: Text('Clear Scan History'),
-                    trailing: SizedBox(
-                      height: 30,
-                      width: 50,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(
-                            vertical: 5,
-                            horizontal: 5,
-                          ),
-                          backgroundColor: Colors.red,
-                          foregroundColor: Colors.white,
-                        ),
-                        onPressed: () {},
-                        child: Text('Clear'),
-                      ),
+                trailing: ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.redAccent,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(
+                      vertical: screenHeight * 0.008,
+                      horizontal: screenWidth * 0.05,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: Text(
+                    "Clear",
+                    style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.w600,
+                      fontSize: screenWidth * 0.035 / textScale,
                     ),
                   ),
                 ),
+              ),
 
-                Divider(color: Colors.black, thickness: 1),
+              Divider(thickness: 1, color: Colors.grey.shade300),
 
-                Transform.scale(
-                  scale: 0.9,
-                  child: ListTile(
-                    title: Text('About'),
-                    trailing: IconButton(
-                      onPressed: () {},
-                      icon: Icon(Icons.arrow_forward_ios),
-                    ),
+              _buildListTile(
+                title: "About",
+                icon: Icons.info_outline,
+                onTap: () {},
+              ),
+
+              _buildListTile(
+                title: "Help & Support",
+                icon: Icons.help_outline,
+                onTap: () {},
+              ),
+
+              Divider(thickness: 1, color: Colors.grey.shade300),
+
+              ListTile(
+                leading: Icon(Icons.logout, color: Colors.redAccent),
+                title: Text(
+                  "Logout",
+                  style: GoogleFonts.poppins(
+                    color: Colors.redAccent,
+                    fontWeight: FontWeight.w600,
+                    fontSize: screenWidth * 0.045 / textScale,
                   ),
                 ),
-
-                Transform.scale(
-                  scale: 0.9,
-                  child: ListTile(
-                    title: Text('Help & Support'),
-                    trailing: IconButton(
-                      onPressed: () {},
-                      icon: Icon(Icons.arrow_forward_ios),
-                    ),
-                  ),
-                ),
-
-                ListTile(
-                  leading: IconButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Signin()),
-                      );
-                    },
-                    icon: Icon(Icons.logout),
-                    color: Colors.red,
-                  ),
-                  title: Text(
-                    'Logout',
-                    style: GoogleFonts.poppins(color: (Colors.red)),
-                  ),
-                ),
-              ],
-            ),
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => Signin()),
+                  );
+                },
+              ),
+            ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSwitchTile({
+    required String title,
+    required bool value,
+    required Function(bool) onChanged,
+  }) {
+    return SwitchListTile(
+      title: Text(
+        title,
+        style: GoogleFonts.poppins(
+          fontWeight: FontWeight.w500,
+          color: Colors.black87,
+        ),
+      ),
+      activeColor: Colors.blueAccent,
+      activeTrackColor: Colors.blue[200],
+      inactiveThumbColor: Colors.grey,
+      inactiveTrackColor: Colors.grey.shade300,
+      value: value,
+      onChanged: onChanged,
+    );
+  }
+
+  Widget _buildListTile({
+    required String title,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      title: Text(
+        title,
+        style: GoogleFonts.poppins(
+          fontWeight: FontWeight.w500,
+          color: Colors.black87,
+        ),
+      ),
+      trailing: Icon(icon, color: Colors.blueAccent),
+      onTap: onTap,
     );
   }
 }

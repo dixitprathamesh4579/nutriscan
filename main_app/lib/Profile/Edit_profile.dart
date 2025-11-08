@@ -1,8 +1,8 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class EditProfile extends StatefulWidget {
   @override
@@ -29,7 +29,7 @@ class EditProfileState extends State<EditProfile> {
   @override
   void initState() {
     super.initState();
-    _loadImage(); 
+    _loadImage();
     nicknameController = TextEditingController(text: unickname);
     fullnameController = TextEditingController(text: ufullname);
     ageController = TextEditingController(text: uage.toString());
@@ -74,261 +74,247 @@ class EditProfileState extends State<EditProfile> {
 
   @override
   Widget build(BuildContext context) {
-    final screenheight = MediaQuery.of(context).size.height;
-    final screenwidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final textScale = MediaQuery.of(context).textScaleFactor;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        toolbarHeight: screenheight * 0.039,
-        leading: Builder(
-          builder: (context) => IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: Icon(Icons.arrow_back_ios_new),
+        toolbarHeight: screenHeight * 0.06,
+        elevation: 0,
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: Icon(Icons.arrow_back_ios_new, color: Colors.black87),
+        ),
+        title: Text(
+          "Edit Profile",
+          style: GoogleFonts.poppins(
+            color: Colors.black87,
+            fontSize: screenWidth * 0.05 / textScale,
+            fontWeight: FontWeight.w600,
           ),
         ),
+        centerTitle: true,
       ),
+
       body: SafeArea(
         child: SingleChildScrollView(
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          child: Container(
-            width: screenwidth,
-            color: Colors.white,
-            padding: EdgeInsets.all(screenheight * 0.03),
+          padding: EdgeInsets.symmetric(
+            horizontal: screenWidth * 0.06,
+            vertical: screenHeight * 0.02,
+          ),
+          child: Form(
+            key: editkey,
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Center(
                   child: Stack(
                     children: [
                       CircleAvatar(
-                        radius: 50,
+                        radius: screenWidth * 0.17,
+                        backgroundColor: Colors.blue.shade50,
                         backgroundImage: _imagefile != null
                             ? FileImage(_imagefile!) as ImageProvider
-                            : const AssetImage(
-                                'assets/images/default_profile.png',
-                              ),
+                            : const AssetImage('assets/images/default_profile.png'),
                       ),
                       Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: Container(
-                          height: 35,
-                          width: 35,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.black, width: 1),
-                          ),
-                          child: Center(
-                            child: IconButton(
-                              onPressed: () {
-                                _pickimage(ImageSource.gallery);
-                              },
-                              icon: Image.asset(
-                                'assets/images/imagepicker.png',
-                              ),
+                        bottom: 4,
+                        right: 6,
+                        child: InkWell(
+                          onTap: () => _pickimage(ImageSource.gallery),
+                          child: Container(
+                            height: screenWidth * 0.1,
+                            width: screenWidth * 0.1,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black12,
+                                  blurRadius: 4,
+                                  offset: Offset(0, 2),
+                                ),
+                              ],
+                              border: Border.all(color: Colors.blueAccent, width: 1),
                             ),
+                            child: Icon(Icons.camera_alt,
+                                color: Colors.blueAccent, size: screenWidth * 0.05),
                           ),
                         ),
                       ),
                     ],
                   ),
                 ),
-                Form(
-                  key: editkey,
-                  child: Column(
-                    children: [
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(' Nick name'),
-                      ),
-                      TextFormField(
-                        controller: nicknameController,
-                        obscureText: false,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Nickname cannot be empty";
-                          }
-                          if (value.length < 2) {
-                            return "Nickname must be at least 2 characters long";
-                          }
-                          if (value.length > 15) {
-                            return "Nickname cannot be more than 15 characters";
-                          }
-                          final nicknameRegex = RegExp(r'^[a-zA-Z0-9_]+$');
-                          if (!nicknameRegex.hasMatch(value)) {
-                            return "Only letters, numbers, and underscores are allowed";
-                          }
-                          return null;
-                        },
-                        decoration: InputDecoration(
-                          hintText: 'Enter Your nick name',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          suffixIcon: Icon(Icons.edit),
-                        ),
-                        onSaved: (val) => unickname = val!.trim(),
-                      ),
-                      SizedBox(height: screenheight * 0.01),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(' Full Name'),
-                      ),
-                      TextFormField(
-                        controller: fullnameController,
-                        obscureText: false,
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return "Full name cannot be empty";
-                          }
-                          if (value.trim().length < 2) {
-                            return "Full name must be at least 2 characters long";
-                          }
-                          if (value.trim().length > 50) {
-                            return "Full name cannot be more than 50 characters";
-                          }
-                          final nameRegex = RegExp(r'^[a-zA-Z\s]+$');
-                          if (!nameRegex.hasMatch(value)) {
-                            return "Only letters and spaces are allowed";
-                          }
-                          return null;
-                        },
-                        decoration: InputDecoration(
-                          hintText: 'Enter Your Full name',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          suffixIcon: Icon(Icons.edit),
-                        ),
-                        onSaved: (val) => ufullname = val!.trim(),
-                      ),
-                      SizedBox(height: screenheight * 0.01),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(' Email Address'),
-                      ),
-                      TextFormField(
-                        controller: emailController,
-                        obscureText: false,
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return "Email is required";
-                          } else if (!RegExp(
-                            r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                          ).hasMatch(value.trim())) {
-                            return "Enter a valid email";
-                          }
-                          return null;
-                        },
-                        decoration: InputDecoration(
-                          hintText: 'Enter Your Email',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          suffixIcon: Icon(Icons.edit),
-                        ),
-                        onSaved: (val) => uemail = val!.trim(),
-                      ),
-                      SizedBox(height: screenheight * 0.01),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(' Age'),
-                      ),
-                      TextFormField(
-                        controller: ageController,
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return "Age cannot be empty";
-                          }
-                          final age = int.tryParse(value.trim());
-                          if (age == null) {
-                            return "Age must be a number";
-                          }
-                          if (age < 12) {
-                            return "Age must be at least 12";
-                          }
-                          if (age > 100) {
-                            return "Age must be less than or equal to 100";
-                          }
-                          return null;
-                        },
-                        obscureText: false,
-                        decoration: InputDecoration(
-                          hintText: 'Enter Your Age',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          suffixIcon: Icon(Icons.edit),
-                        ),
-                        onSaved: (val) => uage = int.parse(val!.trim()),
-                        keyboardType: TextInputType.number,
-                      ),
-                      SizedBox(height: screenheight * 0.01),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(' Weight'),
-                      ),
-                      TextFormField(
-                        controller: weightController,
-                        obscureText: false,
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return "Weight cannot be empty";
-                          }
-                          final weight = double.tryParse(value.trim());
-                          if (weight == null) {
-                            return "Weight must be a number";
-                          }
-                          if (weight <= 10) {
-                            return "Weight must be greater than 10";
-                          }
-                          if (weight > 300) {
-                            return "(Are You Serious!!!)Weight must be less than or equal to 300 kg";
-                          }
-                          return null;
-                        },
-                        decoration: InputDecoration(
-                          hintText: 'Enter Your Weight',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          suffixIcon: Icon(Icons.edit),
-                        ),
-                        onSaved: (val) => uweight = int.parse(val!.trim()),
-                        keyboardType: TextInputType.number,
-                      ),
-                      SizedBox(height: screenheight * 0.10),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 15,
-                            horizontal: 100,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        onPressed: () {
-                          if (editkey.currentState!.validate()) {
-                            editkey.currentState!.save();
-                            Navigator.pop(context);
-                          }
-                        },
-                        child: Text('Save Changes'),
-                      ),
-                    ],
+
+                SizedBox(height: screenHeight * 0.04),
+
+                _buildLabel("Nickname", screenWidth),
+                _buildTextField(
+                  controller: nicknameController,
+                  hint: "Enter your nickname",
+                  icon: Icons.person,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) return "Nickname cannot be empty";
+                    if (value.length < 2) return "Nickname must be at least 2 characters";
+                    if (value.length > 15) return "Nickname too long";
+                    final regex = RegExp(r'^[a-zA-Z0-9_]+$');
+                    if (!regex.hasMatch(value)) return "Only letters, numbers, underscores";
+                    return null;
+                  },
+                  onSaved: (val) => unickname = val!.trim(),
+                ),
+
+                _buildLabel("Full Name", screenWidth),
+                _buildTextField(
+                  controller: fullnameController,
+                  hint: "Enter your full name",
+                  icon: Icons.badge,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) return "Name required";
+                    if (value.trim().length < 2) return "Too short";
+                    final regex = RegExp(r'^[a-zA-Z\s]+$');
+                    if (!regex.hasMatch(value)) return "Only letters & spaces allowed";
+                    return null;
+                  },
+                  onSaved: (val) => ufullname = val!.trim(),
+                ),
+
+                _buildLabel("Email Address", screenWidth),
+                _buildTextField(
+                  controller: emailController,
+                  hint: "Enter your email",
+                  icon: Icons.email,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) return "Email required";
+                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                      return "Invalid email";
+                    }
+                    return null;
+                  },
+                  onSaved: (val) => uemail = val!.trim(),
+                ),
+
+                _buildLabel("Age", screenWidth),
+                _buildTextField(
+                  controller: ageController,
+                  hint: "Enter your age",
+                  icon: Icons.cake,
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) return "Age required";
+                    final age = int.tryParse(value);
+                    if (age == null || age < 12 || age > 100) return "Age 12–100 only";
+                    return null;
+                  },
+                  onSaved: (val) => uage = int.parse(val!.trim()),
+                ),
+
+                _buildLabel("Weight (kg)", screenWidth),
+                _buildTextField(
+                  controller: weightController,
+                  hint: "Enter your weight",
+                  icon: Icons.monitor_weight,
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) return "Weight required";
+                    final weight = double.tryParse(value);
+                    if (weight == null || weight < 10 || weight > 300) {
+                      return "Enter valid weight (10–300)";
+                    }
+                    return null;
+                  },
+                  onSaved: (val) => uweight = int.parse(val!.trim()),
+                ),
+
+                SizedBox(height: screenHeight * 0.06),
+
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blueAccent,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(
+                      vertical: screenHeight * 0.02,
+                      horizontal: screenWidth * 0.25,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onPressed: () {
+                    if (editkey.currentState!.validate()) {
+                      editkey.currentState!.save();
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: Text(
+                    "Save Changes",
+                    style: GoogleFonts.poppins(
+                      fontSize: screenWidth * 0.045 / textScale,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLabel(String label, double screenWidth) {
+    return Padding(
+      padding: EdgeInsets.only(top: screenWidth * 0.04, bottom: screenWidth * 0.015),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          label,
+          style: GoogleFonts.poppins(
+            fontSize: screenWidth * 0.04,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hint,
+    required IconData icon,
+    required String? Function(String?) validator,
+    required void Function(String?) onSaved,
+    TextInputType? keyboardType,
+  }) {
+    return TextFormField(
+      controller: controller,
+      validator: validator,
+      onSaved: onSaved,
+      keyboardType: keyboardType,
+      decoration: InputDecoration(
+        prefixIcon: Icon(icon, color: Colors.blueAccent),
+        hintText: hint,
+        hintStyle: TextStyle(color: Colors.grey.shade500),
+        filled: true,
+        fillColor: Colors.grey.shade100,
+        contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 15),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: Colors.blueAccent, width: 1.5),
         ),
       ),
     );

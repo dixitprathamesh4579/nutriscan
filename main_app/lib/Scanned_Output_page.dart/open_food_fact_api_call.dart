@@ -79,7 +79,7 @@ class _OpenFoodState extends State<OpenFood> {
   Future<void> fetchproducts() async {
     print("Fetching Product...");
     final uri = Uri.parse(
-      "https://world.openfoodfacts.org/api/v2/product/8901595862962.json",
+      "https://world.openfoodfacts.org/api/v2/product/$code.json",
     );
     final response = await http.get(
       uri,

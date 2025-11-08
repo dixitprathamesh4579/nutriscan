@@ -29,7 +29,7 @@ class fatcarbs_state extends State<fatcarbs> {
     } else if (carbs <= 280) {
       return 'Medium';
     } else if (carbs > 325) {
-      return 'high';
+      return 'High';
     } else {
       return 'Average';
     }
@@ -38,30 +38,39 @@ class fatcarbs_state extends State<fatcarbs> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final screenheight = MediaQuery.of(context).size.height;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final textScale = MediaQuery.of(context).textScaleFactor;
+
+    final double boxWidth = screenWidth * 0.435;
+    final double boxHeight = screenHeight * 0.175;
+    final double padding = screenWidth * 0.025;
+    final double fontSmall = screenWidth * 0.045 / textScale;
+    final double fontMedium = screenWidth * 0.055 / textScale;
+    final double fontLarge = screenWidth * 0.07 / textScale;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-
       children: [
         Container(
-          width: screenWidth * 0.44,
-          height: screenheight * 0.175,
-          padding: EdgeInsets.all(10),
+          width: boxWidth,
+          height: boxHeight,
+          padding: EdgeInsets.all(padding),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [const Color(0xFFFFE3C2), const Color(0xFFFFD6A0)],
+            gradient: const LinearGradient(
+              colors: [Color(0xFFFFE3C2), Color(0xFFFFD6A0)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(screenWidth * 0.03),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Text(
                 'Fat',
                 style: GoogleFonts.poppins(
-                  fontSize: 25,
+                  fontSize: fontMedium,
                   fontWeight: FontWeight.bold,
                   color: Colors.brown,
                 ),
@@ -69,7 +78,7 @@ class fatcarbs_state extends State<fatcarbs> {
               Text(
                 '$Fat g',
                 style: GoogleFonts.poppins(
-                  fontSize: 30,
+                  fontSize: fontLarge,
                   fontWeight: FontWeight.bold,
                   color: Colors.brown,
                 ),
@@ -77,7 +86,7 @@ class fatcarbs_state extends State<fatcarbs> {
               Text(
                 fatstat(),
                 style: GoogleFonts.poppins(
-                  fontSize: 20,
+                  fontSize: fontSmall,
                   fontWeight: FontWeight.bold,
                   color: Colors.brown,
                 ),
@@ -85,26 +94,29 @@ class fatcarbs_state extends State<fatcarbs> {
             ],
           ),
         ),
-        SizedBox(width: 10),
+
+        SizedBox(width: screenWidth * 0.025),
+
         Container(
-          width: screenWidth * 0.44,
-          height: screenheight * 0.175,
-          padding: EdgeInsets.all(10),
+          width: boxWidth,
+          height: boxHeight,
+          padding: EdgeInsets.all(padding),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [const Color(0xFFFFE3C2), const Color(0xFFFFD6A0)],
+            gradient: const LinearGradient(
+              colors: [Color(0xFFFFE3C2), Color(0xFFFFD6A0)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(screenWidth * 0.03),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Text(
                 'Carbs',
                 style: GoogleFonts.poppins(
-                  fontSize: 25,
+                  fontSize: fontMedium,
                   fontWeight: FontWeight.bold,
                   color: Colors.brown,
                 ),
@@ -112,7 +124,7 @@ class fatcarbs_state extends State<fatcarbs> {
               Text(
                 '$carbs g',
                 style: GoogleFonts.poppins(
-                  fontSize: 30,
+                  fontSize: fontLarge,
                   fontWeight: FontWeight.bold,
                   color: Colors.brown,
                 ),
@@ -120,7 +132,7 @@ class fatcarbs_state extends State<fatcarbs> {
               Text(
                 Carbstat(),
                 style: GoogleFonts.poppins(
-                  fontSize: 20,
+                  fontSize: fontSmall,
                   fontWeight: FontWeight.bold,
                   color: Colors.brown,
                 ),

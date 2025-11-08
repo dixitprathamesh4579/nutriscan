@@ -10,36 +10,42 @@ class Healthydf extends StatefulWidget {
 class healthydfState extends State<Healthydf> {
   @override
   Widget build(BuildContext context) {
-    final screenwidth = MediaQuery.of(context).size.width;
-    final screenheight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final textScale = MediaQuery.of(context).textScaleFactor;
+
     return Container(
-      width: screenwidth * 0.9,
-      height: screenheight * 0.12,
-      padding: EdgeInsets.all(10),
+      width: screenWidth * 0.9,
+      height: screenHeight * 0.10,
+      padding: EdgeInsets.all(screenWidth * 0.03),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           colors: [
-            const Color.fromARGB(255, 241, 142, 238),
-            const Color.fromARGB(255, 232, 166, 242),
+            Color.fromARGB(255, 241, 142, 238),
+            Color.fromARGB(255, 232, 166, 242),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            "Healthy Food/Drinks",
-            style: GoogleFonts.poppins(
-              fontSize: 25,
-              color: const Color.fromARGB(255, 114, 57, 164),
-              fontWeight: FontWeight.bold,
-            ),
+        borderRadius: BorderRadius.circular(screenWidth * 0.04),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.purple.withOpacity(0.2),
+            blurRadius: screenWidth * 0.03,
+            offset: Offset(0, screenHeight * 0.005),
           ),
         ],
+      ),
+      child: Center(
+        child: Text(
+          "Healthy Food/Drinks",
+          textAlign: TextAlign.center,
+          style: GoogleFonts.poppins(
+            fontSize: screenWidth * 0.065 / textScale, 
+            color: const Color.fromARGB(255, 114, 57, 164),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
     );
   }
