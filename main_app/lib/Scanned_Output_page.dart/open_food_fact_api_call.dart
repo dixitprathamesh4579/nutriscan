@@ -19,6 +19,8 @@ class _OpenFoodState extends State<OpenFood> {
   String? code = ScannerCamerastate.scannedBarcode;
   String veganStatus = "Unknown";
   List<String> riskyIngredients = [];
+  List<dynamic> alternativeProducts = [];
+  bool loadingAlternatives = true;
 
   @override
   void initState() {
@@ -35,15 +37,15 @@ class _OpenFoodState extends State<OpenFood> {
 
     switch (nova) {
       case 1:
-        return "- Unprocessed / Minimally Processed";
+        return " Unprocessed / Minimally Processed";
       case 2:
-        return "- Processed Culinary Ingredients";
+        return " Processed Culinary Ingredients";
       case 3:
-        return "- Processed Food";
+        return " Processed Food";
       case 4:
-        return "- Ultra-Processed Food";
+        return " Ultra-Processed Food";
       default:
-        return "Unknown";
+        return " Unknown";
     }
   }
 
@@ -79,7 +81,7 @@ class _OpenFoodState extends State<OpenFood> {
   Future<void> fetchproducts() async {
     print("Fetching Product...");
     final uri = Uri.parse(
-      "https://world.openfoodfacts.org/api/v2/product/$code.json",
+      "https://world.openfoodfacts.org/api/v2/product/8901058000290.json",
     );
     final response = await http.get(
       uri,
@@ -115,91 +117,95 @@ class _OpenFoodState extends State<OpenFood> {
     }
   }
 
-  List<dynamic> alternativeProducts = [];
-  bool loadingAlternatives = true;
+  Future<void> fetchAlternatives() async {
+    if (product == null) return;
 
-Future<void> fetchAlternatives() async {
-  if (product == null) return;
+    String? rawCategory =
+        product?["categories_tags"] != null &&
+            product!["categories_tags"].isNotEmpty
+        ? product!["categories_tags"][0] as String
+        : null;
 
-  String? rawCategory = product?["categories_tags"] != null &&
-          product!["categories_tags"].isNotEmpty
-      ? product!["categories_tags"][0] as String
-      : null;
+    if (rawCategory == null) return;
 
-  if (rawCategory == null) return;
+    String category = rawCategory
+        .replaceFirst(RegExp(r'^[a-z]{2}:'), '')
+        .replaceAll('_', ' ')
+        .trim();
 
-  String category = rawCategory.replaceFirst(RegExp(r'^[a-z]{2}:'), '')
-      .replaceAll('_', ' ')
-      .trim();
+    String? currentGrade =
+        product?["nutrition_grades"] ?? product?["nutriscore_grade"];
 
-  String? currentGrade = product?["nutrition_grades"] ?? product?["nutriscore_grade"];
+    int gradeRank(String g) {
+      final map = {'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5};
+      return map[g.toLowerCase()] ?? 999;
+    }
 
-  int gradeRank(String g) {
-    final map = {'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5};
-    return map[g.toLowerCase()] ?? 999;
-  }
+    final searchParams = {
+      'action': 'process',
+      'tagtype_0': 'categories',
+      'tag_contains_0': 'contains',
+      'tag_0': category,
 
-  final searchParams = {
-    'action': 'process',
-    'tagtype_0': 'categories',
-    'tag_contains_0': 'contains',
-    'tag_0': category,
+      'tagtype_1': 'countries',
+      'tag_contains_1': 'contains',
+      'tag_1': 'india',
 
-    'tagtype_1': 'countries',
-    'tag_contains_1': 'contains',
-    'tag_1': 'india',
+      'page_size': '60',
+      'sort_by': 'unique_scans_n',
+      'fields':
+          'product_name,image_url,nutrition_grades,nutriscore_grade,brands,code,countries_tags',
+      'json': '1',
+      'nocache': '1',
+    };
 
-    'page_size': '60',
-    'sort_by': 'unique_scans_n',
-    'fields':
-        'product_name,image_url,nutrition_grades,nutriscore_grade,brands,code,countries_tags',
-    'json': '1',
-    'nocache': '1',
-  };
+    final uri = Uri.https(
+      'world.openfoodfacts.org',
+      '/cgi/search.pl',
+      searchParams,
+    );
 
-  final uri = Uri.https('world.openfoodfacts.org', '/cgi/search.pl', searchParams);
+    setState(() => loadingAlternatives = true);
 
-  setState(() => loadingAlternatives = true);
+    try {
+      final response = await http.get(
+        uri,
+        headers: {'User-Agent': 'MyApp/1.0 (support@yourapp.com)'},
+      );
 
-  try {
-    final response = await http.get(uri, headers: {
-      'User-Agent': 'MyApp/1.0 (support@yourapp.com)'
-    });
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        List<dynamic> products = (data['products'] as List<dynamic>?) ?? [];
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      List<dynamic> products = (data['products'] as List<dynamic>?) ?? [];
+        List<dynamic> filtered;
+        if (currentGrade == null || currentGrade.isEmpty) {
+          filtered = products;
+        } else {
+          final int currentRank = gradeRank(currentGrade);
+          filtered = products.where((p) {
+            final String? g =
+                (p['nutrition_grades'] ?? p['nutriscore_grade']) as String?;
+            if (g == null || g.isEmpty) return false;
+            return gradeRank(g) < currentRank;
+          }).toList();
+        }
 
-      List<dynamic> filtered;
-      if (currentGrade == null || currentGrade.isEmpty) {
-        filtered = products;
+        final String? thisCode = product?['code'] as String?;
+        filtered.removeWhere((p) => p['code'] == thisCode);
+
+        final alternatives = filtered.take(5).toList();
+
+        setState(() {
+          alternativeProducts = alternatives;
+          loadingAlternatives = false;
+        });
       } else {
-        final int currentRank = gradeRank(currentGrade);
-        filtered = products.where((p) {
-          final String? g = (p['nutrition_grades'] ?? p['nutriscore_grade']) as String?;
-          if (g == null || g.isEmpty) return false;
-          return gradeRank(g) < currentRank;
-        }).toList();
+        setState(() => loadingAlternatives = false);
       }
-
-      final String? thisCode = product?['code'] as String?;
-      filtered.removeWhere((p) => p['code'] == thisCode);
-
-      final alternatives = filtered.take(5).toList();
-
-      setState(() {
-        alternativeProducts = alternatives;
-        loadingAlternatives = false;
-      });
-    } else {
+    } catch (e) {
       setState(() => loadingAlternatives = false);
     }
-  } catch (e) {
-    setState(() => loadingAlternatives = false);
   }
-}
-
-
 
   Future<void> analyzeIngredients() async {
     final String ingredientText =
@@ -224,6 +230,202 @@ Future<void> fetchAlternatives() async {
     setState(() {
       riskyIngredients = detected.toSet().toList();
     });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screenheight = MediaQuery.of(context).size.height;
+    final screenwidth = MediaQuery.of(context).size.width;
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HomePage()),
+            );
+          },
+          icon: Icon(Icons.arrow_back_ios_new),
+        ),
+        backgroundColor: Colors.white,
+        toolbarHeight: 30,
+      ),
+      backgroundColor: Colors.white,
+      resizeToAvoidBottomInset: true,
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : product == null
+          ? const Center(
+              child: Text(
+                'Product Not Found',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            )
+          : LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (product!["image_url"] != null)
+                        Container(
+                          width: double.infinity,
+                          height: screenheight * 0.28,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16),
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 8,
+                                offset: Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          clipBehavior: Clip.antiAlias,
+                          child: Center(
+                            child: AspectRatio(
+                              aspectRatio: 1.2,
+                              child: Image.network(
+                                product!['image_url'],
+                                fit: BoxFit.contain,
+                                alignment: Alignment.center,
+                                loadingBuilder:
+                                    (context, child, loadingProgress) {
+                                      if (loadingProgress == null) return child;
+                                      return const Center(
+                                        child: CircularProgressIndicator(),
+                                      );
+                                    },
+                                errorBuilder: (_, __, ___) => const Icon(
+                                  Icons.broken_image,
+                                  size: 60,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+
+                      SizedBox(height: screenheight * 0.01),
+                       Row(
+                        children: [
+                          SizedBox(width: screenwidth*0.03),
+                      Text(
+                        product!["product_name"] ?? "No Name",
+                        style: GoogleFonts.poppins(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(width: screenwidth*0.4),
+                      Text(
+                        "Brand :  ${product!["brands"] ?? "Unknown"}",
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                      ),
+                        ]
+                       ),
+
+                      Card(
+                        elevation: 0,
+                        color: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _infoRow("Vegan Status", vegStatus()),
+                              _infoRow(
+                                "Processed Level",
+                                getProcessedLevel(),
+                                color: getProcessedLevel().contains("Processed")
+                                    ? Colors.red
+                                    : Colors.green,
+                              ),
+                              _infoRow(
+                                "Sugar Level",
+                                getSugarLevel(),
+                                color: getLevelColor(getSugarLevel()),
+                              ),
+                              _infoRow(
+                                "Fat Level",
+                                getFatLevel(),
+                                color: getLevelColor(getFatLevel()),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+
+                      harmfulIngredientsWidget(),
+                      Text(
+                        "Ingradients Used",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+
+                      ingredientsWidget(),
+
+                      SizedBox(height: screenheight * 0.01),
+
+                      Text(
+                        "Nutritional Level Per 100g",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                      NutritionalItemsWidget(),
+                      SizedBox(height: screenheight * 0.01),
+                      Text(
+                        "Alternatives",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                      alternativeProductsWidget(),
+                    ],
+                  ),
+                );
+              },
+            ),
+    );
+  }
+
+  Widget _infoRow(String title, dynamic value, {Color? color}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.w600,
+              fontSize: 13,
+            ),
+          ),
+          value is Widget
+              ? value
+              : Text(
+                  value.toString(),
+                  style: GoogleFonts.poppins(
+                    color: color ?? Colors.black87,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 12,
+                  ),
+                ),
+        ],
+      ),
+    );
   }
 
   Widget vegStatus() {
@@ -259,6 +461,40 @@ Future<void> fetchAlternatives() async {
     return Text("Unknown", style: TextStyle(color: Colors.grey));
   }
 
+  Widget harmfulIngredientsWidget() {
+    final screenwidth = MediaQuery.of(context).size.width;
+    if (riskyIngredients.isEmpty) {
+      return Text(
+        "No harmful ingredients detected ",
+        style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+      );
+    }
+
+    return Container(
+      padding: EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.red),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Harmful Ingredients Found:",
+            style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 6, width: screenwidth * 0.9),
+          ...riskyIngredients.map(
+            (ing) => Text(
+              "• $ing",
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget ingredientsWidget() {
     final screenwidth = MediaQuery.of(context).size.width;
     final screenheight = MediaQuery.of(context).size.height;
@@ -282,6 +518,22 @@ Future<void> fetchAlternatives() async {
     } else {
       return Text('Unknown');
     }
+  }
+
+  Widget _rowItem(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: TextStyle(fontSize: 10)),
+          Text(
+            value,
+            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget NutritionalItemsWidget() {
@@ -345,22 +597,6 @@ Future<void> fetchAlternatives() async {
     return Text("No nutritional info available");
   }
 
-  Widget _rowItem(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label, style: TextStyle(fontSize: 10)),
-          Text(
-            value,
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget alternativeProductsWidget() {
     final screenwidth = MediaQuery.of(context).size.width;
     final screenheight = MediaQuery.of(context).size.height;
@@ -392,202 +628,6 @@ Future<void> fetchAlternatives() async {
               subtitle: Text("Brand: ${item["brands"] ?? "Unknown"}"),
             );
           }).toList(),
-        ),
-      ),
-    );
-  }
-
-  Widget harmfulIngredientsWidget() {
-    final screenwidth = MediaQuery.of(context).size.width;
-    if (riskyIngredients.isEmpty) {
-      return Text(
-        "No harmful ingredients detected ",
-        style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-      );
-    }
-
-    return Container(
-      padding: EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.red),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Harmful Ingredients Found:",
-            style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 6, width: screenwidth * 0.9),
-          ...riskyIngredients.map(
-            (ing) => Text(
-              "• $ing",
-              style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final screenheight = MediaQuery.of(context).size.height;
-    final screenwidth = MediaQuery.of(context).size.width;
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => HomePage()),
-            );
-          },
-          icon: Icon(Icons.arrow_back_ios_new),
-        ),
-        backgroundColor: Colors.white,
-        toolbarHeight: 30,
-      ),
-      backgroundColor: Colors.white,
-      resizeToAvoidBottomInset: true,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          child: isLoading
-              ? Center(child: CircularProgressIndicator())
-              : product == null
-              ? const Center(child: Text('Product Not Found'))
-              : Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (product!["image_url"] != null)
-                        Container(
-                          width: screenwidth * 0.9,
-                          height: screenheight * 0.2,
-                          padding: EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: const Color.fromARGB(255, 116, 116, 116),
-                            ),
-                          ),
-                          child: Image.network(
-                            product!['image_url'],
-                            height: 150,
-                          ),
-                        ),
-                      SizedBox(height: screenheight * 0.01),
-                      Row(
-                        children: [
-                          Text(
-                            "Veganstatus : ",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          vegStatus(),
-                        ],
-                      ),
-                      SizedBox(height: screenheight * 0.01),
-                      Text(
-                        product!["product_name"] ?? "No Name",
-                        style: GoogleFonts.poppins(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        "Brand : ${product!["brands"] ?? "Unknown"}",
-                        style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-                      ),
-
-                      SizedBox(height: screenheight * 0.01),
-                      Row(
-                        children: [
-                          Text(
-                            "Processed Level: ",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            getProcessedLevel(),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color:
-                                  getProcessedLevel().contains("Ultra") ||
-                                      getProcessedLevel().contains("Processed")
-                                  ? Colors.red
-                                  : Colors.green,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            "Sugar Level: ",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            getSugarLevel(),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: getLevelColor(getSugarLevel()),
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      Row(
-                        children: [
-                          Text(
-                            "Fat Level: ",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            getFatLevel(),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: getLevelColor(getFatLevel()),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: screenheight * 0.01),
-                     
-                      harmfulIngredientsWidget(),
-                      Text(
-                        "Ingradients Used",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                        ),
-                      ),
-
-                      ingredientsWidget(),
-
-                      SizedBox(height: screenheight * 0.01),
-
-                      Text(
-                        "Nutritional Level Per 100g",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                        ),
-                      ),
-                      NutritionalItemsWidget(),
-                      SizedBox(height: screenheight * 0.01),
-                      Text(
-                        "Alternatives",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                        ),
-                      ),
-                      alternativeProductsWidget(),
-                    ],
-                  ),
-                ),
         ),
       ),
     );
