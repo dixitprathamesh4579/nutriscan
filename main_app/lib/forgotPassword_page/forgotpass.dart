@@ -3,117 +3,171 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:main_app/SignUp_and_Login/SignIn.dart';
 import 'PasswordRecovery.dart';
 
-class forgotpass extends StatefulWidget {
-  State<forgotpass> createState() => forgotpassstate();
+class ForgotPass extends StatefulWidget {
+  const ForgotPass({super.key});
+
+  @override
+  State<ForgotPass> createState() => _ForgotPassState();
 }
 
-class forgotpassstate extends State<forgotpass> {
-  final GlobalKey<FormState> passkey = GlobalKey<FormState>();
+class _ForgotPassState extends State<ForgotPass> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController emailCtrl = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    final screenwidth = MediaQuery.of(context).size.width;
-    final screenheight = MediaQuery.of(context).size.height;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final textScale = MediaQuery.of(context).textScaleFactor;
+
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
-
       appBar: AppBar(
         backgroundColor: Colors.white,
-        toolbarHeight: screenheight * 0.04,
-        leading: Builder(
-          builder: (context) => IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => Signin()),
-              );
-            },
-            icon: Icon(Icons.arrow_back_ios_new),
-          ),
+        elevation: 0,
+        toolbarHeight: screenHeight * 0.05,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const Signin()),
+            );
+          },
         ),
       ),
-
       body: SafeArea(
-        child: SingleChildScrollView(
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          child: Container(
-            padding: EdgeInsets.all(20),
-            width: screenwidth,
-            child: Column(
-              children: [
-                Image.asset(
-                  'assets/images/forgotpass.png',
-                  height: screenheight * 0.15,
+        child: LayoutBuilder(
+          builder: (context, constraints) => SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: screenWidth * 0.08,
+                  vertical: screenHeight * 0.03,
                 ),
-                SizedBox(height: screenheight * 0.05),
-                Text(
-                  'Forgot Password?',
-                  style: GoogleFonts.poppins(
-                    fontSize: screenwidth * 0.05,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: screenheight * 0.05),
-                Text(
-                  'Quick Reset Your Password',
-                  style: GoogleFonts.poppins(
-                    fontSize: screenwidth * 0.04,
-                    color: Colors.grey,
-                  ),
-                ),
-                SizedBox(height: screenheight * 0.05),
-                Form(
-                  key: passkey,
-                  child: TextFormField(
-                    obscureText: false,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return "Email is required";
-                      } else if (!RegExp(
-                        r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                      ).hasMatch(value.trim())) {
-                        return "Enter a valid email";
-                      }
-                      return null;
-                    },
-                    decoration: InputDecoration(
-                      hintText: 'Enter Your Email Address',
-                      border: OutlineInputBorder(),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/images/forgotpass.png',
+                      height: screenHeight * 0.22,
                     ),
-                  ),
-                ),
-                SizedBox(height: screenheight * 0.10),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 15,
-                      horizontal: 100,
+                    SizedBox(height: screenHeight * 0.04),
+
+                    Text(
+                      'Forgot Password?',
+                      style: GoogleFonts.poppins(
+                        fontSize: screenWidth * 0.065,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                    SizedBox(height: screenHeight * 0.015),
+
+                    Text(
+                      'No worries! Enter your email and we’ll help you reset it.',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(
+                        fontSize: screenWidth * 0.037 / textScale,
+                        color: Colors.grey.shade700,
+                      ),
                     ),
-                  ),
-                  onPressed: () {
-                    if (passkey.currentState!.validate()) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Passwordrecovery(),
+                    SizedBox(height: screenHeight * 0.05),
+
+                    Form(
+                      key: _formKey,
+                      child: TextFormField(
+                        controller: emailCtrl,
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return "Email is required";
+                          } else if (!RegExp(
+                                  r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                              .hasMatch(value.trim())) {
+                            return "Enter a valid email";
+                          }
+                          return null;
+                        },
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          hintText: 'Enter your email address',
+                          prefixIcon: const Icon(Icons.email_outlined),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
                         ),
-                      );
-                    }
-                    ;
-                  },
-                  child: Text(
-                    'Continue',
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
+
+                    SizedBox(height: screenHeight * 0.07),
+
+                    SizedBox(
+                      width: double.infinity,
+                      height: screenHeight * 0.06,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                        ),
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>  Passwordrecovery(),
+                              ),
+                            );
+                          }
+                        },
+                        child: Text(
+                          'Continue',
+                          style: GoogleFonts.poppins(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: screenWidth * 0.045 / textScale,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    SizedBox(height: screenHeight * 0.04),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Remember your password? ",
+                          style: GoogleFonts.poppins(fontSize: 13),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const Signin(),
+                              ),
+                            );
+                          },
+                          child: Text(
+                            "Sign In",
+                            style: GoogleFonts.poppins(
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    SizedBox(height: screenHeight * 0.02),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),

@@ -4,165 +4,258 @@ import 'package:main_app/SignUp_and_Login/SignIn.dart';
 import 'package:main_app/forgotPassword_page/forgotpass.dart';
 
 class Passwordrecovery extends StatefulWidget {
-  State<Passwordrecovery> createState() => Passwordrecoverystate();
+  const Passwordrecovery({super.key});
+
+  @override
+  State<Passwordrecovery> createState() => _PasswordrecoveryState();
 }
 
-class Passwordrecoverystate extends State<Passwordrecovery> {
-  final recover_key = GlobalKey<FormState>();
+class _PasswordrecoveryState extends State<Passwordrecovery> {
+  final _recoverKey = GlobalKey<FormState>();
 
   final TextEditingController otpController = TextEditingController();
   final TextEditingController newPassController = TextEditingController();
-  final TextEditingController checkpass_con = TextEditingController();
+  final TextEditingController confirmPassController = TextEditingController();
+
+  bool _obscureNewPass = true;
+  bool _obscureConfirmPass = true;
 
   @override
   void dispose() {
     otpController.dispose();
     newPassController.dispose();
-    checkpass_con.dispose();
+    confirmPassController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenwidth = MediaQuery.of(context).size.width;
-    final screenheight = MediaQuery.of(context).size.height;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final textScale = MediaQuery.of(context).textScaleFactor;
 
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
-
       appBar: AppBar(
-        leading: Builder(
-          builder: (context) => IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => forgotpass()),
-              );
-            },
-            icon: Icon(Icons.arrow_back_ios_new),
-          ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        toolbarHeight: screenHeight * 0.05,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const ForgotPass()),
+            );
+          },
         ),
       ),
-
       body: SafeArea(
-        child: SingleChildScrollView(
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          child: Container(
-            padding: EdgeInsets.all(20),
-            width: screenwidth,
-            child: Column(
-              children: [
-                Image.asset(
-                  'assets/images/passrecovery.png',
-                  height: screenheight * 0.15,
+        child: LayoutBuilder(
+          builder: (context, constraints) => SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: screenWidth * 0.08,
+                  vertical: screenHeight * 0.03,
                 ),
-                SizedBox(height: screenheight * 0.05),
-                Text(
-                  'Password Recovery',
-                  style: GoogleFonts.roboto(
-                    fontSize: screenheight * 0.03,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: screenheight * 0.04),
-                Text(
-                  'Enter Recieved OTP And New PassWord',
-                  style: GoogleFonts.poppins(
-                    fontSize: screenheight * 0.02,
-                    color: Colors.grey,
-                  ),
-                ),
-                SizedBox(height: screenheight * 0.05),
-                Form(
-                  key: recover_key,
-                  child: Column(
-                    children: [
-                      TextFormField(
-                        controller: otpController,
-                        obscureText: false,
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'OTP is required';
-                          } else if (value.length != 6) {
-                            return 'OTP must be 6 digits';
-                          } else if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
-                            return 'OTP must contain only numbers';
-                          }
-                          return null;
-                        },
-                        decoration: InputDecoration(
-                          hintText: 'Enter OTP',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-
-                      SizedBox(height: screenheight * 0.05),
-
-                      TextFormField(
-                        controller: newPassController,
-                        obscureText: true, 
-                        decoration: InputDecoration(
-                          hintText: 'Enter New Password',
-                          border: OutlineInputBorder(),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return "Password is required";
-                          } else if (value.length < 6) {
-                            return "Password must be at least 6 characters";
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: screenheight * 0.03),
-
-                      TextFormField(
-                        controller: checkpass_con,
-                        obscureText: true, 
-                        decoration: InputDecoration(
-                          hintText: 'Re-Enter PassWord',
-                          border: OutlineInputBorder(),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please re-enter your password';
-                          } else if (value != newPassController.text) {
-                            return 'Passwords do not match';
-                          }
-                          return null;
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: screenheight * 0.05),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    padding: EdgeInsets.symmetric(
-                      vertical: 15,
-                      horizontal: 100,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/images/passrecovery.png',
+                      height: screenHeight * 0.22,
                     ),
-                  ),
-                  onPressed: () {
-                    if (recover_key.currentState!.validate()) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Signin()),
-                      );
-                    }
-                  },
-                  child: Text(
-                    'Continue',
-                    style: GoogleFonts.poppins(
-                      fontSize: screenheight * 0.02,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                    SizedBox(height: screenHeight * 0.04),
+
+                    Text(
+                      'Password Recovery',
+                      style: GoogleFonts.poppins(
+                        fontSize: screenWidth * 0.065,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
+                    SizedBox(height: screenHeight * 0.015),
+
+                    Text(
+                      'Enter the OTP sent to your email and create a new password.',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(
+                        fontSize: screenWidth * 0.037 / textScale,
+                        color: Colors.grey.shade700,
+                      ),
+                    ),
+                    SizedBox(height: screenHeight * 0.05),
+
+                    Form(
+                      key: _recoverKey,
+                      child: Column(
+                        children: [
+                          TextFormField(
+                            controller: otpController,
+                            keyboardType: TextInputType.number,
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'OTP is required';
+                              } else if (value.length != 6) {
+                                return 'OTP must be 6 digits';
+                              } else if (!RegExp(r'^[0-9]+$')
+                                  .hasMatch(value)) {
+                                return 'OTP must contain only numbers';
+                              }
+                              return null;
+                            },
+                            decoration: InputDecoration(
+                              hintText: 'Enter OTP',
+                              prefixIcon: const Icon(Icons.lock_clock_outlined),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                            ),
+                          ),
+
+                          SizedBox(height: screenHeight * 0.03),
+
+                          TextFormField(
+                            controller: newPassController,
+                            obscureText: _obscureNewPass,
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return "Password is required";
+                              } else if (value.length < 6) {
+                                return "Password must be at least 6 characters";
+                              }
+                              return null;
+                            },
+                            decoration: InputDecoration(
+                              hintText: 'Enter New Password',
+                              prefixIcon: const Icon(Icons.lock_outline),
+                              suffixIcon: IconButton(
+                                icon: Icon(_obscureNewPass
+                                    ? Icons.visibility_off
+                                    : Icons.visibility),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscureNewPass = !_obscureNewPass;
+                                  });
+                                },
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                            ),
+                          ),
+
+                          SizedBox(height: screenHeight * 0.03),
+
+                          TextFormField(
+                            controller: confirmPassController,
+                            obscureText: _obscureConfirmPass,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please re-enter your password';
+                              } else if (value != newPassController.text) {
+                                return 'Passwords do not match';
+                              }
+                              return null;
+                            },
+                            decoration: InputDecoration(
+                              hintText: 'Re-enter Password',
+                              prefixIcon: const Icon(Icons.lock_reset),
+                              suffixIcon: IconButton(
+                                icon: Icon(_obscureConfirmPass
+                                    ? Icons.visibility_off
+                                    : Icons.visibility),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscureConfirmPass = !_obscureConfirmPass;
+                                  });
+                                },
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: screenHeight * 0.06),
+
+                    SizedBox(
+                      width: double.infinity,
+                      height: screenHeight * 0.06,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                        ),
+                        onPressed: () {
+                          if (_recoverKey.currentState!.validate()) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Password reset successful!'),
+                                duration: Duration(seconds: 2),
+                              ),
+                            );
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const Signin(),
+                              ),
+                            );
+                          }
+                        },
+                        child: Text(
+                          'Continue',
+                          style: GoogleFonts.poppins(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: screenWidth * 0.045 / textScale,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    SizedBox(height: screenHeight * 0.04),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Go back to ",
+                          style: GoogleFonts.poppins(fontSize: 13),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const Signin(),
+                              ),
+                            );
+                          },
+                          child: Text(
+                            "Sign In",
+                            style: GoogleFonts.poppins(
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    SizedBox(height: screenHeight * 0.02),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),

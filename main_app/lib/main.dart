@@ -6,7 +6,9 @@ import 'package:main_app/Scanned_Output_page.dart/scan_output.dart';
 import 'package:main_app/Scanner/Product_Image.dart';
 import 'package:main_app/Scanner/ScannerCamera.dart';
 import 'package:main_app/SignUp_and_Login/SignIn.dart';
+import 'package:main_app/SignUp_and_Login/Signup.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 
 void main() async {
    WidgetsFlutterBinding.ensureInitialized();
@@ -35,6 +37,7 @@ class Nutri extends StatefulWidget {
   State<Nutri> createState() => _NutriState();
 }
 
+
 class _NutriState extends State<Nutri> {
   @override
   Widget build(BuildContext context) {
@@ -42,7 +45,7 @@ class _NutriState extends State<Nutri> {
       title: 'NutriScan',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: OpenFood(),
+      home:Signup(),
     );
   }
 }
