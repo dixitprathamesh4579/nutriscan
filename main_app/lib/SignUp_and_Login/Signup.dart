@@ -3,9 +3,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:main_app/SignUp_and_Login/Authservice_email.dart';
 import 'SignIn.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:main_app/SignUp_and_Login/googleauth.dart';
 
 class Signup extends StatefulWidget {
-  const Signup({super.key}); 
+  const Signup({super.key});
   @override
   State<Signup> createState() => SignupState();
 }
@@ -31,9 +32,9 @@ class SignupState extends State<Signup> {
     passCtrl.clear();
   }
 
-   final AuthService _authService = AuthService();
-   
-   Future<void> _signUp() async {
+  final AuthService _authService = AuthService();
+
+  Future<void> _signUp() async {
     final firstName = fnameCtrl.text.trim();
     final lastName = lnameCtrl.text.trim();
     final email = emailCtrl.text.trim();
@@ -53,15 +54,18 @@ class SignupState extends State<Signup> {
     if (error == null) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Sign up successful! confirm your email and log in.")),
+        const SnackBar(
+          content: Text("Sign up successful! confirm your email and log in."),
+        ),
       );
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const Signin()),
       );
     } else {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(error)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error)));
     }
   }
 
@@ -102,7 +106,6 @@ class SignupState extends State<Signup> {
                 ),
                 child: Column(
                   children: [
-              
                     Image.asset(
                       'assets/images/appbarlogo.png',
                       height: screenHeight * 0.12,
@@ -143,12 +146,10 @@ class SignupState extends State<Signup> {
                     ),
                     SizedBox(height: screenHeight * 0.03),
 
-            
                     Form(
                       key: _formKey,
                       child: Column(
                         children: [
-                          
                           Row(
                             children: [
                               Expanded(
@@ -159,8 +160,9 @@ class SignupState extends State<Signup> {
                                       return "First name required";
                                     } else if (value.length < 2) {
                                       return "Min 2 letters";
-                                    } else if (!RegExp(r'^[a-zA-Z ]+$')
-                                        .hasMatch(value)) {
+                                    } else if (!RegExp(
+                                      r'^[a-zA-Z ]+$',
+                                    ).hasMatch(value)) {
                                       return "Letters only";
                                     }
                                     return null;
@@ -183,15 +185,18 @@ class SignupState extends State<Signup> {
                                       return "Last name required";
                                     } else if (value.length < 2) {
                                       return "Min 2 letters";
-                                    } else if (!RegExp(r'^[a-zA-Z ]+$')
-                                        .hasMatch(value)) {
+                                    } else if (!RegExp(
+                                      r'^[a-zA-Z ]+$',
+                                    ).hasMatch(value)) {
                                       return "Letters only";
                                     }
                                     return null;
                                   },
                                   decoration: InputDecoration(
                                     hintText: 'Last Name',
-                                    prefixIcon: const Icon(Icons.person_outline),
+                                    prefixIcon: const Icon(
+                                      Icons.person_outline,
+                                    ),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(15),
                                     ),
@@ -202,7 +207,6 @@ class SignupState extends State<Signup> {
                           ),
                           SizedBox(height: screenHeight * 0.025),
 
-                  
                           TextFormField(
                             controller: emailCtrl,
                             keyboardType: TextInputType.emailAddress,
@@ -210,8 +214,8 @@ class SignupState extends State<Signup> {
                               if (value == null || value.trim().isEmpty) {
                                 return "Email is required";
                               } else if (!RegExp(
-                                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                                  .hasMatch(value.trim())) {
+                                r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                              ).hasMatch(value.trim())) {
                                 return "Enter valid email";
                               }
                               return null;
@@ -226,7 +230,6 @@ class SignupState extends State<Signup> {
                           ),
                           SizedBox(height: screenHeight * 0.025),
 
-                        
                           TextFormField(
                             controller: passCtrl,
                             obscureText: obscurePassword,
@@ -248,8 +251,9 @@ class SignupState extends State<Signup> {
                                       : Icons.visibility,
                                 ),
                                 onPressed: () {
-                                  setState(() =>
-                                      obscurePassword = !obscurePassword);
+                                  setState(
+                                    () => obscurePassword = !obscurePassword,
+                                  );
                                 },
                               ),
                               border: OutlineInputBorder(
@@ -260,7 +264,6 @@ class SignupState extends State<Signup> {
 
                           SizedBox(height: screenHeight * 0.02),
 
-                
                           Row(
                             children: [
                               Checkbox(
@@ -306,7 +309,6 @@ class SignupState extends State<Signup> {
 
                           SizedBox(height: screenHeight * 0.04),
 
-              
                           SizedBox(
                             width: double.infinity,
                             height: screenHeight * 0.06,
@@ -324,11 +326,13 @@ class SignupState extends State<Signup> {
                                         if (agreeTerms) {
                                           _signUp();
                                         } else {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
                                             const SnackBar(
                                               content: Text(
-                                                  'Please accept Terms of Service'),
+                                                'Please accept Terms of Service',
+                                              ),
                                               duration: Duration(seconds: 2),
                                             ),
                                           );
@@ -337,7 +341,8 @@ class SignupState extends State<Signup> {
                                     },
                               child: isLoading
                                   ? const CircularProgressIndicator(
-                                      color: Colors.white)
+                                      color: Colors.white,
+                                    )
                                   : Text(
                                       'Sign Up',
                                       style: GoogleFonts.poppins(
@@ -355,25 +360,23 @@ class SignupState extends State<Signup> {
 
                     SizedBox(height: screenHeight * 0.03),
 
-                  
                     Row(
                       children: const [
                         Expanded(
-                            child:
-                                Divider(color: Colors.grey, thickness: 1.2)),
+                          child: Divider(color: Colors.grey, thickness: 1.2),
+                        ),
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 8.0),
                           child: Text('Or Use'),
                         ),
                         Expanded(
-                            child:
-                                Divider(color: Colors.grey, thickness: 1.2)),
+                          child: Divider(color: Colors.grey, thickness: 1.2),
+                        ),
                       ],
                     ),
 
                     SizedBox(height: screenHeight * 0.03),
 
-            
                     SizedBox(
                       width: double.infinity,
                       height: screenHeight * 0.055,
@@ -384,7 +387,23 @@ class SignupState extends State<Signup> {
                           ),
                           side: const BorderSide(color: Colors.grey),
                         ),
-                        onPressed: () {},
+                        onPressed: () async {
+                          try {
+                            await signInWithGoogleAndroid();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("Signed in successfully!"),
+                              ),
+                            );
+
+                         Navigator.push(context, MaterialPageRoute(builder: (context)=>Signin()));
+                          } catch (error) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Error: $error")),
+                            );
+                          }
+                        },
+
                         icon: Image.asset(
                           'assets/images/google.png',
                           height: 18,
@@ -398,9 +417,9 @@ class SignupState extends State<Signup> {
                         ),
                       ),
                     ),
+
                     SizedBox(height: screenHeight * 0.04),
 
-          
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -412,9 +431,7 @@ class SignupState extends State<Signup> {
                           onTap: () {
                             Navigator.pushReplacement(
                               context,
-                              MaterialPageRoute(
-                                builder: (_) => const Signin(),
-                              ),
+                              MaterialPageRoute(builder: (_) => const Signin()),
                             );
                           },
                           child: Text(

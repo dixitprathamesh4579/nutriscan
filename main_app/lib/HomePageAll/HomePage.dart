@@ -5,7 +5,6 @@ import 'package:main_app/HomePageAll/fat-carbs.dart';
 import 'package:main_app/HomePageAll/healthy-drink-food.dart';
 import 'package:main_app/Profile/user_profile.dart';
 import 'package:main_app/Scanner/ScanPageSwitcher.dart';
-import 'package:main_app/Scanner/ScannerCamera.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
