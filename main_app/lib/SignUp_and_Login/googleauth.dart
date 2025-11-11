@@ -147,10 +147,15 @@ Future<void> loginWithGoogleAndroid(BuildContext context) async {
         MaterialPageRoute(builder: (context) => const Signin()),
       );
     } else {
+       final fullName = googleUser.displayName ?? '';
+        final parts = fullName.split(' ');
+        final firstName = parts.isNotEmpty ? parts.first : '';
+        final lastName = parts.length > 1 ? parts.sublist(1).join(' ') : '';
       await supabase
           .from('profiles')
           .update({
-            'name': googleUser.displayName,
+            'first_name': firstName,
+            'last_name': lastName,
             'avatar_url': googleUser.photoUrl,
             'updated_at': DateTime.now().toIso8601String(),
           })

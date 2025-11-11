@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:main_app/SignUp_and_Login/googleauth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class EditProfile extends StatefulWidget {
   @override
@@ -19,19 +21,23 @@ class EditProfileState extends State<EditProfile> {
   String uemail = 'nutriscan08@gmail.com';
   File? _imagefile;
 
-  late TextEditingController nicknameController;
-  late TextEditingController fullnameController;
+  late TextEditingController FirstnameController;
+  late TextEditingController LastnameController;
   late TextEditingController ageController;
   late TextEditingController weightController;
   late TextEditingController emailController;
   final ImagePicker _picker = ImagePicker();
 
+  bool isSaving = false;
+  Map<String, dynamic>? profileData;
+
   @override
   void initState() {
     super.initState();
-    _loadImage();
-    nicknameController = TextEditingController(text: unickname);
-    fullnameController = TextEditingController(text: ufullname);
+    loadProfileData();
+    updateProfile();
+    FirstnameController = TextEditingController(text: unickname);
+    LastnameController = TextEditingController(text: ufullname);
     ageController = TextEditingController(text: uage.toString());
     weightController = TextEditingController(text: uweight.toString());
     emailController = TextEditingController(text: uemail);
@@ -39,12 +45,55 @@ class EditProfileState extends State<EditProfile> {
 
   @override
   void dispose() {
-    nicknameController.dispose();
-    fullnameController.dispose();
+    FirstnameController.dispose();
+    LastnameController.dispose();
     ageController.dispose();
     weightController.dispose();
     emailController.dispose();
     super.dispose();
+  }
+
+  Future<void> loadProfileData() async {
+    try {
+      final user = supabase.auth.currentUser;
+      if (user == null) throw Exception('User not logged in');
+
+      final response = await supabase
+          .from('profiles')
+          .select()
+          .eq('id', user.id)
+          .maybeSingle();
+
+      if (response == null) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Profile not found')));
+        return;
+      }
+
+      profileData = response;
+      setState(() {
+        FirstnameController = TextEditingController(
+          text: profileData?['first_name'] ?? '',
+        );
+        LastnameController = TextEditingController(
+          text: profileData?['last_name'] ?? '',
+        );
+        emailController = TextEditingController(
+          text: profileData?['email'] ?? '',
+        );
+        ageController = TextEditingController(
+          text: profileData?['age']?.toString() ?? '',
+        );
+        weightController = TextEditingController(
+          text: profileData?['weight']?.toString() ?? '',
+        );
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error loading profile: $e')));
+    }
   }
 
   Future<void> _pickimage(ImageSource source) async {
@@ -57,13 +106,65 @@ class EditProfileState extends State<EditProfile> {
     }
   }
 
-  Future<void> _loadImage() async {
-    final prefs = await SharedPreferences.getInstance();
-    final path = prefs.getString("profile_image");
-    if (path != null) {
-      setState(() {
-        _imagefile = File(path);
-      });
+  Future<String?> uploadAvatar(String userId) async {
+    try {
+      if (_imagefile == null) return profileData?['avatar_url'];
+
+      final fileName = 'avatar_$userId.jpg';
+      final filePath = 'avatars/$fileName';
+
+      await supabase.storage
+          .from('avatars')
+          .upload(
+            filePath,
+            _imagefile!,
+            fileOptions: const FileOptions(upsert: true),
+          );
+
+      final publicUrl = supabase.storage.from('avatars').getPublicUrl(filePath);
+      return publicUrl;
+    } catch (e) {
+      debugPrint('Error uploading avatar: $e');
+      return profileData?['avatar_url'];
+    }
+  }
+
+  Future<void> updateProfile() async {
+    if (!editkey.currentState!.validate()) return;
+
+    setState(() => isSaving = true);
+
+    try {
+      final user = supabase.auth.currentUser;
+      if (user == null) throw Exception('User not logged in');
+
+      final avatarUrl = await uploadAvatar(user.id);
+
+      await supabase
+          .from('profiles')
+          .update({
+            'first_name': FirstnameController.text.trim(),
+            'last_name': LastnameController.text.trim(),
+            'email': emailController.text.trim(),
+            'age': int.tryParse(ageController.text.trim()),
+            'weight': double.tryParse(weightController.text.trim()),
+            'avatar_url': avatarUrl,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('id', user.id);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Profile updated successfully!')),
+        );
+        Navigator.pop(context, true);
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error updating profile: $e')));
+    } finally {
+      if (mounted) setState(() => isSaving = false);
     }
   }
 
@@ -119,8 +220,13 @@ class EditProfileState extends State<EditProfile> {
                         radius: screenWidth * 0.17,
                         backgroundColor: Colors.blue.shade50,
                         backgroundImage: _imagefile != null
-                            ? FileImage(_imagefile!) as ImageProvider
-                            : const AssetImage('assets/images/default_profile.png'),
+                            ? FileImage(_imagefile!)
+                            : (profileData?['avatar_url'] != null
+                                      ? NetworkImage(profileData!['avatar_url'])
+                                      : const AssetImage(
+                                          'assets/images/default_profile.png',
+                                        ))
+                                  as ImageProvider,
                       ),
                       Positioned(
                         bottom: 4,
@@ -140,10 +246,16 @@ class EditProfileState extends State<EditProfile> {
                                   offset: Offset(0, 2),
                                 ),
                               ],
-                              border: Border.all(color: Colors.blueAccent, width: 1),
+                              border: Border.all(
+                                color: Colors.blueAccent,
+                                width: 1,
+                              ),
                             ),
-                            child: Icon(Icons.camera_alt,
-                                color: Colors.blueAccent, size: screenWidth * 0.05),
+                            child: Icon(
+                              Icons.camera_alt,
+                              color: Colors.blueAccent,
+                              size: screenWidth * 0.05,
+                            ),
                           ),
                         ),
                       ),
@@ -153,82 +265,34 @@ class EditProfileState extends State<EditProfile> {
 
                 SizedBox(height: screenHeight * 0.04),
 
-                _buildLabel("Nickname", screenWidth),
-                _buildTextField(
-                  controller: nicknameController,
-                  hint: "Enter your nickname",
-                  icon: Icons.person,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) return "Nickname cannot be empty";
-                    if (value.length < 2) return "Nickname must be at least 2 characters";
-                    if (value.length > 15) return "Nickname too long";
-                    final regex = RegExp(r'^[a-zA-Z0-9_]+$');
-                    if (!regex.hasMatch(value)) return "Only letters, numbers, underscores";
+                _buildInput(
+                  "First Name",
+                  Icons.person,
+                  FirstnameController,
+                  validator: (v) {
+                    if (v == null || v.isEmpty) return 'Required';
                     return null;
                   },
-                  onSaved: (val) => unickname = val!.trim(),
                 ),
-
-                _buildLabel("Full Name", screenWidth),
-                _buildTextField(
-                  controller: fullnameController,
-                  hint: "Enter your full name",
-                  icon: Icons.badge,
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) return "Name required";
-                    if (value.trim().length < 2) return "Too short";
-                    final regex = RegExp(r'^[a-zA-Z\s]+$');
-                    if (!regex.hasMatch(value)) return "Only letters & spaces allowed";
-                    return null;
-                  },
-                  onSaved: (val) => ufullname = val!.trim(),
+                _buildInput("Last Name", Icons.badge, LastnameController),
+                _buildInput(
+                  "Email",
+                  Icons.email,
+                  emailController,
+                  readOnly:true,
+                  
                 ),
-
-                _buildLabel("Email Address", screenWidth),
-                _buildTextField(
-                  controller: emailController,
-                  hint: "Enter your email",
-                  icon: Icons.email,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) return "Email required";
-                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                      return "Invalid email";
-                    }
-                    return null;
-                  },
-                  onSaved: (val) => uemail = val!.trim(),
-                ),
-
-                _buildLabel("Age", screenWidth),
-                _buildTextField(
-                  controller: ageController,
-                  hint: "Enter your age",
-                  icon: Icons.cake,
+                _buildInput(
+                  "Age",
+                  Icons.cake,
+                  ageController,
                   keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) return "Age required";
-                    final age = int.tryParse(value);
-                    if (age == null || age < 12 || age > 100) return "Age 12–100 only";
-                    return null;
-                  },
-                  onSaved: (val) => uage = int.parse(val!.trim()),
                 ),
-
-                _buildLabel("Weight (kg)", screenWidth),
-                _buildTextField(
-                  controller: weightController,
-                  hint: "Enter your weight",
-                  icon: Icons.monitor_weight,
+                _buildInput(
+                  "Weight (kg)",
+                  Icons.monitor_weight,
+                  weightController,
                   keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) return "Weight required";
-                    final weight = double.tryParse(value);
-                    if (weight == null || weight < 10 || weight > 300) {
-                      return "Enter valid weight (10–300)";
-                    }
-                    return null;
-                  },
-                  onSaved: (val) => uweight = int.parse(val!.trim()),
                 ),
 
                 SizedBox(height: screenHeight * 0.06),
@@ -245,19 +309,16 @@ class EditProfileState extends State<EditProfile> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  onPressed: () {
-                    if (editkey.currentState!.validate()) {
-                      editkey.currentState!.save();
-                      Navigator.pop(context);
-                    }
-                  },
-                  child: Text(
-                    "Save Changes",
-                    style: GoogleFonts.poppins(
-                      fontSize: screenWidth * 0.045 / textScale,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                  onPressed: isSaving ? null : () => updateProfile(),
+                  child: isSaving
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : Text(
+                          "Save Changes",
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.w600,
+                            fontSize: screenWidth * 0.045 / textScale,
+                          ),
+                        ),
                 ),
               ],
             ),
@@ -267,54 +328,34 @@ class EditProfileState extends State<EditProfile> {
     );
   }
 
-  Widget _buildLabel(String label, double screenWidth) {
-    return Padding(
-      padding: EdgeInsets.only(top: screenWidth * 0.04, bottom: screenWidth * 0.015),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Text(
-          label,
-          style: GoogleFonts.poppins(
-            fontSize: screenWidth * 0.04,
-            fontWeight: FontWeight.w600,
-            color: Colors.black87,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String hint,
-    required IconData icon,
-    required String? Function(String?) validator,
-    required void Function(String?) onSaved,
+  Widget _buildInput(
+    String label,
+    IconData icon,
+    TextEditingController ctrl, {
     TextInputType? keyboardType,
+    String? Function(String?)? validator,
+    bool readOnly = false, 
   }) {
-    return TextFormField(
-      controller: controller,
-      validator: validator,
-      onSaved: onSaved,
-      keyboardType: keyboardType,
-      decoration: InputDecoration(
-        prefixIcon: Icon(icon, color: Colors.blueAccent),
-        hintText: hint,
-        hintStyle: TextStyle(color: Colors.grey.shade500),
-        filled: true,
-        fillColor: Colors.grey.shade100,
-        contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 15),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: Colors.blueAccent, width: 1.5),
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: TextFormField(
+        controller: ctrl,
+        validator: validator,
+        keyboardType: keyboardType,
+          readOnly: readOnly,
+        decoration: InputDecoration(
+          labelText: label,
+          prefixIcon: Icon(icon, color: Colors.blueAccent),
+          filled: true,
+          fillColor: Colors.grey.shade100,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide(color: Colors.grey.shade300),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: const BorderSide(color: Colors.blueAccent, width: 1.5),
+          ),
         ),
       ),
     );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:main_app/Profile/Edit_profile.dart';
 import 'package:main_app/SignUp_and_Login/googleauth.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class UserProfile extends StatefulWidget {
   @override
@@ -9,8 +10,52 @@ class UserProfile extends StatefulWidget {
 }
 
 class UserProfilestate extends State<UserProfile> {
+  final SupabaseClient supabase = Supabase.instance.client;
+  Map<String, dynamic>? profile;
+  bool isLoading = true;
   bool isOn = false;
   bool isOn2 = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
+    try {
+      final user = supabase.auth.currentUser;
+      if (user == null) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('User not logged in')));
+        return;
+      }
+
+      final response = await supabase
+          .from('profiles')
+          .select()
+          .eq('id', user.id)
+          .maybeSingle();
+
+      if (response != null) {
+        setState(() {
+          profile = response;
+          isLoading = false;
+        });
+      } else {
+        setState(() => isLoading = false);
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Profile not found')));
+      }
+    } catch (e) {
+      setState(() => isLoading = false);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error fetching profile: $e')));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,9 +63,19 @@ class UserProfilestate extends State<UserProfile> {
     final screenWidth = MediaQuery.of(context).size.width;
     final textScale = MediaQuery.of(context).textScaleFactor;
 
-    String defaultUname = 'John Doe';
-    String defaultGmail = 'nutriscan08@gmail.com';
+    final String fullName =
+        '${profile?['first_name'] ?? ''} ${profile?['last_name'] ?? ''}'
+            .trim()
+            .isEmpty
+        ? 'John Doe'
+        : '${profile?['first_name']} ${profile?['last_name']}';
 
+  
+
+    final String email = profile?['email'] ?? 'nutriscan08@gmail.com';
+    final String avatarUrl =
+        profile?['avatar_url'] ??
+        'https://res.cloudinary.com/ddwdjlq7j/image/upload/v1762861113/user_v37kf9.png';
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
@@ -55,21 +110,21 @@ class UserProfilestate extends State<UserProfile> {
                     CircleAvatar(
                       radius: screenWidth * 0.17,
                       backgroundColor: Colors.blue.shade50,
-                      backgroundImage: const AssetImage(
-                        'assets/images/default_profile.png',
-                      ),
+                      backgroundImage: NetworkImage(avatarUrl),
                     ),
                     SizedBox(height: screenHeight * 0.02),
                     Text(
-                      defaultUname,
+                      fullName,
                       style: GoogleFonts.poppins(
                         fontSize: screenWidth * 0.05 / textScale,
                         fontWeight: FontWeight.w600,
                         color: Colors.black87,
                       ),
                     ),
+                   
+                    SizedBox(height: screenHeight * 0.01),
                     Text(
-                      defaultGmail,
+                      email,
                       style: GoogleFonts.roboto(
                         fontSize: screenWidth * 0.04 / textScale,
                         color: Colors.grey.shade600,
@@ -103,11 +158,15 @@ class UserProfilestate extends State<UserProfile> {
                     fontSize: screenWidth * 0.045 / textScale,
                   ),
                 ),
-                onPressed: () {
-                  Navigator.push(
+                onPressed: () async {
+                  final result = await Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => EditProfile()),
                   );
+
+                  if (result == true) {
+                    _loadProfile();
+                  }
                 },
               ),
 
@@ -205,14 +264,14 @@ class UserProfilestate extends State<UserProfile> {
                   ),
                 ),
                 onTap: () async {
-                          try {
-                            await logoutUser(context);
-                          } catch (error) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text("Error: $error")),
-                            );
-                          }
-                        },
+                  try {
+                    await logoutUser(context);
+                  } catch (error) {
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text("Error: $error")));
+                  }
+                },
               ),
             ],
           ),
