@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:main_app/Profile/Edit_profile.dart';
-import 'package:main_app/SignUp_and_Login/SignIn.dart';
+import 'package:main_app/SignUp_and_Login/googleauth.dart';
 
 class UserProfile extends StatefulWidget {
   @override
@@ -204,12 +204,15 @@ class UserProfilestate extends State<UserProfile> {
                     fontSize: screenWidth * 0.045 / textScale,
                   ),
                 ),
-                onTap: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => Signin()),
-                  );
-                },
+                onTap: () async {
+                          try {
+                            await logoutUser(context);
+                          } catch (error) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Error: $error")),
+                            );
+                          }
+                        },
               ),
             ],
           ),

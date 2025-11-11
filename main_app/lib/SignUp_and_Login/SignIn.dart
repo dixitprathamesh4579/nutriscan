@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:main_app/HomePageAll/HomePage.dart';
 import 'package:main_app/SignUp_and_Login/Signup.dart';
+import 'package:main_app/SignUp_and_Login/googleauth.dart';
 import 'package:main_app/forgotPassword_page/forgotpass.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -35,9 +36,9 @@ class _SigninState extends State<Signin> {
       );
 
       if (response.user != null && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Login successful!')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Login successful!')));
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => const HomePage()),
@@ -93,7 +94,6 @@ class _SigninState extends State<Signin> {
                 ),
                 child: Column(
                   children: [
-                    
                     Image.asset(
                       'assets/images/appbarlogo.png',
                       height: screenHeight * 0.12,
@@ -139,12 +139,10 @@ class _SigninState extends State<Signin> {
 
                     SizedBox(height: screenHeight * 0.03),
 
-                    
                     Form(
                       key: _formKey,
                       child: Column(
                         children: [
-                          
                           TextFormField(
                             controller: emailCtrl,
                             keyboardType: TextInputType.emailAddress,
@@ -152,8 +150,8 @@ class _SigninState extends State<Signin> {
                               if (value == null || value.trim().isEmpty) {
                                 return "Email is required";
                               } else if (!RegExp(
-                                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                                  .hasMatch(value.trim())) {
+                                r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                              ).hasMatch(value.trim())) {
                                 return "Enter a valid email";
                               }
                               return null;
@@ -168,7 +166,6 @@ class _SigninState extends State<Signin> {
                           ),
                           SizedBox(height: screenHeight * 0.025),
 
-                      
                           TextFormField(
                             controller: passCtrl,
                             obscureText: obscurePassword,
@@ -190,8 +187,9 @@ class _SigninState extends State<Signin> {
                                       : Icons.visibility,
                                 ),
                                 onPressed: () {
-                                  setState(() =>
-                                      obscurePassword = !obscurePassword);
+                                  setState(
+                                    () => obscurePassword = !obscurePassword,
+                                  );
                                 },
                               ),
                               border: OutlineInputBorder(
@@ -202,7 +200,6 @@ class _SigninState extends State<Signin> {
 
                           SizedBox(height: screenHeight * 0.015),
 
-                          
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -225,7 +222,7 @@ class _SigninState extends State<Signin> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (_) =>  ForgotPass(),
+                                      builder: (_) => ForgotPass(),
                                     ),
                                   );
                                 },
@@ -242,7 +239,6 @@ class _SigninState extends State<Signin> {
 
                           SizedBox(height: screenHeight * 0.05),
 
-                  
                           SizedBox(
                             width: double.infinity,
                             height: screenHeight * 0.06,
@@ -262,7 +258,8 @@ class _SigninState extends State<Signin> {
                                     },
                               child: isLoading
                                   ? const CircularProgressIndicator(
-                                      color: Colors.white)
+                                      color: Colors.white,
+                                    )
                                   : Text(
                                       'Sign In',
                                       style: GoogleFonts.poppins(
@@ -280,7 +277,6 @@ class _SigninState extends State<Signin> {
 
                     SizedBox(height: screenHeight * 0.04),
 
-            
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -304,7 +300,6 @@ class _SigninState extends State<Signin> {
 
                     SizedBox(height: screenHeight * 0.03),
 
-        
                     SizedBox(
                       width: double.infinity,
                       height: screenHeight * 0.055,
@@ -315,8 +310,14 @@ class _SigninState extends State<Signin> {
                           ),
                           side: const BorderSide(color: Colors.grey),
                         ),
-                        onPressed: () {
-                          debugPrint('Google Sign-In pressed');
+                        onPressed: () async {
+                          try {
+                            await loginWithGoogleAndroid(context);
+                          } catch (error) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Error: $error")),
+                            );
+                          }
                         },
                         icon: Image.asset(
                           'assets/images/google.png',
@@ -334,7 +335,6 @@ class _SigninState extends State<Signin> {
 
                     SizedBox(height: screenHeight * 0.04),
 
-        
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -346,9 +346,7 @@ class _SigninState extends State<Signin> {
                           onTap: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(
-                                builder: (_) => const Signup(),
-                              ),
+                              MaterialPageRoute(builder: (_) => const Signup()),
                             );
                           },
                           child: Text(

@@ -34,41 +34,49 @@ class SignupState extends State<Signup> {
 
   final AuthService _authService = AuthService();
 
-  Future<void> _signUp() async {
-    final firstName = fnameCtrl.text.trim();
-    final lastName = lnameCtrl.text.trim();
-    final email = emailCtrl.text.trim();
-    final password = passCtrl.text.trim();
+ Future<void> _signUp() async {
+  final firstName = fnameCtrl.text.trim();
+  final lastName = lnameCtrl.text.trim();
+  final email = emailCtrl.text.trim();
+  final password = passCtrl.text.trim();
 
-    setState(() => isLoading = true);
+  setState(() => isLoading = true);
 
-    final error = await _authService.signUp(
-      email: email,
-      password: password,
-      firstName: firstName,
-      lastName: lastName,
+  final error = await _authService.signUp(
+    email: email,
+    password: password,
+    firstName: firstName,
+    lastName: lastName,
+  );
+
+  setState(() => isLoading = false);
+
+  if (error == null) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Sign up successful! Confirm your email and log in."),
+      ),
     );
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const Signin()),
+    );
+  } else {
+    String errorMessage = error;
 
-    setState(() => isLoading = false);
-
-    if (error == null) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Sign up successful! confirm your email and log in."),
-        ),
-      );
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const Signin()),
-      );
-    } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error)));
+    if (error.toLowerCase().contains("already") ||
+        error.toLowerCase().contains("exists") ||
+        error.toLowerCase().contains("duplicate") ||
+        error.toLowerCase().contains("foreign key")) {
+      errorMessage = "This email is already registered.Please log in instead.";
     }
-  }
 
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(errorMessage)),
+    );
+  }
+}
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -389,14 +397,7 @@ class SignupState extends State<Signup> {
                         ),
                         onPressed: () async {
                           try {
-                            await signInWithGoogleAndroid();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Signed in successfully!"),
-                              ),
-                            );
-
-                         Navigator.push(context, MaterialPageRoute(builder: (context)=>Signin()));
+                            await signUpWithGoogleAndroid(context);
                           } catch (error) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text("Error: $error")),
