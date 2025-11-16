@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:main_app/SignUp_and_Login/googleauth.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -35,7 +34,6 @@ class EditProfileState extends State<EditProfile> {
   void initState() {
     super.initState();
     loadProfileData();
-    updateProfile();
     FirstnameController = TextEditingController(text: unickname);
     LastnameController = TextEditingController(text: ufullname);
     ageController = TextEditingController(text: uage.toString());
@@ -102,17 +100,21 @@ class EditProfileState extends State<EditProfile> {
       setState(() {
         _imagefile = File(pickedfile.path);
       });
-      _saveImage(pickedfile.path);
     }
   }
 
   Future<String?> uploadAvatar(String userId) async {
     try {
-      if (_imagefile == null) return profileData?['avatar_url'];
+      if (_imagefile == null) {
+        debugPrint('No image file selected, keeping existing avatar');
+        return profileData?['avatar_url'];
+      }
 
       final fileName = 'avatar_$userId.jpg';
-      final filePath = 'avatars/$fileName';
+      final filePath = fileName;
 
+      debugPrint('Uploading avatar to bucket: avatars, path: $filePath');
+      
       await supabase.storage
           .from('avatars')
           .upload(
@@ -122,10 +124,12 @@ class EditProfileState extends State<EditProfile> {
           );
 
       final publicUrl = supabase.storage.from('avatars').getPublicUrl(filePath);
+      debugPrint('Avatar uploaded successfully. URL: $publicUrl');
+      
       return publicUrl;
     } catch (e) {
       debugPrint('Error uploading avatar: $e');
-      return profileData?['avatar_url'];
+      throw Exception('Failed to upload avatar: $e');
     }
   }
 
@@ -138,40 +142,69 @@ class EditProfileState extends State<EditProfile> {
       final user = supabase.auth.currentUser;
       if (user == null) throw Exception('User not logged in');
 
-      final avatarUrl = await uploadAvatar(user.id);
+      String? avatarUrl;
+      try {
+        avatarUrl = await uploadAvatar(user.id);
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Warning: Avatar upload failed. $e'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
+        avatarUrl = profileData?['avatar_url'];
+      }
+
+      final updateData = {
+        'first_name': FirstnameController.text.trim(),
+        'last_name': LastnameController.text.trim(),
+        'email': emailController.text.trim(),
+        'age': int.tryParse(ageController.text.trim()),
+        'weight': double.tryParse(weightController.text.trim()),
+        'updated_at': DateTime.now().toIso8601String(),
+      };
+
+      if (avatarUrl != null) {
+        updateData['avatar_url'] = avatarUrl;
+      }
 
       await supabase
           .from('profiles')
-          .update({
-            'first_name': FirstnameController.text.trim(),
-            'last_name': LastnameController.text.trim(),
-            'email': emailController.text.trim(),
-            'age': int.tryParse(ageController.text.trim()),
-            'weight': double.tryParse(weightController.text.trim()),
-            'avatar_url': avatarUrl,
-            'updated_at': DateTime.now().toIso8601String(),
-          })
+          .update(updateData)
           .eq('id', user.id);
+
+      setState(() {
+        profileData = {...?profileData, ...updateData};
+      });
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profile updated successfully!')),
+          const SnackBar(
+            content: Text('Profile updated successfully!'),
+            backgroundColor: Colors.green,
+          ),
         );
         Navigator.pop(context, true);
       }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error updating profile: $e')));
+      debugPrint('Error updating profile: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(
+          SnackBar(
+            content: Text('Error updating profile: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } finally {
       if (mounted) setState(() => isSaving = false);
     }
   }
 
-  Future<void> _saveImage(String path) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString("profile_image", path);
-  }
 
   @override
   Widget build(BuildContext context) {

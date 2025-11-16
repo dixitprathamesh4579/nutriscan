@@ -22,6 +22,8 @@ class AuthService {
           'id': user.id,
           'first_name': firstName,
           'last_name': lastName,
+          'email':email,
+          'created_at': DateTime.now().toIso8601String(),
         });
       }
 

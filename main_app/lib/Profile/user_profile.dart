@@ -15,6 +15,7 @@ class UserProfilestate extends State<UserProfile> {
   bool isLoading = true;
   bool isOn = false;
   bool isOn2 = false;
+  int _avatarCacheKey = 0;
 
   @override
   void initState() {
@@ -42,6 +43,7 @@ class UserProfilestate extends State<UserProfile> {
         setState(() {
           profile = response;
           isLoading = false;
+          _avatarCacheKey = DateTime.now().millisecondsSinceEpoch;
         });
       } else {
         setState(() => isLoading = false);
@@ -76,6 +78,10 @@ class UserProfilestate extends State<UserProfile> {
     final String avatarUrl =
         profile?['avatar_url'] ??
         'https://res.cloudinary.com/ddwdjlq7j/image/upload/v1762861113/user_v37kf9.png';
+    
+    final String avatarUrlWithCache = avatarUrl.contains('?')
+        ? '$avatarUrl&t=$_avatarCacheKey'
+        : '$avatarUrl?t=$_avatarCacheKey';
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
@@ -110,7 +116,10 @@ class UserProfilestate extends State<UserProfile> {
                     CircleAvatar(
                       radius: screenWidth * 0.17,
                       backgroundColor: Colors.blue.shade50,
-                      backgroundImage: NetworkImage(avatarUrl),
+                      backgroundImage: NetworkImage(avatarUrlWithCache),
+                      onBackgroundImageError: (exception, stackTrace) {
+                        debugPrint('Error loading avatar image: $exception');
+                      },
                     ),
                     SizedBox(height: screenHeight * 0.02),
                     Text(
