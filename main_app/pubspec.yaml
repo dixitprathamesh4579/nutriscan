@@ -56,6 +56,7 @@ dev_dependencies:
   google_mlkit_barcode_scanning: ^0.14.0
   go_router: ^15.1.3
   google_sign_in: ^6.2.1
+  flutter_dotenv: 
   
   
 flutter_launcher_icons:
@@ -87,6 +88,7 @@ flutter:
     - assets/harmful_ingredients.json
     - assets/harmful_reasons.json
     - assets/e_codes.json
+    - .env
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

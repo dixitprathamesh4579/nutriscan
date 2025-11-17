@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:main_app/Gorouter/deeplink.dart';
 import 'package:main_app/HomePageAll/HomePage.dart';
 import 'package:main_app/Profile/user_profile.dart';
+import 'package:main_app/Scanned_Output_page.dart/Product_output.dart';
 import 'package:main_app/Scanned_Output_page.dart/open_food_fact_api_call.dart';
 import 'package:main_app/Scanned_Output_page.dart/scan_output.dart';
 import 'package:main_app/Scanner/Product_Image.dart';
@@ -9,35 +10,34 @@ import 'package:main_app/Scanner/ScannerCamera.dart';
 import 'package:main_app/SignUp_and_Login/SignIn.dart';
 import 'package:main_app/SignUp_and_Login/Signup.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 
 
 void main() async {
-   WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
 
   await Supabase.initialize(
-    url: 'https://gvpgxdclmoafiorertev.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2cGd4ZGNsbW9hZmlvcmVydGV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk0NzU4MzEsImV4cCI6MjA3NTA1MTgzMX0.vGrQYp5oPO7By0vLtoJbc79kpvZzKoaEg_tRwvm12Lw',
+    url: dotenv.env['SUPABASE_URL']!,
+    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
 
   runApp(Nutri());
 }
 
+@override
+Widget build(BuildContext context) {
+  return MaterialApp.router(
+    routerConfig: router,
+    debugShowCheckedModeBanner: false,
+  );
+}
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp.router(
-      routerConfig: router,
-      debugShowCheckedModeBanner: false,
-    );
-  }
-
-
-  
 class Nutri extends StatefulWidget {
   @override
   State<Nutri> createState() => _NutriState();
 }
-
 
 class _NutriState extends State<Nutri> {
   @override
@@ -46,8 +46,7 @@ class _NutriState extends State<Nutri> {
       title: 'NutriScan',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.blue),
-      home:OpenFood(),
+      home: OpenFood(),
     );
   }
 }
-  

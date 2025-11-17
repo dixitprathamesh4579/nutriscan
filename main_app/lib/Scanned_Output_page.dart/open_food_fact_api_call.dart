@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:main_app/HomePageAll/HomePage.dart';
 import 'dart:convert';
 import 'package:main_app/Scanner/ScannerCamera.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 
 class OpenFood extends StatefulWidget {
   const OpenFood({super.key});
@@ -100,8 +102,10 @@ class _OpenFoodState extends State<OpenFood> {
 
   Future<void> fetchproducts() async {
     print("Fetching Product...");
+    await dotenv.load(fileName: ".env");
+
     final uri = Uri.parse(
-      "https://world.openfoodfacts.org/api/v2/product/8901058000290.json",
+      dotenv.env['OPEN_FOOD']!,
     );
     final response = await http.get(
       uri,
@@ -119,7 +123,6 @@ class _OpenFoodState extends State<OpenFood> {
           product = data["product"];
           isLoading = false;
 
-          // Parse Additives - remove "en:" and normalize to E### uppercase
           additivesList = List<String>.from(
             (product?["additives_tags"] as List<dynamic>?)
                     ?.map(
@@ -132,7 +135,6 @@ class _OpenFoodState extends State<OpenFood> {
                 [],
           );
 
-          // Parse Allergens - remove locale prefix if present
           allergensList = List<String>.from(
             (product?["allergens_tags"] as List<dynamic>?)
                     ?.map(
@@ -464,6 +466,28 @@ class _OpenFoodState extends State<OpenFood> {
                         ),
                       ),
                       alternativeProductsWidget(),
+                      SizedBox(height: 0.1),
+                      SizedBox(
+                        width: double.infinity,
+                        height: screenheight * 0.06,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                          ),
+                          onPressed: () {},
+                          child: Text(
+                            'SAVE',
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                              fontSize: screenwidth * 0.045,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 );
