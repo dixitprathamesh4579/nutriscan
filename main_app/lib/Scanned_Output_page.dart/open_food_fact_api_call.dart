@@ -36,7 +36,6 @@ class _OpenFoodState extends State<OpenFood> {
     try {
       final String raw = await rootBundle.loadString("assets/e_codes.json");
       final Map<String, dynamic> decoded = jsonDecode(raw);
-      // Normalize keys to uppercase (E150d -> E150D)
       final normalized = <String, dynamic>{};
       decoded.forEach((k, v) {
         normalized[k.toString().toUpperCase()] = v;
@@ -45,7 +44,6 @@ class _OpenFoodState extends State<OpenFood> {
         eCodeMap = normalized;
       });
     } catch (e) {
-      // If asset missing or invalid, keep eCodeMap empty but do not crash
       print("Failed to load e_codes.json: $e");
     }
   }
@@ -674,7 +672,6 @@ class _OpenFoodState extends State<OpenFood> {
 
   Widget harmfulIngredientsWidget() {
     final screenwidth = MediaQuery.of(context).size.width;
-    final screenheight = MediaQuery.of(context).size.height;
     if (riskyIngredients.isEmpty) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
@@ -786,7 +783,6 @@ class _OpenFoodState extends State<OpenFood> {
 
   Widget allergensWidget() {
     final screenwidth = MediaQuery.of(context).size.width;
-    final screenheight = MediaQuery.of(context).size.height;
     if (allergensList.isEmpty) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
