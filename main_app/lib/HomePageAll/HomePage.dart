@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:main_app/History/ScanHistoryPage.dart';
 import 'package:main_app/HomePageAll/Calender.dart';
 import 'package:main_app/HomePageAll/calories_banner.dart';
 import 'package:main_app/HomePageAll/fat-carbs.dart';
@@ -52,15 +53,7 @@ class HomePageState extends State<HomePage> {
         ),
       ),
       ScanPageSwitcher(),
-      Center(
-        child: Text(
-          "History Page",
-          style: TextStyle(
-            fontSize: screenWidth * 0.06 / textScale,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
+      ScanHistoryPage(),
       UserProfile(),
     ];
 

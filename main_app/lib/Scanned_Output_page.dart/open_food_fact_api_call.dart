@@ -6,7 +6,7 @@ import 'package:main_app/HomePageAll/HomePage.dart';
 import 'dart:convert';
 import 'package:main_app/Scanner/ScannerCamera.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class OpenFood extends StatefulWidget {
   const OpenFood({super.key});
@@ -105,10 +105,11 @@ class _OpenFoodState extends State<OpenFood> {
     await dotenv.load(fileName: ".env");
 
     final uri = Uri.parse(
-      dotenv.env['OPEN_FOOD']!,
+      "https://world.openfoodfacts.org/api/v2/product/$code.json",
     );
+
     final response = await http.get(
-      uri,
+      uri as Uri,
       headers: {"User-Agent": "NutriScan - Flutter - Version 1.0"},
     );
 
@@ -466,7 +467,7 @@ class _OpenFoodState extends State<OpenFood> {
                         ),
                       ),
                       alternativeProductsWidget(),
-                      SizedBox(height: 0.1),
+                      SizedBox(height: screenheight * 0.015),
                       SizedBox(
                         width: double.infinity,
                         height: screenheight * 0.06,
@@ -477,7 +478,49 @@ class _OpenFoodState extends State<OpenFood> {
                               borderRadius: BorderRadius.circular(15),
                             ),
                           ),
-                          onPressed: () {},
+                          onPressed: () async {
+                            final supabase = Supabase.instance.client;
+
+                            final userId = supabase.auth.currentUser?.id;
+
+                            if (userId == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text("You must be logged in"),
+                                ),
+                              );
+                              return;
+                            }
+
+                            try {
+                              final response = await supabase
+                                  .from('scan_history')
+                                  .insert({
+                                    "profile_id": userId,
+                                    "name":
+                                        product?["product_name"] ?? "Unknown",
+                                    "brand": product?["brands"] ?? "Unknown",
+                                    "image": product?["image_url"] ?? "",
+                                    "ingredients":
+                                        product?["ingredients_text"] ?? "",
+                                    "harmful_ingredients": riskyIngredients,
+                                    "additives": additivesList,
+                                  });
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("Saved to history ✔")),
+                              );
+                            } catch (e) {
+                              print("Error saving history: $e");
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text("Failed to save history"),
+                                ),
+                              );
+                            }
+                          },
+
                           child: Text(
                             'SAVE',
                             style: GoogleFonts.poppins(

@@ -181,6 +181,7 @@ class ScannerCamerastate extends State<ScannerCamera> {
                                 setState(
                                   () => scannedBarcode = barcode.rawValue,
                                 );
+                                controller.stop();
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
