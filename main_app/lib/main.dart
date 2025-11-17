@@ -46,7 +46,7 @@ class _NutriState extends State<Nutri> {
       title: 'NutriScan',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.blue),
-      home:Signin(),
+      home:OpenFood(),
     );
   }
 }

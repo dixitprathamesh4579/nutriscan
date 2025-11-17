@@ -85,6 +85,8 @@ flutter:
   assets:
     - assets/images/
     - assets/harmful_ingredients.json
+    - assets/harmful_reasons.json
+    - assets/e_codes.json
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

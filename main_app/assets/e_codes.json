@@ -1,0 +1,330 @@
+{
+  "E100": { "name": "Curcumin (Turmeric extract)", "type": "Color", "risk": "Low", "warning": "" },
+  "E101": { "name": "Riboflavin (Vitamin B2)", "type": "Color / Nutrient", "risk": "Low", "warning": "" },
+  "E102": { "name": "Tartrazine (Yellow 5)", "type": "Color", "risk": "Moderate", "warning": "May cause allergic reactions or hyperactivity in sensitive people." },
+  "E104": { "name": "Quinoline Yellow", "type": "Color", "risk": "Moderate", "warning": "Associated with sensitivity in some individuals." },
+  "E110": { "name": "Sunset Yellow FCF", "type": "Color", "risk": "Moderate", "warning": "May cause allergic reactions; linked with hyperactivity in some studies." },
+  "E120": { "name": "Cochineal / Carmine", "type": "Color (natural insect dye)", "risk": "Moderate", "warning": "Not suitable for vegans; may cause allergies." },
+  "E122": { "name": "Carmoisine (Azorubin)", "type": "Color", "risk": "Moderate", "warning": "May cause allergic reactions in some people." },
+  "E123": { "name": "Amaranth", "type": "Color", "risk": "Moderate", "warning": "Restricted or banned in some countries; check local regs." },
+  "E124": { "name": "Ponceau 4R", "type": "Color", "risk": "Moderate", "warning": "May cause hypersensitivity in some individuals." },
+  "E127": { "name": "Erythrosine (Red No. 3)", "type": "Color", "risk": "Moderate", "warning": "Some historical concerns; restricted in certain uses." },
+  "E129": { "name": "Allura Red AC", "type": "Color", "risk": "Moderate", "warning": "May trigger sensitivity in susceptible people." },
+  "E132": { "name": "Indigo Carmine", "type": "Color", "risk": "Low", "warning": "" },
+  "E133": { "name": "Brilliant Blue FCF", "type": "Color", "risk": "Low", "warning": "May cause mild sensitivity in rare cases." },
+  "E140": { "name": "Chlorophylls and chlorophyllins", "type": "Color (natural)", "risk": "Low", "warning": "" },
+  "E141": { "name": "Copper complexes of chlorophyll", "type": "Color", "risk": "Low", "warning": "Avoid in copper-sensitive diets." },
+  "E150a": { "name": "Plain Caramel", "type": "Color", "risk": "Low", "warning": "" },
+  "E150b": { "name": "Caustic sulphite caramel", "type": "Color", "risk": "Low", "warning": "" },
+  "E150c": { "name": "Ammonia caramel", "type": "Color", "risk": "Low", "warning": "" },
+  "E150d": { "name": "Sulphite ammonia caramel (Caramel IV)", "type": "Color", "risk": "Moderate", "warning": "May contain sulfites; some health concerns reported." },
+  "E151": { "name": "Brilliant Black BN", "type": "Color", "risk": "Moderate", "warning": "Uses restricted in some countries." },
+  "E153": { "name": "Vegetable carbon (Charcoal)", "type": "Color (natural)", "risk": "Low", "warning": "Can affect absorption of medications if consumed in large amounts." },
+  "E160a": { "name": "Alpha-carotene / Carotenes", "type": "Color / Nutrient", "risk": "Low", "warning": "" },
+  "E160b": { "name": "Annatto", "type": "Color (natural)", "risk": "Low", "warning": "May cause allergic reactions in rare cases." },
+  "E160c": { "name": "Paprika extract", "type": "Color (natural)", "risk": "Low", "warning": "" },
+  "E160d": { "name": "Lycpene", "type": "Color / Nutrient", "risk": "Low", "warning": "" },
+  "E160e": { "name": "Beta-apo-8'-carotenal", "type": "Color", "risk": "Low", "warning": "" },
+  "E160f": { "name": "Ethyl ester of beta-apo-8'-carotenic acid", "type": "Color", "risk": "Low", "warning": "" },
+  "E161b": { "name": "Lutein", "type": "Color / Nutrient", "risk": "Low", "warning": "" },
+  "E162": { "name": "Beetroot Red", "type": "Color (natural)", "risk": "Low", "warning": "" },
+  "E163": { "name": "Anthocyanins", "type": "Color (natural)", "risk": "Low", "warning": "" },
+  "E170": { "name": "Calcium carbonate", "type": "Color / Mineral", "risk": "Low", "warning": "High intake may affect mineral balance." },
+  "E171": { "name": "Titanium dioxide", "type": "Color (whitening)", "risk": "Moderate", "warning": "Some regulatory scrutiny; avoid inhalation of powder form." },
+  "E172": { "name": "Iron oxides and hydroxides", "type": "Color", "risk": "Low", "warning": "" },
+  "E175": { "name": "Gold", "type": "Color (decorative)", "risk": "Low", "warning": "Used for decoration; inert in small amounts." },
+  "E180": { "name": "Lithol Rubine BK", "type": "Color", "risk": "Moderate", "warning": "Restricted uses in some regions." },
+
+  "E200": { "name": "Sorbic acid", "type": "Preservative", "risk": "Low", "warning": "May cause mild irritation in rare cases." },
+  "E201": { "name": "Sodium sorbate", "type": "Preservative", "risk": "Low", "warning": "" },
+  "E202": { "name": "Potassium sorbate", "type": "Preservative", "risk": "Low", "warning": "" },
+  "E203": { "name": "Calcium sorbate", "type": "Preservative", "risk": "Low", "warning": "" },
+  "E210": { "name": "Benzoic acid", "type": "Preservative", "risk": "Moderate", "warning": "May cause sensitivity for some; forms benzene with vitamin C." },
+  "E211": { "name": "Sodium benzoate", "type": "Preservative", "risk": "Moderate", "warning": "Can form benzene when combined with vitamin C under heat/light." },
+  "E212": { "name": "Potassium benzoate", "type": "Preservative", "risk": "Moderate", "warning": "" },
+  "E213": { "name": "Calcium benzoate", "type": "Preservative", "risk": "Low", "warning": "" },
+  "E214": { "name": "Ethyl para-hydroxybenzoate (Ethylparaben)", "type": "Preservative", "risk": "Moderate", "warning": "Some concerns about endocrine effects in high exposures." },
+  "E215": { "name": "Sodium ethyl para-hydroxybenzoate", "type": "Preservative", "risk": "Moderate", "warning": "" },
+  "E216": { "name": "Propyl para-hydroxybenzoate (Propylparaben)", "type": "Preservative", "risk": "Moderate", "warning": "Possible endocrine disruption in large/sustained exposures." },
+  "E217": { "name": "Sodium propyl para-hydroxybenzoate", "type": "Preservative", "risk": "Moderate", "warning": "" },
+  "E218": { "name": "Methyl para-hydroxybenzoate (Methylparaben)", "type": "Preservative", "risk": "Moderate", "warning": "" },
+  "E219": { "name": "Sodium methyl para-hydroxybenzoate", "type": "Preservative", "risk": "Moderate", "warning": "" },
+  "E220": { "name": "Sulphur dioxide", "type": "Preservative / Antioxidant", "risk": "Moderate", "warning": "Can trigger asthma attacks in sensitive individuals." },
+  "E221": { "name": "Sodium sulphite", "type": "Preservative", "risk": "Moderate", "warning": "May cause respiratory sensitivity." },
+  "E222": { "name": "Sodium bisulphite", "type": "Preservative", "risk": "Moderate", "warning": "May cause sensitivity in asthmatics." },
+  "E223": { "name": "Sodium metabisulphite", "type": "Preservative", "risk": "Moderate", "warning": "Avoid if sensitive to sulfites." },
+  "E224": { "name": "Potassium metabisulphite", "type": "Preservative", "risk": "Moderate", "warning": "Avoid if sulfite-sensitive." },
+  "E226": { "name": "Calcium sulphite", "type": "Preservative", "risk": "Moderate", "warning": "" },
+  "E227": { "name": "Calcium hydrogen sulphite", "type": "Preservative", "risk": "Moderate", "warning": "" },
+  "E228": { "name": "Potassium bisulphite", "type": "Preservative", "risk": "Moderate", "warning": "" },
+  "E230": { "name": "Biphenyl", "type": "Preservative (surface)", "risk": "Moderate", "warning": "Used on citrus; restricted in some areas." },
+  "E231": { "name": "Orthophenyl phenol", "type": "Preservative (surface)", "risk": "Moderate", "warning": "" },
+  "E232": { "name": "Sodium orthophenyl phenol", "type": "Preservative (surface)", "risk": "Moderate", "warning": "" },
+  "E233": { "name": "Thiabendazole", "type": "Preservative / Fungicide", "risk": "Moderate", "warning": "Limited uses; check local regulations." },
+  "E234": { "name": "Nisin", "type": "Preservative (antimicrobial peptide)", "risk": "Low", "warning": "Generally regarded as safe; may cause rare allergies." },
+  "E235": { "name": "Nisinic acid", "type": "Preservative", "risk": "Low", "warning": "" },
+  "E236": { "name": "Formic acid", "type": "Preservative / pH regulator", "risk": "Moderate", "warning": "Used in processing; avoid high concentrations." },
+  "E239": { "name": "Hexamethylene tetramine", "type": "Preservative", "risk": "Moderate", "warning": "Not common in foods; regulatory limits apply." },
+  "E249": { "name": "Potassium nitrite", "type": "Preservative (curing agent)", "risk": "High", "warning": "Can form nitrosamines when heated; linked to cancer risk in some studies." },
+  "E250": { "name": "Sodium nitrite", "type": "Preservative (curing)", "risk": "High", "warning": "Used in cured meats; limit intake." },
+  "E251": { "name": "Sodium nitrate", "type": "Preservative / curing agent", "risk": "High", "warning": "Can convert to nitrites; moderation advised." },
+  "E252": { "name": "Potassium nitrate (Saltpeter)", "type": "Preservative / curing", "risk": "High", "warning": "Used historically for curing; subject to regulation." },
+
+  "E260": { "name": "Acetic acid (vinegar)", "type": "Acidity regulator / Preservative", "risk": "Low", "warning": "" },
+  "E261": { "name": "Potassium acetate", "type": "Acidity regulator", "risk": "Low", "warning": "" },
+  "E262": { "name": "Sodium acetate", "type": "Acidity regulator", "risk": "Low", "warning": "" },
+  "E263": { "name": "Calcium acetate", "type": "Acidity regulator", "risk": "Low", "warning": "" },
+
+  "E270": { "name": "Lactic acid", "type": "Acidity regulator / Preservative", "risk": "Low", "warning": "" },
+  "E281": { "name": "Sodium propionate", "type": "Preservative", "risk": "Low", "warning": "" },
+  "E282": { "name": "Calcium propionate", "type": "Preservative", "risk": "Low", "warning": "Used in baked goods; some people report sensitivity." },
+
+  "E290": { "name": "Carbon dioxide (CO2)", "type": "Gas used in packaging / carbonation", "risk": "Low", "warning": "" },
+
+  "E300": { "name": "Ascorbic acid (Vitamin C)", "type": "Antioxidant / Nutrient", "risk": "Low", "warning": "" },
+  "E301": { "name": "Sodium ascorbate", "type": "Antioxidant", "risk": "Low", "warning": "" },
+  "E302": { "name": "Calcium ascorbate", "type": "Antioxidant", "risk": "Low", "warning": "" },
+  "E303": { "name": "Alpha-tocopherol (Vitamin E)", "type": "Antioxidant / Nutrient", "risk": "Low", "warning": "" },
+  "E304": { "name": "Ascorbyl palmitate", "type": "Antioxidant", "risk": "Low", "warning": "" },
+  "E306": { "name": "Tocopherol-rich extract (mixed tocopherols)", "type": "Antioxidant", "risk": "Low", "warning": "" },
+  "E307": { "name": "Alpha-tocopherol", "type": "Antioxidant (Vitamin E)", "risk": "Low", "warning": "" },
+  "E308": { "name": "Gamma-tocopherol", "type": "Antioxidant", "risk": "Low", "warning": "" },
+  "E309": { "name": "Delta-tocopherol", "type": "Antioxidant", "risk": "Low", "warning": "" },
+
+  "E310": { "name": "Propyl gallate", "type": "Antioxidant", "risk": "Moderate", "warning": "May cause sensitivity in some people." },
+  "E311": { "name": "Octyl gallate", "type": "Antioxidant", "risk": "Moderate", "warning": "" },
+  "E312": { "name": "Dodecyl gallate", "type": "Antioxidant", "risk": "Moderate", "warning": "" },
+
+  "E320": { "name": "Butylated hydroxyanisole (BHA)", "type": "Antioxidant", "risk": "Moderate", "warning": "Has been flagged in some studies; regulatory limits apply." },
+  "E321": { "name": "Butylated hydroxytoluene (BHT)", "type": "Antioxidant", "risk": "Moderate", "warning": "Regulated usage; avoid excessive intake." },
+
+  "E322": { "name": "Lecithins (soy, sunflower)", "type": "Emulsifier / Nutrient", "risk": "Low", "warning": "May contain traces of soy (allergen)." },
+
+  "E325": { "name": "Sodium lactate", "type": "Regulator / Preservative", "risk": "Low", "warning": "" },
+  "E326": { "name": "Potassium lactate", "type": "Preservative", "risk": "Low", "warning": "" },
+  "E327": { "name": "Calcium lactate", "type": "Additive / Firming agent", "risk": "Low", "warning": "" },
+
+  "E330": { "name": "Citric acid", "type": "Acidity regulator / Flavoring", "risk": "Low", "warning": "May irritate sensitive mouths at high concentrations." },
+  "E331": { "name": "Sodium citrates", "type": "Acidity regulator", "risk": "Low", "warning": "" },
+  "E332": { "name": "Potassium citrates", "type": "Acidity regulator", "risk": "Low", "warning": "" },
+  "E333": { "name": "Calcium citrates", "type": "Acidity regulator", "risk": "Low", "warning": "" },
+
+  "E334": { "name": "Tartaric acid", "type": "Acidity regulator", "risk": "Low", "warning": "" },
+  "E335": { "name": "Sodium tartrates", "type": "Stabilizer", "risk": "Low", "warning": "" },
+
+  "E338": { "name": "Phosphoric acid", "type": "Acidity regulator", "risk": "Moderate", "warning": "High intake may affect bone mineral balance." },
+
+  "E339": { "name": "Sodium phosphates", "type": "Acidity regulator / Emulsifier", "risk": "Moderate", "warning": "High consumption can affect mineral balance." },
+
+  "E400": { "name": "Alginic acid", "type": "Thickener / Stabilizer", "risk": "Low", "warning": "" },
+  "E401": { "name": "Sodium alginate", "type": "Thickener", "risk": "Low", "warning": "" },
+  "E402": { "name": "Potassium alginate", "type": "Thickener", "risk": "Low", "warning": "" },
+  "E403": { "name": "Ammonium alginate", "type": "Thickener", "risk": "Low", "warning": "" },
+  "E404": { "name": "Calcium alginate", "type": "Thickener", "risk": "Low", "warning": "" },
+  "E405": { "name": "Propane-1,2-diol alginate", "type": "Stabilizer", "risk": "Low", "warning": "" },
+
+  "E406": { "name": "Agar", "type": "Thickener (natural)", "risk": "Low", "warning": "" },
+  "E407": { "name": "Carrageenan", "type": "Thickener / Stabilizer", "risk": "Moderate", "warning": "Some studies link degraded carrageenan to digestive irritation; food-grade carrageenan generally considered safe." },
+  "E407a": { "name": "Processed Eucheuma seaweed (processed carrageenan)", "type": "Thickener", "risk": "Moderate", "warning": "Use as per food-grade limits." },
+
+  "E410": { "name": "Locust bean gum (Carob gum)", "type": "Thickener", "risk": "Low", "warning": "" },
+  "E412": { "name": "Guar gum", "type": "Thickener", "risk": "Low", "warning": "May cause digestive bloating in large amounts." },
+  "E413": { "name": "Tragacanth", "type": "Thickener", "risk": "Low", "warning": "" },
+  "E414": { "name": "Gum Arabic", "type": "Stabilizer", "risk": "Low", "warning": "" },
+
+  "E415": { "name": "Xanthan gum", "type": "Thickener / Stabilizer", "risk": "Low", "warning": "May cause digestive effects if consumed in very large amounts." },
+  "E416": { "name": "Karaya gum", "type": "Thickener", "risk": "Low", "warning": "" },
+
+  "E420": { "name": "Sorbitol", "type": "Sweetener / Humectant", "risk": "Moderate", "warning": "Laxative effect in large amounts." },
+  "E421": { "name": "Mannitol", "type": "Sweetener", "risk": "Moderate", "warning": "May have laxative effects." },
+  "E422": { "name": "Glycerol (Glycerin)", "type": "Humectant / Sweetener", "risk": "Low", "warning": "" },
+
+  "E430": { "name": "Polyoxyethylene sorbitan monooleate (Polysorbate 80)", "type": "Emulsifier", "risk": "Moderate", "warning": "May cause sensitivity in some cases." },
+  "E431": { "name": "Polysorbate 65", "type": "Emulsifier", "risk": "Moderate", "warning": "" },
+  "E432": { "name": "Polysorbate 20", "type": "Emulsifier", "risk": "Moderate", "warning": "" },
+
+  "E433": { "name": "Polysorbate 60", "type": "Emulsifier", "risk": "Moderate", "warning": "" },
+  "E434": { "name": "Polysorbate 40", "type": "Emulsifier", "risk": "Moderate", "warning": "" },
+
+  "E440": { "name": "Pectin", "type": "Gelling agent", "risk": "Low", "warning": "" },
+  "E441": { "name": "Gelatin", "type": "Gelling agent (animal)", "risk": "Low", "warning": "Not suitable for vegetarians/vegans." },
+  "E442": { "name": "Ammonium phosphatides", "type": "Emulsifier", "risk": "Low", "warning": "" },
+
+  "E450": { "name": "Diphosphates", "type": "Leavening agent / Emulsifier", "risk": "Low", "warning": "" },
+  "E451": { "name": "Triphosphates", "type": "Processing aid", "risk": "Low", "warning": "" },
+  "E452": { "name": "Polyphosphates", "type": "Processing aid", "risk": "Low", "warning": "High intake of phosphates may affect kidney/bone health." },
+
+  "E460": { "name": "Microcrystalline cellulose", "type": "Anti-caking / Filler", "risk": "Low", "warning": "" },
+  "E461": { "name": "Methyl cellulose", "type": "Thickener", "risk": "Low", "warning": "" },
+  "E462": { "name": "Ethyl cellulose", "type": "Stabilizer", "risk": "Low", "warning": "" },
+
+  "E463": { "name": "Hydroxypropyl cellulose", "type": "Thickener", "risk": "Low", "warning": "" },
+  "E464": { "name": "Hydroxypropyl methylcellulose", "type": "Thickener", "risk": "Low", "warning": "" },
+
+  "E465": { "name": "Methyl cellulose ethers", "type": "Thickener", "risk": "Low", "warning": "" },
+  "E466": { "name": "Sodium carboxymethyl cellulose (CMC)", "type": "Thickener", "risk": "Low", "warning": "" },
+
+  "E469": { "name": "Enzymatically modified cellulose", "type": "Processing aid", "risk": "Low", "warning": "" },
+
+  "E470": { "name": "Salts of fatty acids (e.g., magnesium stearate)", "type": "Anti-caking / Binder", "risk": "Low", "warning": "" },
+  "E471": { "name": "Mono- and diglycerides of fatty acids", "type": "Emulsifier", "risk": "Low", "warning": "" },
+  "E472": { "name": "Esters of mono- and diglycerides", "type": "Emulsifier", "risk": "Low", "warning": "" },
+
+  "E474": { "name": "Sucrose esters of fatty acids", "type": "Emulsifier", "risk": "Low", "warning": "" },
+  "E475": { "name": "Polyglycerol esters of fatty acids", "type": "Emulsifier", "risk": "Low", "warning": "" },
+
+  "E476": { "name": "Polyglycerol polyricinoleate (PGPR)", "type": "Emulsifier", "risk": "Low", "warning": "" },
+
+  "E477": { "name": "Propylene glycol esters of fatty acids", "type": "Emulsifier", "risk": "Low", "warning": "Avoid high doses." },
+
+  "E479b": { "name": "Thermally oxidized soya bean oil interacted with mono- and diglycerides of fatty acids", "type": "Emulsifier / Processing aid", "risk": "Moderate", "warning": "Use regulated; uncommon in everyday foods." },
+
+  "E481": { "name": "Sodium stearoyl-2-lactylate", "type": "Emulsifier", "risk": "Low", "warning": "" },
+  "E482": { "name": "Calcium stearoyl-2-lactylate", "type": "Emulsifier", "risk": "Low", "warning": "" },
+
+  "E483": { "name": "Stearyl tartrate", "type": "Emulsifier", "risk": "Low", "warning": "" },
+
+  "E491": { "name": "Sorbitan monostearate", "type": "Emulsifier", "risk": "Low", "warning": "" },
+  "E492": { "name": "Sorbitan tristearate", "type": "Emulsifier", "risk": "Low", "warning": "" },
+  "E493": { "name": "Sorbian monolaurate", "type": "Emulsifier", "risk": "Low", "warning": "" },
+
+  "E494": { "name": "Sucrose acetate isobutyrate (SAIB)", "type": "Stabilizer", "risk": "Low", "warning": "" },
+
+  "E500": { "name": "Sodium carbonates (bicarbonate)", "type": "Anti-caking / Raising agent", "risk": "Low", "warning": "" },
+  "E501": { "name": "Potassium carbonates", "type": "Raising agent", "risk": "Low", "warning": "" },
+  "E503": { "name": "Ammonium carbonates", "type": "Raising agent", "risk": "Low", "warning": "" },
+
+  "E504": { "name": "Magnesium carbonate", "type": "Anti-caking agent", "risk": "Low", "warning": "" },
+  "E505": { "name": "Calcium magnesium carbonate", "type": "Anti-caking agent", "risk": "Low", "warning": "" },
+
+  "E507": { "name": "Hydrochloric acid (used in processing)", "type": "Acid regulator", "risk": "Moderate", "warning": "Processing chemical; not present in final product at harmful levels when used correctly." },
+
+  "E508": { "name": "Potassium chloride", "type": "Salt / Mineral", "risk": "Low", "warning": "High potassium intake not suitable for some conditions." },
+  "E509": { "name": "Calcium chloride", "type": "Firming agent / Salt", "risk": "Low", "warning": "" },
+
+  "E511": { "name": "Magnesium chloride", "type": "Firming agent", "risk": "Low", "warning": "" },
+
+  "E512": { "name": "Magnesium sulfate", "type": "Processing aid", "risk": "Low", "warning": "" },
+
+  "E513": { "name": "Sulphuric acid (processing)", "type": "Processing aid", "risk": "Moderate", "warning": "Used in processing; residuals tightly regulated." },
+
+  "E514": { "name": "Sodium sulphate", "type": "Processing aid", "risk": "Low", "warning": "" },
+
+  "E515": { "name": "Potassium sulphate", "type": "Processing aid", "risk": "Low", "warning": "" },
+
+  "E516": { "name": "Calcium sulphate (gypsum)", "type": "Firming agent", "risk": "Low", "warning": "" },
+
+  "E520": { "name": "Aluminium sulphate", "type": "Processing aid", "risk": "Moderate", "warning": "Aluminium exposure concerns in some contexts; regulated usage." },
+
+  "E521": { "name": "Aluminium sodium sulfate", "type": "Processing aid", "risk": "Moderate", "warning": "" },
+
+  "E522": { "name": "Calcium aluminium sulfate", "type": "Processing aid", "risk": "Moderate", "warning": "" },
+
+  "E523": { "name": "Ammonium aluminium sulfate", "type": "Processing aid", "risk": "Moderate", "warning": "" },
+
+  "E524": { "name": "Sodium hydroxide (lye)", "type": "Processing aid / pH regulator", "risk": "Moderate", "warning": "Used in processing (e.g., pretzels); not harmful in proper use." },
+
+  "E525": { "name": "Potassium hydroxide", "type": "Processing aid", "risk": "Moderate", "warning": "" },
+
+  "E526": { "name": "Calcium hydroxide (lime)", "type": "Processing aid", "risk": "Low", "warning": "" },
+
+  "E530": { "name": "Magnesium oxide", "type": "Anti-caking agent", "risk": "Low", "warning": "" },
+
+  "E531": { "name": "Ferrous sulfate", "type": "Mineral / Fortificant", "risk": "Low", "warning": "Used for iron fortification; excessive intake may cause GI upset." },
+
+  "E535": { "name": "Sodium ferrocyanide", "type": "Anti-caking agent", "risk": "Low", "warning": "Safe at regulated low levels; misinterpretations exist around 'cyanide' in name." },
+
+  "E539": { "name": "Iron ammonium citrate", "type": "Fortificant", "risk": "Low", "warning": "" },
+
+  "E541": { "name": "Sodium aluminium phosphate", "type": "Leavening agent", "risk": "Moderate", "warning": "Contains aluminium; follow regulatory limits." },
+
+  "E542": { "name": "Edible bone phosphate", "type": "Leavening agent / Mineral", "risk": "Low", "warning": "" },
+
+  "E550": { "name": "Silicon dioxide", "type": "Anti-caking agent", "risk": "Low", "warning": "Generally inert and safe in food uses." },
+
+  "E551": { "name": "Hydrated silica", "type": "Anti-caking agent", "risk": "Low", "warning": "" },
+  "E552": { "name": "Calcium silicate", "type": "Anti-caking agent", "risk": "Low", "warning": "" },
+  "E553a": { "name": "Magnesium trisilicate", "type": "Anti-caking agent", "risk": "Low", "warning": "" },
+
+  "E554": { "name": "Sodium aluminosilicate", "type": "Anti-caking agent", "risk": "Low", "warning": "" },
+  "E555": { "name": "Potassium aluminosilicate", "type": "Anti-caking agent", "risk": "Low", "warning": "" },
+
+  "E556": { "name": "Calcium aluminosilicate", "type": "Anti-caking agent", "risk": "Low", "warning": "" },
+
+  "E570": { "name": "Fatty acids (various)", "type": "Processing aid / Release agent", "risk": "Low", "warning": "" },
+  "E571": { "name": "Stearic acid", "type": "Release agent", "risk": "Low", "warning": "" },
+
+  "E572": { "name": "Magnesium stearate", "type": "Anti-caking / Flow agent", "risk": "Low", "warning": "" },
+
+  "E574": { "name": "Glucono delta-lactone", "type": "Firming agent / Acidifier", "risk": "Low", "warning": "" },
+
+  "E575": { "name": "Gluconic acid", "type": "Acidity regulator", "risk": "Low", "warning": "" },
+
+  "E578": { "name": "Gluconates (various)", "type": "Mineral salts", "risk": "Low", "warning": "" },
+
+  "E579": { "name": "Glucono-delta-lactone derivatives", "type": "Acidity regulator", "risk": "Low", "warning": "" },
+
+  "E585": { "name": "Calcium disodium EDTA", "type": "Antioxidant / Chelating agent", "risk": "Low", "warning": "Used in small amounts to stabilize color/flavor." },
+
+  "E586": { "name": "Sodium calcium EDTA", "type": "Chelating agent", "risk": "Low", "warning": "" },
+
+  "E620": { "name": "Glutamic acid", "type": "Amino acid / Flavor enhancer precursor", "risk": "Low", "warning": "" },
+  "E621": { "name": "Monosodium glutamate (MSG)", "type": "Flavour enhancer", "risk": "Moderate", "warning": "May cause sensitivity (headache, flushing) in some people." },
+  "E622": { "name": "Monopotassium glutamate", "type": "Flavour enhancer", "risk": "Moderate", "warning": "" },
+  "E623": { "name": "Calcium diglutamate", "type": "Flavour enhancer", "risk": "Moderate", "warning": "" },
+  "E624": { "name": "Propyldihydroxybenzenesulfonate derivatives", "type": "Flavour enhancer", "risk": "Unknown", "warning": "" },
+
+  "E625": { "name": "Monosodium 5'-ribonucleotides", "type": "Flavour enhancer", "risk": "Low", "warning": "" },
+  "E626": { "name": "Disodium guanylate", "type": "Flavour enhancer", "risk": "Moderate", "warning": "Often used with MSG; may affect sensitive people." },
+  "E627": { "name": "Disodium inosinate", "type": "Flavour enhancer", "risk": "Moderate", "warning": "" },
+  "E628": { "name": "Dipotassium guanylate", "type": "Flavour enhancer", "risk": "Moderate", "warning": "" },
+  "E629": { "name": "Dipotassium inosinate", "type": "Flavour enhancer", "risk": "Moderate", "warning": "" },
+
+  "E630": { "name": "Guanylic acid", "type": "Flavor precursor", "risk": "Low", "warning": "" },
+  "E631": { "name": "Disodium 5'-ribonucleotide", "type": "Flavoring", "risk": "Low", "warning": "" },
+
+  "E633": { "name": "Calcium 5'-ribonucleotide", "type": "Flavoring", "risk": "Low", "warning": "" },
+
+  "E634": { "name": "Sodium L-glutamate derivatives", "type": "Flavor enhancer", "risk": "Low", "warning": "" },
+
+  "E635": { "name": "Disodium 5'-ribonucleotides", "type": "Flavour enhancer", "risk": "Moderate", "warning": "" },
+
+  "E637": { "name": "Creatine phosphate derivatives", "type": "Processing aid", "risk": "Unknown", "warning": "" },
+
+  "E640": { "name": "Glycine and its sodium salts", "type": "Flavor enhancer", "risk": "Low", "warning": "" },
+
+  "E641": { "name": "Glycine alkyl esters", "type": "Flavor enhancer", "risk": "Unknown", "warning": "" },
+
+  "E650": { "name": "Sodium glutamate salts", "type": "Flavor", "risk": "Low", "warning": "" },
+
+  "E900": { "name": "Dimethylpolysiloxane", "type": "Anti-foaming agent", "risk": "Low", "warning": "Used to prevent foaming in frying oils; safe at regulated levels." },
+  "E901": { "name": "Beeswax", "type": "Glazing agent", "risk": "Low", "warning": "Natural; may not be vegan." },
+  "E902": { "name": "Candelilla wax", "type": "Glazing agent (plant)", "risk": "Low", "warning": "" },
+  "E903": { "name": "Carnauba wax", "type": "Glazing agent (plant)", "risk": "Low", "warning": "" },
+  "E904": { "name": "Shellac", "type": "Glazing agent (insect)", "risk": "Moderate", "warning": "Not suitable for vegans/vegetarians." },
+  "E905": { "name": "Microcrystalline wax", "type": "Coating", "risk": "Low", "warning": "" },
+  "E906": { "name": "Polyethylene", "type": "Coating", "risk": "Low", "warning": "Food-grade coatings; inert." },
+  "E907": { "name": "Hydrogenated poly-1-decene", "type": "Coating", "risk": "Low", "warning": "" },
+  "E908": { "name": "Quillaia extract", "type": "Foaming agent / Flavoring", "risk": "Low", "warning": "" },
+  "E910": { "name": "Propane", "type": "Gas (packaging)", "risk": "Low", "warning": "Used in extraction/processing; not present in food." },
+
+  "E911": { "name": "Methyl cellulose (also E461)", "type": "Thickener", "risk": "Low", "warning": "" },
+  "E912": { "name": "Xanthan gum (also E415)", "type": "Thickener", "risk": "Low", "warning": "" },
+
+  "E920": { "name": "L-cysteine", "type": "Flavour precursor / Dough conditioner", "risk": "Low", "warning": "May be derived from animal sources; check if vegan." },
+
+  "E927": { "name": "Azodicarbonamide (ADCA)", "type": "Dough conditioner", "risk": "High", "warning": "Restricted or banned in some countries; avoid if possible." },
+
+  "E940": { "name": "Nitrogen", "type": "Packaging gas", "risk": "Low", "warning": "" },
+  "E941": { "name": "Nitrous oxide", "type": "Whipping gas", "risk": "Low", "warning": "Used for cream dispensers." },
+
+  "E950": { "name": "Acesulfame K", "type": "Artificial sweetener", "risk": "Moderate", "warning": "Non-caloric sweetener; avoid excessive use." },
+  "E951": { "name": "Aspartame", "type": "Artificial sweetener", "risk": "High", "warning": "Contains phenylalanine — avoid if you have PKU." },
+  "E952": { "name": "Cyclamic acid and salts", "type": "Sweetener", "risk": "Moderate", "warning": "Banned in some countries; check local regulations." },
+  "E954": { "name": "Saccharin", "type": "Artificial sweetener", "risk": "Moderate", "warning": "Old animal studies raised concerns; modern regs allow limited use." },
+  "E955": { "name": "Sucralose", "type": "Artificial sweetener", "risk": "Moderate", "warning": "Stable sweetener; some people prefer natural alternatives." },
+  "E957": { "name": "Thaumatin", "type": "Natural sweetener / Flavour modifier", "risk": "Low", "warning": "" },
+  "E959": { "name": "Neohesperidin DC", "type": "Sweetener (flavour enhancer)", "risk": "Low", "warning": "" },
+
+  "E999": { "name": "Quillaia saponin extracts (misc)", "type": "Foaming agent", "risk": "Low", "warning": "" }
+}

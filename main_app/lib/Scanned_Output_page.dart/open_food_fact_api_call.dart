@@ -21,11 +21,33 @@ class _OpenFoodState extends State<OpenFood> {
   List<String> riskyIngredients = [];
   List<dynamic> alternativeProducts = [];
   bool loadingAlternatives = true;
+  List<String> additivesList = [];
+  List<String> allergensList = [];
+  Map<String, dynamic> eCodeMap = {};
 
   @override
   void initState() {
     super.initState();
+    loadECodes();
     fetchproducts();
+  }
+
+  Future<void> loadECodes() async {
+    try {
+      final String raw = await rootBundle.loadString("assets/e_codes.json");
+      final Map<String, dynamic> decoded = jsonDecode(raw);
+      // Normalize keys to uppercase (E150d -> E150D)
+      final normalized = <String, dynamic>{};
+      decoded.forEach((k, v) {
+        normalized[k.toString().toUpperCase()] = v;
+      });
+      setState(() {
+        eCodeMap = normalized;
+      });
+    } catch (e) {
+      // If asset missing or invalid, keep eCodeMap empty but do not crash
+      print("Failed to load e_codes.json: $e");
+    }
   }
 
   String getProcessedLevel() {
@@ -98,6 +120,30 @@ class _OpenFoodState extends State<OpenFood> {
         setState(() {
           product = data["product"];
           isLoading = false;
+
+          // Parse Additives - remove "en:" and normalize to E### uppercase
+          additivesList = List<String>.from(
+            (product?["additives_tags"] as List<dynamic>?)
+                    ?.map(
+                      (e) => e
+                          .toString()
+                          .replaceFirst(RegExp(r'^[a-z]{2}:'), '')
+                          .toUpperCase(),
+                    )
+                    .toList() ??
+                [],
+          );
+
+          // Parse Allergens - remove locale prefix if present
+          allergensList = List<String>.from(
+            (product?["allergens_tags"] as List<dynamic>?)
+                    ?.map(
+                      (e) =>
+                          e.toString().replaceFirst(RegExp(r'^[a-z]{2}:'), ''),
+                    )
+                    .toList() ??
+                [],
+          );
         });
       } else {
         print("Product not found ");
@@ -111,7 +157,6 @@ class _OpenFoodState extends State<OpenFood> {
     } else {
       print("Error: ${response.statusCode}");
       setState(() {
-        Text(response.statusCode.toString());
         isLoading = false;
       });
     }
@@ -146,11 +191,9 @@ class _OpenFoodState extends State<OpenFood> {
       'tagtype_0': 'categories',
       'tag_contains_0': 'contains',
       'tag_0': category,
-
       'tagtype_1': 'countries',
       'tag_contains_1': 'contains',
       'tag_1': 'india',
-
       'page_size': '60',
       'sort_by': 'unique_scans_n',
       'fields':
@@ -212,24 +255,49 @@ class _OpenFoodState extends State<OpenFood> {
         product?["ingredients_text"]?.toString().toLowerCase() ?? "";
     if (ingredientText.isEmpty) return;
 
-    final harmfulData = await rootBundle.loadString(
-      "assets/harmful_ingredients.json",
-    );
-    final Map<String, dynamic> harmfulMap = jsonDecode(harmfulData);
+    try {
+      final harmfulData = await rootBundle.loadString(
+        "assets/harmful_ingredients.json",
+      );
+      final Map<String, dynamic> harmfulMap = jsonDecode(harmfulData);
 
-    List<String> detected = [];
+      List<String> detected = [];
 
-    harmfulMap.forEach((category, items) {
-      for (var ing in items) {
-        if (ingredientText.contains(ing.toLowerCase())) {
-          detected.add(ing);
+      harmfulMap.forEach((category, items) {
+        for (var ing in items) {
+          if (ingredientText.contains(ing.toString().toLowerCase())) {
+            detected.add(ing.toString());
+          }
         }
-      }
-    });
+      });
 
-    setState(() {
-      riskyIngredients = detected.toSet().toList();
-    });
+      setState(() {
+        riskyIngredients = detected.toSet().toList();
+      });
+    } catch (e) {
+      print("Failed to analyze ingredients: $e");
+    }
+  }
+
+  Map<String, String> getECodeInfo(String eCode) {
+    final key = eCode.toUpperCase();
+    if (eCodeMap.containsKey(key)) {
+      final item = eCodeMap[key] as Map<String, dynamic>;
+      return {
+        "code": key,
+        "name": item["name"]?.toString() ?? "Unknown",
+        "type": item["type"]?.toString() ?? "Additive",
+        "risk": item["risk"]?.toString() ?? "Unknown",
+        "warning": item["warning"]?.toString() ?? "",
+      };
+    }
+    return {
+      "code": key,
+      "name": "Unknown additive",
+      "type": "Additive",
+      "risk": "Unknown",
+      "warning": "",
+    };
   }
 
   @override
@@ -309,23 +377,27 @@ class _OpenFoodState extends State<OpenFood> {
                         ),
 
                       SizedBox(height: screenheight * 0.01),
-                       Row(
+                      Row(
                         children: [
-                          SizedBox(width: screenwidth*0.03),
-                      Text(
-                        product!["product_name"] ?? "No Name",
-                        style: GoogleFonts.poppins(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
+                          SizedBox(width: screenwidth * 0.03),
+                          Expanded(
+                            child: Text(
+                              product!["product_name"] ?? "No Name",
+                              style: GoogleFonts.poppins(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: screenwidth * 0.02),
+                          Text(
+                            "Brand :  ${product!["brands"] ?? "Unknown"}",
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
-                      SizedBox(width: screenwidth*0.4),
-                      Text(
-                        "Brand :  ${product!["brands"] ?? "Unknown"}",
-                        style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-                      ),
-                        ]
-                       ),
 
                       Card(
                         elevation: 0,
@@ -361,8 +433,10 @@ class _OpenFoodState extends State<OpenFood> {
                         ),
                       ),
 
-
                       harmfulIngredientsWidget(),
+                      additivesWidget(),
+                      allergensWidget(),
+
                       Text(
                         "Ingradients Used",
                         style: TextStyle(
@@ -461,40 +535,6 @@ class _OpenFoodState extends State<OpenFood> {
     return Text("Unknown", style: TextStyle(color: Colors.grey));
   }
 
-  Widget harmfulIngredientsWidget() {
-    final screenwidth = MediaQuery.of(context).size.width;
-    if (riskyIngredients.isEmpty) {
-      return Text(
-        "No harmful ingredients detected ",
-        style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-      );
-    }
-
-    return Container(
-      padding: EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.red),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Harmful Ingredients Found:",
-            style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 6, width: screenwidth * 0.9),
-          ...riskyIngredients.map(
-            (ing) => Text(
-              "• $ing",
-              style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget ingredientsWidget() {
     final screenwidth = MediaQuery.of(context).size.width;
     final screenheight = MediaQuery.of(context).size.height;
@@ -563,7 +603,6 @@ class _OpenFoodState extends State<OpenFood> {
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-
             children: [
               _rowItem(
                 "Energy :",
@@ -628,6 +667,163 @@ class _OpenFoodState extends State<OpenFood> {
               subtitle: Text("Brand: ${item["brands"] ?? "Unknown"}"),
             );
           }).toList(),
+        ),
+      ),
+    );
+  }
+
+  Widget harmfulIngredientsWidget() {
+    final screenwidth = MediaQuery.of(context).size.width;
+    final screenheight = MediaQuery.of(context).size.height;
+    if (riskyIngredients.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Text(
+          "No harmful ingredients detected ",
+          style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+        ),
+      );
+    }
+
+    return Container(
+      width: screenwidth * 0.9,
+      padding: EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.red),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Harmful Ingredients Found:",
+            style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+          ),
+          ...riskyIngredients.map(
+            (ing) => Text(
+              "• $ing",
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget additivesWidget() {
+    final screenwidth = MediaQuery.of(context).size.width;
+    final screenheight = MediaQuery.of(context).size.height;
+    if (additivesList.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Text(
+          "No additives detected",
+          style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+        ),
+      );
+    }
+
+    return Container(
+      width: screenwidth * 0.9,
+      height: screenheight * 0.2,
+      padding: EdgeInsets.all(8),
+      margin: EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.orange),
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Additives (E-codes):",
+              style: TextStyle(
+                color: Colors.orange,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            ...additivesList.map((code) {
+              final info = getECodeInfo(code);
+              return Container(
+                margin: EdgeInsets.symmetric(vertical: 6),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "• ${info['code']} - ${info['name']}",
+                      style: TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      "  Type: ${info['type']}    Risk: ${info['risk']}",
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    if (info['warning'] != null && info['warning']!.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4.0),
+                        child: Text(
+                          "  ⚠ ${info['warning']}",
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.red[800],
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              );
+            }).toList(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget allergensWidget() {
+    final screenwidth = MediaQuery.of(context).size.width;
+    final screenheight = MediaQuery.of(context).size.height;
+    if (allergensList.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Text(
+          "No allergens detected",
+          style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+        ),
+      );
+    }
+
+    return Container(
+      width: screenwidth * 0.9,
+      padding: EdgeInsets.all(8),
+      margin: EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.red),
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Allergens:",
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+            ),
+
+            ...allergensList.map(
+              (item) => Text(
+                "• $item",
+                style: TextStyle(
+                  color: Colors.red[800],
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
