@@ -26,6 +26,10 @@ class _OpenFoodState extends State<OpenFood> {
   List<String> additivesList = [];
   List<String> allergensList = [];
   Map<String, dynamic> eCodeMap = {};
+  String todayDate() {
+    final now = DateTime.now();
+    return "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+  }
 
   @override
   void initState() {
@@ -109,7 +113,7 @@ class _OpenFoodState extends State<OpenFood> {
     );
 
     final response = await http.get(
-      uri as Uri,
+      uri,
       headers: {"User-Agent": "NutriScan - Flutter - Version 1.0"},
     );
 
@@ -161,6 +165,51 @@ class _OpenFoodState extends State<OpenFood> {
         isLoading = false;
       });
     }
+  }
+
+  double parseNutri(dynamic value) {
+    if (value == null) return 0.0;
+    try {
+      return double.parse(value.toString());
+    } catch (e) {
+      return 0.0;
+    }
+  }
+
+  double getProductWeight() {
+    if (product?["product_quantity"] != null) {
+      return double.tryParse(product!["product_quantity"].toString()) ?? 100.0;
+    }
+
+    if (product?["quantity"] != null) {
+      final text = product!["quantity"].toString();
+      final match = RegExp(r'\d+(\.\d+)?').firstMatch(text);
+      return double.tryParse(match?.group(0) ?? "") ?? 100.0;
+    }
+
+    // fallback
+    return 100.0;
+  }
+
+  Map<String, double> getTotalNutrition() {
+    double weight = getProductWeight(); // e.g. 300 grams
+
+    final nutr = product?["nutriments"];
+
+    double calories100 = parseNutri(nutr?["energy-kcal_100g"]);
+    double fat100 = parseNutri(nutr?["fat_100g"]);
+    double carbs100 = parseNutri(nutr?["carbohydrates_100g"]);
+    double sugar100 = parseNutri(nutr?["sugars_100g"]);
+    double protein100 = parseNutri(nutr?["proteins_100g"]);
+
+    // Convert PER 100g → TOTAL
+    return {
+      "calories": (calories100 / 100) * weight,
+      "fat": (fat100 / 100) * weight,
+      "carbs": (carbs100 / 100) * weight,
+      "sugar": (sugar100 / 100) * weight,
+      "protein": (protein100 / 100) * weight,
+    };
   }
 
   Future<void> fetchAlternatives() async {
@@ -299,6 +348,50 @@ class _OpenFoodState extends State<OpenFood> {
       "risk": "Unknown",
       "warning": "",
     };
+  }
+
+  Future<void> updateDailyTotals({
+    required String userId,
+    required String date,
+    required double calories,
+    required double fat,
+    required double carbs,
+    required double sugar,
+    required double protein,
+  }) async {
+    final supabase = Supabase.instance.client;
+
+    final existing = await supabase
+        .from("daily_nutrition")
+        .select()
+        .eq("profile_id", userId)
+        .eq("date", date)
+        .maybeSingle();
+
+    if (existing == null) {
+      // INSERT NEW DAY ENTRY
+      await supabase.from("daily_nutrition").insert({
+        "profile_id": userId,
+        "date": date,
+        "total_calories": calories,
+        "total_fat": fat,
+        "total_carbs": carbs,
+        "total_sugar": sugar,
+        "total_protein": protein,
+      });
+    } else {
+      // UPDATE EXISTING ENTRY
+      await supabase
+          .from("daily_nutrition")
+          .update({
+            "total_calories": (existing["total_calories"] ?? 0) + calories,
+            "total_fat": (existing["total_fat"] ?? 0) + fat,
+            "total_carbs": (existing["total_carbs"] ?? 0) + carbs,
+            "total_sugar": (existing["total_sugar"] ?? 0) + sugar,
+            "total_protein": (existing["total_protein"] ?? 0) + protein,
+          })
+          .eq("id", existing["id"]);
+    }
   }
 
   @override
@@ -480,7 +573,6 @@ class _OpenFoodState extends State<OpenFood> {
                           ),
                           onPressed: () async {
                             final supabase = Supabase.instance.client;
-
                             final userId = supabase.auth.currentUser?.id;
 
                             if (userId == null) {
@@ -493,32 +585,80 @@ class _OpenFoodState extends State<OpenFood> {
                             }
 
                             try {
-                              final response = await supabase
-                                  .from('scan_history')
-                                  .insert({
-                                    "profile_id": userId,
-                                    "name":
-                                        product?["product_name"] ?? "Unknown",
-                                    "brand": product?["brands"] ?? "Unknown",
-                                    "image": product?["image_url"] ?? "",
-                                    "ingredients":
-                                        product?["ingredients_text"] ?? "",
-                                    "harmful_ingredients": riskyIngredients,
-                                    "additives": additivesList,
-                                  });
+                              final nutr = product?["nutriments"];
+
+                              // 🔥 PER 100g values
+                              double calories100 = parseNutri(
+                                nutr?["energy-kcal_100g"],
+                              );
+                              double fat100 = parseNutri(nutr?["fat_100g"]);
+                              double carbs100 = parseNutri(
+                                nutr?["carbohydrates_100g"],
+                              );
+                              double sugar100 = parseNutri(
+                                nutr?["sugars_100g"],
+                              );
+                              double protein100 = parseNutri(
+                                nutr?["proteins_100g"],
+                              );
+
+                              // 🔥 Product weight
+                              double weight = getProductWeight(); // e.g. 300g
+
+                              // 🔥 TOTAL values = (per 100g / 100) * weight
+                              double totalCalories =
+                                  (calories100 / 100) * weight;
+                              double totalFat = (fat100 / 100) * weight;
+                              double totalCarbs = (carbs100 / 100) * weight;
+                              double totalSugar = (sugar100 / 100) * weight;
+                              double totalProtein = (protein100 / 100) * weight;
+ 
+                              await supabase.from('scan_history').insert({
+                                "profile_id": userId,
+                                "name": product?["product_name"] ?? "Unknown",
+                                "brand": product?["brands"] ?? "Unknown",
+                                "image": product?["image_url"] ?? "",
+                                "ingredients":
+                                    product?["ingredients_text"] ?? "",
+                                "harmful_ingredients": riskyIngredients,
+                                "additives": additivesList,
+                                "calories": totalCalories,
+                                "fat": totalFat,
+                                "carbs": totalCarbs,
+                                "sugar": totalSugar,
+                                "protein": totalProtein,
+                                "weight": weight,
+                                "date": todayDate(),
+                              });
+                                await updateDailyTotals(
+                              userId: userId,
+                              date: todayDate(),
+                              calories: totalCalories,
+                              fat: totalFat,
+                              carbs: totalCarbs,
+                              sugar: totalSugar,
+                              protein: totalProtein,
+                            );
 
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text("Saved to history ✔")),
                               );
                             } catch (e) {
-                              print("Error saving history: $e");
+                              if (e is PostgrestException) {
+                                print("Supabase Postgrest Error: ${e.message}");
+                              } else {
+                                print("Unknown Save Error: $e");
+                              }
 
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text("Failed to save history"),
+                                  content: Text(
+                                    "Failed to save: ${e.toString()}",
+                                  ),
                                 ),
                               );
                             }
+                          
                           },
 
                           child: Text(

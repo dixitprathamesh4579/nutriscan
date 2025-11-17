@@ -1,49 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class Healthydf extends StatefulWidget {
+class Healthydf extends StatelessWidget {
   const Healthydf({super.key});
-  @override
-  State<Healthydf> createState() => healthydfState();
-}
 
-class healthydfState extends State<Healthydf> {
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-    final textScale = MediaQuery.of(context).textScaleFactor;
+    final w = MediaQuery.of(context).size.width;
+    final h = MediaQuery.of(context).size.height;
+    final t = MediaQuery.of(context).textScaleFactor;
 
     return Container(
-      width: screenWidth * 0.9,
-      height: screenHeight * 0.10,
-      padding: EdgeInsets.all(screenWidth * 0.03),
+      width: w * 0.9,
+      height: h * 0.10,
+      padding: EdgeInsets.all(w * 0.03),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [
-            Color.fromARGB(255, 241, 142, 238),
-            Color.fromARGB(255, 232, 166, 242),
+              Color(0xFF66BB6A), 
+            Color(0xFF81C784),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(screenWidth * 0.04),
+        borderRadius: BorderRadius.circular(w * 0.04),
         boxShadow: [
           BoxShadow(
-            color: Colors.purple.withOpacity(0.2),
-            blurRadius: screenWidth * 0.03,
-            offset: Offset(0, screenHeight * 0.005),
+            color: Colors.green.withOpacity(0.25),
+            blurRadius: w * 0.03,
+            offset: Offset(0, h * 0.005),
           ),
         ],
       ),
+
       child: Center(
         child: Text(
-          "Healthy Food/Drinks",
+          "Healthy Food / Drinks",
           textAlign: TextAlign.center,
           style: GoogleFonts.poppins(
-            fontSize: screenWidth * 0.065 / textScale, 
-            color: const Color.fromARGB(255, 114, 57, 164),
+            fontSize: w * 0.06 / t,
             fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
         ),
       ),

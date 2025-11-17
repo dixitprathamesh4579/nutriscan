@@ -3,15 +3,20 @@ import 'package:percent_indicator/percent_indicator.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Calories extends StatefulWidget {
-  const Calories({super.key});
+  final double totalCalories;
+  final double target;
+
+  const Calories({
+    super.key,
+    required this.totalCalories,
+    this.target = 2000,
+  });
+
   @override
-  State<Calories> createState() => Calories_state();
+  State<Calories> createState() => CaloriesState();
 }
 
-class Calories_state extends State<Calories> {
-  int totalCalories = 1200;
-  int target = 2000;
-
+class CaloriesState extends State<Calories> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -25,8 +30,8 @@ class Calories_state extends State<Calories> {
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [
-            Color.fromARGB(255, 39, 130, 203),
-            Color.fromARGB(255, 34, 110, 240),
+           Color.fromARGB(255, 248, 187, 45),  
+            Color.fromARGB(255, 252, 199, 85),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -34,7 +39,7 @@ class Calories_state extends State<Calories> {
         borderRadius: BorderRadius.circular(screenWidth * 0.04),
         boxShadow: [
           BoxShadow(
-            color: Colors.blue.withOpacity(0.2),
+            color: Colors.green.withOpacity(0.2),
             blurRadius: screenWidth * 0.03,
             offset: Offset(0, screenHeight * 0.005),
           ),
@@ -42,11 +47,11 @@ class Calories_state extends State<Calories> {
       ),
 
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            "Total Calories :",
+            "Total Calories",
             style: GoogleFonts.poppins(
               fontSize: screenWidth * 0.06 / textScale,
               color: Colors.white,
@@ -55,7 +60,7 @@ class Calories_state extends State<Calories> {
           ),
 
           Text(
-            '$totalCalories Kcal',
+            '${widget.totalCalories.toStringAsFixed(0)} Kcal',
             style: GoogleFonts.poppins(
               fontSize: screenWidth * 0.075 / textScale,
               color: Colors.white,
@@ -64,11 +69,10 @@ class Calories_state extends State<Calories> {
           ),
 
           Text(
-            'Target - $target Kcal',
+            'Target - ${widget.target.toStringAsFixed(0)} Kcal',
             style: GoogleFonts.poppins(
               fontSize: screenWidth * 0.035 / textScale,
-              fontStyle: FontStyle.italic,
-              color: Colors.white.withOpacity(0.9),
+              color: Colors.white70,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -78,12 +82,12 @@ class Calories_state extends State<Calories> {
           LinearPercentIndicator(
             width: screenWidth * 0.83,
             lineHeight: screenHeight * 0.015,
-            percent: totalCalories / target,
+            percent: widget.totalCalories / widget.target,
             animation: true,
             animateFromLastPercent: true,
             animationDuration: 1000,
             progressColor: Colors.white,
-            backgroundColor: const Color.fromARGB(255, 137, 192, 238),
+            backgroundColor: Colors.white24,
             barRadius: Radius.circular(screenWidth * 0.03),
           ),
         ],

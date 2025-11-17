@@ -1,140 +1,127 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class fatcarbs extends StatefulWidget {
-  const fatcarbs({super.key});
+class FatCarbs extends StatelessWidget {
+  final double fat;
+  final double carbs;
 
-  @override
-  State<fatcarbs> createState() => fatcarbs_state();
-}
+  const FatCarbs({
+    super.key,
+    required this.fat,
+    required this.carbs,
+  });
 
-class fatcarbs_state extends State<fatcarbs> {
-  int Fat = 100, carbs = 200;
-
-  String fatstat() {
-    if (Fat < 44) {
-      return 'Good';
-    } else if (Fat < 65) {
-      return 'Bad';
-    } else if (Fat > 78) {
-      return 'Too Much';
-    } else {
-      return 'Average';
-    }
+  String fatStat(double fat) {
+    if (fat < 44) return "Good";
+    if (fat < 65) return "Moderate";
+    if (fat > 78) return "High";
+    return "Average";
   }
 
-  String Carbstat() {
-    if (carbs < 225) {
-      return 'Low';
-    } else if (carbs <= 280) {
-      return 'Medium';
-    } else if (carbs > 325) {
-      return 'High';
-    } else {
-      return 'Average';
-    }
+  String carbStat(double carbs) {
+    if (carbs < 225) return "Low";
+    if (carbs <= 280) return "Medium";
+    if (carbs > 325) return "High";
+    return "Average";
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-    final textScale = MediaQuery.of(context).textScaleFactor;
+    final w = MediaQuery.of(context).size.width;
+    final h = MediaQuery.of(context).size.height;
+    final t = MediaQuery.of(context).textScaleFactor;
 
-    final double boxWidth = screenWidth * 0.435;
-    final double boxHeight = screenHeight * 0.175;
-    final double padding = screenWidth * 0.025;
-    final double fontSmall = screenWidth * 0.045 / textScale;
-    final double fontMedium = screenWidth * 0.055 / textScale;
-    final double fontLarge = screenWidth * 0.07 / textScale;
+    final double boxW = w * 0.435;
+    final double boxH = h * 0.15;
+    final double pad = w * 0.025;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        // ---------------- FAT ----------------
         Container(
-          width: boxWidth,
-          height: boxHeight,
-          padding: EdgeInsets.all(padding),
+          width: boxW,
+          height: boxH,
+          padding: EdgeInsets.all(pad),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [Color(0xFFFFE3C2), Color(0xFFFFD6A0)],
+              colors: [Color(0xFFFF7043), Color(0xFFFF8A65)], // Orange-Red
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(screenWidth * 0.03),
+            borderRadius: BorderRadius.circular(w * 0.03),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Text(
                 'Fat',
                 style: GoogleFonts.poppins(
-                  fontSize: fontMedium,
+                  fontSize: w * 0.055 / t,
                   fontWeight: FontWeight.bold,
-                  color: Colors.brown,
+                  color: Colors.white,
                 ),
               ),
               Text(
-                '$Fat g',
+                '${fat.toStringAsFixed(1)} g',
                 style: GoogleFonts.poppins(
-                  fontSize: fontLarge,
+                  fontSize: w * 0.07 / t,
                   fontWeight: FontWeight.bold,
-                  color: Colors.brown,
+                  color: Colors.white,
                 ),
               ),
               Text(
-                fatstat(),
+                fatStat(fat),
                 style: GoogleFonts.poppins(
-                  fontSize: fontSmall,
+                  fontSize: w * 0.045 / t,
                   fontWeight: FontWeight.bold,
-                  color: Colors.brown,
+                  color: Colors.white70,
                 ),
               ),
             ],
           ),
         ),
 
-        SizedBox(width: screenWidth * 0.025),
+        SizedBox(width: w * 0.025),
 
+        // ---------------- CARBS ----------------
         Container(
-          width: boxWidth,
-          height: boxHeight,
-          padding: EdgeInsets.all(padding),
+          width: boxW,
+          height: boxH,
+          padding: EdgeInsets.all(pad),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [Color(0xFFFFE3C2), Color(0xFFFFD6A0)],
+              colors: [Color(0xFF29B6F6), Color(0xFF4FC3F7)], // Blue-Cyan
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(screenWidth * 0.03),
+            borderRadius: BorderRadius.circular(w * 0.03),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Text(
                 'Carbs',
                 style: GoogleFonts.poppins(
-                  fontSize: fontMedium,
+                  fontSize: w * 0.055 / t,
                   fontWeight: FontWeight.bold,
-                  color: Colors.brown,
+                  color: Colors.white,
                 ),
               ),
               Text(
-                '$carbs g',
+                '${carbs.toStringAsFixed(1)} g',
                 style: GoogleFonts.poppins(
-                  fontSize: fontLarge,
+                  fontSize: w * 0.07 / t,
                   fontWeight: FontWeight.bold,
-                  color: Colors.brown,
+                  color: Colors.white,
                 ),
               ),
               Text(
-                Carbstat(),
+                carbStat(carbs),
                 style: GoogleFonts.poppins(
-                  fontSize: fontSmall,
+                  fontSize: w * 0.045 / t,
                   fontWeight: FontWeight.bold,
-                  color: Colors.brown,
+                  color: Colors.white70,
                 ),
               ),
             ],

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class Calender extends StatefulWidget {
-  const Calender({super.key});
+  final Function(String) onDateChange;
+   const Calender({super.key, required this.onDateChange});
 
   @override
   State<Calender> createState() => Calenderstate();
@@ -15,6 +16,9 @@ class Calenderstate extends State<Calender> {
     setState(() {
       today = day;
     });
+     String selected = day.toString().split(" ")[0]; 
+
+    widget.onDateChange(selected);
   }
 
   @override

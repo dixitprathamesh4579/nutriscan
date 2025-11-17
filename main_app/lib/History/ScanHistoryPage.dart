@@ -71,7 +71,7 @@ class _ScanHistoryPageState extends State<ScanHistoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
+ backgroundColor: Colors.white,
       body: loading
           ? const Center(child: CircularProgressIndicator())
           : historyItems.isEmpty
@@ -83,6 +83,7 @@ class _ScanHistoryPageState extends State<ScanHistoryPage> {
                     final item = historyItems[index];
 
                     return Card(
+                      color: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
