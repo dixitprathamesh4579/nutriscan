@@ -187,12 +187,11 @@ class _OpenFoodState extends State<OpenFood> {
       return double.tryParse(match?.group(0) ?? "") ?? 100.0;
     }
 
-    // fallback
     return 100.0;
   }
 
   Map<String, double> getTotalNutrition() {
-    double weight = getProductWeight(); // e.g. 300 grams
+    double weight = getProductWeight(); 
 
     final nutr = product?["nutriments"];
 
@@ -202,7 +201,6 @@ class _OpenFoodState extends State<OpenFood> {
     double sugar100 = parseNutri(nutr?["sugars_100g"]);
     double protein100 = parseNutri(nutr?["proteins_100g"]);
 
-    // Convert PER 100g → TOTAL
     return {
       "calories": (calories100 / 100) * weight,
       "fat": (fat100 / 100) * weight,
@@ -369,7 +367,6 @@ class _OpenFoodState extends State<OpenFood> {
         .maybeSingle();
 
     if (existing == null) {
-      // INSERT NEW DAY ENTRY
       await supabase.from("daily_nutrition").insert({
         "profile_id": userId,
         "date": date,
@@ -380,7 +377,6 @@ class _OpenFoodState extends State<OpenFood> {
         "total_protein": protein,
       });
     } else {
-      // UPDATE EXISTING ENTRY
       await supabase
           .from("daily_nutrition")
           .update({
@@ -587,7 +583,6 @@ class _OpenFoodState extends State<OpenFood> {
                             try {
                               final nutr = product?["nutriments"];
 
-                              // 🔥 PER 100g values
                               double calories100 = parseNutri(
                                 nutr?["energy-kcal_100g"],
                               );
@@ -602,10 +597,8 @@ class _OpenFoodState extends State<OpenFood> {
                                 nutr?["proteins_100g"],
                               );
 
-                              // 🔥 Product weight
-                              double weight = getProductWeight(); // e.g. 300g
+                              double weight = getProductWeight(); 
 
-                              // 🔥 TOTAL values = (per 100g / 100) * weight
                               double totalCalories =
                                   (calories100 / 100) * weight;
                               double totalFat = (fat100 / 100) * weight;

@@ -7,7 +7,7 @@ class SugarBanner extends StatelessWidget {
   const SugarBanner({super.key, required this.sugar});
 
   String sugarStatus(double s) {
-    if (s < 24) return "Good";         // WHO recommended
+    if (s < 24) return "Good";         
     if (s <= 36) return "Moderate";
     return "High";
   }

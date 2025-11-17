@@ -29,7 +29,7 @@ class ProteinBanner extends StatelessWidget {
       padding: EdgeInsets.all(w * 0.04),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFFE1F5FE), Color(0xFFB3E5FC)], // light blue theme
+          colors: [Color(0xFFE1F5FE), Color(0xFFB3E5FC)], 
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),

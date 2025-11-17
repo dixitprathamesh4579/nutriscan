@@ -86,7 +86,7 @@ class ProductOutput extends StatelessWidget {
             Text("Harmful Ingredients", style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
             if (harmfulIngredients.isEmpty)
-              Text("No harmful ingredients detected ✅", style: GoogleFonts.poppins(fontSize: 15, color: Colors.green))
+              Text("No harmful ingredients detected ", style: GoogleFonts.poppins(fontSize: 15, color: Colors.green))
             else
               Column(
                 children: harmfulIngredients.map((item) => Container(

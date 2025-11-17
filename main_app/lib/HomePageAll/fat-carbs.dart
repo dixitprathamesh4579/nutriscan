@@ -38,7 +38,6 @@ class FatCarbs extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // ---------------- FAT ----------------
         Container(
           width: boxW,
           height: boxH,
@@ -84,7 +83,6 @@ class FatCarbs extends StatelessWidget {
 
         SizedBox(width: w * 0.025),
 
-        // ---------------- CARBS ----------------
         Container(
           width: boxW,
           height: boxH,

@@ -77,27 +77,22 @@ class HomePageState extends State<HomePage> {
 
             SizedBox(height: h * 0.015),
 
-            // 🔥 TOTAL CALORIES
             Calories(totalCalories: totalCalories),
 
             SizedBox(height: h * 0.02),
 
-            // 🧈 FAT + 🍞 CARBS
             FatCarbs(fat: totalFat, carbs: totalCarbs),
 
             SizedBox(height: h * 0.02),
 
-            // 🥛 PROTEIN BANNER
             ProteinBanner(protein: totalProtein),
 
             SizedBox(height: h * 0.02),
 
-            // 🍬 SUGAR INTAKE
             SugarBanner(sugar: totalSugar),
 
             SizedBox(height: h * 0.02),
 
-            // HEALTHY FOOD/DRINK WIDGET
             Healthydf(),
 
             SizedBox(height: h * 0.03),
