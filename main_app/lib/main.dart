@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:main_app/Gorouter/deeplink.dart';
 import 'package:main_app/HomePageAll/HomePage.dart';
 import 'package:main_app/Profile/user_profile.dart';
+import 'package:main_app/Progress/ProgressPage.dart';
 import 'package:main_app/Scanned_Output_page.dart/Product_output.dart';
 import 'package:main_app/Scanned_Output_page.dart/open_food_fact_api_call.dart';
 import 'package:main_app/Scanned_Output_page.dart/scan_output.dart';
@@ -46,7 +47,7 @@ class _NutriState extends State<Nutri> {
       title: 'NutriScan',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: Signin(),
+      home: ProgressPage(),
     );
   }
 }

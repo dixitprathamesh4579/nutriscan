@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:main_app/Profile/user_profile.dart';
 import 'package:main_app/SignUp_and_Login/googleauth.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -114,7 +115,7 @@ class EditProfileState extends State<EditProfile> {
       final filePath = fileName;
 
       debugPrint('Uploading avatar to bucket: avatars, path: $filePath');
-      
+
       await supabase.storage
           .from('avatars')
           .upload(
@@ -125,7 +126,7 @@ class EditProfileState extends State<EditProfile> {
 
       final publicUrl = supabase.storage.from('avatars').getPublicUrl(filePath);
       debugPrint('Avatar uploaded successfully. URL: $publicUrl');
-      
+
       return publicUrl;
     } catch (e) {
       debugPrint('Error uploading avatar: $e');
@@ -170,10 +171,7 @@ class EditProfileState extends State<EditProfile> {
         updateData['avatar_url'] = avatarUrl;
       }
 
-      await supabase
-          .from('profiles')
-          .update(updateData)
-          .eq('id', user.id);
+      await supabase.from('profiles').update(updateData).eq('id', user.id);
 
       setState(() {
         profileData = {...?profileData, ...updateData};
@@ -191,9 +189,7 @@ class EditProfileState extends State<EditProfile> {
     } catch (e) {
       debugPrint('Error updating profile: $e');
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error updating profile: $e'),
             backgroundColor: Colors.red,
@@ -204,7 +200,6 @@ class EditProfileState extends State<EditProfile> {
       if (mounted) setState(() => isSaving = false);
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -220,7 +215,10 @@ class EditProfileState extends State<EditProfile> {
         toolbarHeight: screenHeight * 0.06,
         elevation: 0,
         leading: IconButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => UserProfile()),
+          ),
           icon: Icon(Icons.arrow_back_ios_new, color: Colors.black87),
         ),
         title: Text(
@@ -312,8 +310,7 @@ class EditProfileState extends State<EditProfile> {
                   "Email",
                   Icons.email,
                   emailController,
-                  readOnly:true,
-                  
+                  readOnly: true,
                 ),
                 _buildInput(
                   "Age",
@@ -367,7 +364,7 @@ class EditProfileState extends State<EditProfile> {
     TextEditingController ctrl, {
     TextInputType? keyboardType,
     String? Function(String?)? validator,
-    bool readOnly = false, 
+    bool readOnly = false,
   }) {
     return Padding(
       padding: const EdgeInsets.only(top: 16),
@@ -375,7 +372,7 @@ class EditProfileState extends State<EditProfile> {
         controller: ctrl,
         validator: validator,
         keyboardType: keyboardType,
-          readOnly: readOnly,
+        readOnly: readOnly,
         decoration: InputDecoration(
           labelText: label,
           prefixIcon: Icon(icon, color: Colors.blueAccent),

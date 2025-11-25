@@ -7,6 +7,7 @@ import 'package:main_app/HomePageAll/healthy-drink-food.dart';
 import 'package:main_app/HomePageAll/sugar_banner.dart';
 import 'package:main_app/HomePageAll/protein_banner.dart';
 import 'package:main_app/Profile/user_profile.dart';
+import 'package:main_app/Progress/ProgressPage.dart';
 import 'package:main_app/Scanner/ScanPageSwitcher.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -100,16 +101,7 @@ class HomePageState extends State<HomePage> {
         ),
       ),
 
-      Center(
-        child: Text(
-          "Progress Page",
-          style: TextStyle(
-            fontSize: w * 0.06 / scale,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
-
+      ProgressPage(),
       ScanPageSwitcher(),
       ScanHistoryPage(),
       UserProfile(),
