@@ -16,8 +16,10 @@ class ScannerCamera extends StatefulWidget {
 
 class ScannerCamerastate extends State<ScannerCamera> {
   static String? scannedBarcode;
-  bool cameraPaused = false;
   List<bool> isSelected = [false, true];
+
+  bool cameraRunning = true; // track logical camera state
+  Timer? _timeoutTimer; // for 30-second timeout
 
   final MobileScannerController controller = MobileScannerController(
     formats: [
@@ -32,9 +34,40 @@ class ScannerCamerastate extends State<ScannerCamera> {
   );
 
   @override
+  void initState() {
+    super.initState();
+    
+    _startTimeout();
+  }
+
+  @override
   void dispose() {
     controller.dispose();
+    _timeoutTimer?.cancel();
     super.dispose();
+  }
+
+  void _startTimeout() {
+    _timeoutTimer?.cancel();
+    _timeoutTimer = Timer(const Duration(seconds: 30), () {
+      if (!mounted) return;
+      controller.stop();
+      setState(() {
+        cameraRunning = false;
+      });
+    });
+  }
+
+  void _pauseCamera() {
+    controller.stop();
+    _timeoutTimer?.cancel();
+    cameraRunning = false;
+  }
+
+  void _resumeCamera() {
+    controller.start();
+    cameraRunning = true;
+    _startTimeout();
   }
 
   Future<void> _pickimageandscan() async {
@@ -115,7 +148,19 @@ class ScannerCamerastate extends State<ScannerCamera> {
                             isSelected[i] = (i == index);
                           }
                         });
-                        if (index == 0) widget.onSwitch?.call();
+
+                        if (index == 0) {
+                          setState(() {
+                            _pauseCamera();
+                            scannedBarcode = null;
+                          });
+                          widget.onSwitch?.call();
+                        } else {
+                          setState(() {
+                            _resumeCamera();
+                            scannedBarcode = null;
+                          });
+                        }
                       },
                       children: [
                         Text(
@@ -155,43 +200,80 @@ class ScannerCamerastate extends State<ScannerCamera> {
 
                     AspectRatio(
                       aspectRatio: 1,
-                      child: Container(
-                        width: screenWidth * 0.9,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
-                          border: Border.all(
-                            color: Colors.blueAccent,
-                            width: 2,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.blueAccent.withOpacity(0.1),
-                              blurRadius: 8,
-                              offset: const Offset(0, 4),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Container(
+                            width: screenWidth * 0.9,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              border: Border.all(
+                                color: Colors.blueAccent,
+                                width: 2,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.blueAccent.withOpacity(0.1),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(15),
-                          child: MobileScanner(
-                            controller: controller,
-                            onDetect: (BarcodeCapture capture) {
-                              final List<Barcode> barcodes = capture.barcodes;
-                              for (final barcode in barcodes) {
-                                setState(
-                                  () => scannedBarcode = barcode.rawValue,
-                                );
-                                controller.stop();
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const OpenFood(),
-                                  ),
-                                );
-                              }
-                            },
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(15),
+                              child: MobileScanner(
+                                controller: controller,
+                                onDetect: (BarcodeCapture capture) {
+                                  if (!cameraRunning) return;
+                                  if (scannedBarcode != null) return;
+
+                                  _timeoutTimer?.cancel();
+
+                                  final List<Barcode> barcodes = capture.barcodes;
+                                  for (final barcode in barcodes) {
+                                    setState(() {
+                                      scannedBarcode = barcode.rawValue;
+                                      cameraRunning = false;
+                                    });
+
+                                    controller.stop();
+
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => const OpenFood(),
+                                      ),
+                                    ).then((_) {
+                                      if (!mounted) return;
+                                      _resumeCamera();
+                                      setState(() {
+                                        scannedBarcode = null;
+                                      });
+                                    });
+                                  }
+                                },
+                              ),
+                            ),
                           ),
-                        ),
+
+                          if (!cameraRunning)
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                foregroundColor: Colors.black,
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(22),
+                                elevation: 5,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _resumeCamera();
+                                  scannedBarcode = null;
+                                });
+                              },
+                              child: const Icon(Icons.refresh, size: 32),
+                            ),
+                        ],
                       ),
                     ),
 
@@ -204,8 +286,7 @@ class ScannerCamerastate extends State<ScannerCamera> {
                         horizontal: screenWidth * 0.02,
                       ),
                       decoration: BoxDecoration(
-                        color: Color.fromARGB(255, 166, 106, 234),
-
+                        color: const Color.fromARGB(255, 166, 106, 234),
                         borderRadius: BorderRadius.circular(15),
                       ),
                       alignment: Alignment.center,
