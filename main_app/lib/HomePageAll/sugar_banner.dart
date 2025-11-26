@@ -25,7 +25,7 @@ class SugarBanner extends StatelessWidget {
 
     return Container(
       width: w * 0.9,
-      height: h * 0.14,
+      height: h * 0.16,
       padding: EdgeInsets.all(w * 0.04),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
