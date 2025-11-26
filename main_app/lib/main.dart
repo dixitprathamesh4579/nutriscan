@@ -10,6 +10,7 @@ import 'package:main_app/Scanner/Product_Image.dart';
 import 'package:main_app/Scanner/ScannerCamera.dart';
 import 'package:main_app/SignUp_and_Login/SignIn.dart';
 import 'package:main_app/SignUp_and_Login/Signup.dart';
+import 'package:main_app/forgotPassword_page/PasswordRecovery.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -25,7 +26,9 @@ void main() async {
   );
 
   runApp(Nutri());
+  
 }
+
 
 @override
 Widget build(BuildContext context) {
@@ -41,6 +44,22 @@ class Nutri extends StatefulWidget {
 }
 
 class _NutriState extends State<Nutri> {
+   @override
+  void initState() {
+    super.initState();
+
+    Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+      final event = data.event;
+
+      if (event == AuthChangeEvent.passwordRecovery) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const Passwordrecovery()),
+        );
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

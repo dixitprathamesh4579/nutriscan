@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:main_app/SignUp_and_Login/SignIn.dart';
-import 'PasswordRecovery.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ForgotPass extends StatefulWidget {
   const ForgotPass({super.key});
@@ -84,8 +84,8 @@ class _ForgotPassState extends State<ForgotPass> {
                           if (value == null || value.trim().isEmpty) {
                             return "Email is required";
                           } else if (!RegExp(
-                                  r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                              .hasMatch(value.trim())) {
+                            r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                          ).hasMatch(value.trim())) {
                             return "Enter a valid email";
                           }
                           return null;
@@ -113,14 +113,42 @@ class _ForgotPassState extends State<ForgotPass> {
                             borderRadius: BorderRadius.circular(15),
                           ),
                         ),
-                        onPressed: () {
+                        onPressed: () async {
                           if (_formKey.currentState!.validate()) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) =>  Passwordrecovery(),
-                              ),
-                            );
+                            final email = emailCtrl.text.trim();
+
+                            try {
+                              await Supabase.instance.client.auth
+                                  .resetPasswordForEmail(
+                                    email,
+                                    redirectTo:
+                                        'io.supabase.nutriscan://login-callback/',
+                                  );
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    "Reset link sent to your email",
+                                  ),
+                                ),
+                              );
+                            } on AuthException catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(e.message),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    "Something went wrong. Try again.",
+                                  ),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
                           }
                         },
                         child: Text(
@@ -147,9 +175,7 @@ class _ForgotPassState extends State<ForgotPass> {
                           onTap: () {
                             Navigator.pushReplacement(
                               context,
-                              MaterialPageRoute(
-                                builder: (_) => const Signin(),
-                              ),
+                              MaterialPageRoute(builder: (_) => const Signin()),
                             );
                           },
                           child: Text(

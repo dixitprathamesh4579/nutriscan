@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:main_app/SignUp_and_Login/SignIn.dart';
 import 'package:main_app/forgotPassword_page/forgotpass.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class Passwordrecovery extends StatefulWidget {
   const Passwordrecovery({super.key});
@@ -81,7 +82,7 @@ class _PasswordrecoveryState extends State<Passwordrecovery> {
                     SizedBox(height: screenHeight * 0.015),
 
                     Text(
-                      'Enter the OTP sent to your email and create a new password.',
+                      'create a new password.',
                       textAlign: TextAlign.center,
                       style: GoogleFonts.poppins(
                         fontSize: screenWidth * 0.037 / textScale,
@@ -94,31 +95,6 @@ class _PasswordrecoveryState extends State<Passwordrecovery> {
                       key: _recoverKey,
                       child: Column(
                         children: [
-                          TextFormField(
-                            controller: otpController,
-                            keyboardType: TextInputType.number,
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return 'OTP is required';
-                              } else if (value.length != 6) {
-                                return 'OTP must be 6 digits';
-                              } else if (!RegExp(r'^[0-9]+$')
-                                  .hasMatch(value)) {
-                                return 'OTP must contain only numbers';
-                              }
-                              return null;
-                            },
-                            decoration: InputDecoration(
-                              hintText: 'Enter OTP',
-                              prefixIcon: const Icon(Icons.lock_clock_outlined),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                            ),
-                          ),
-
-                          SizedBox(height: screenHeight * 0.03),
-
                           TextFormField(
                             controller: newPassController,
                             obscureText: _obscureNewPass,
@@ -134,9 +110,11 @@ class _PasswordrecoveryState extends State<Passwordrecovery> {
                               hintText: 'Enter New Password',
                               prefixIcon: const Icon(Icons.lock_outline),
                               suffixIcon: IconButton(
-                                icon: Icon(_obscureNewPass
-                                    ? Icons.visibility_off
-                                    : Icons.visibility),
+                                icon: Icon(
+                                  _obscureNewPass
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                ),
                                 onPressed: () {
                                   setState(() {
                                     _obscureNewPass = !_obscureNewPass;
@@ -166,9 +144,11 @@ class _PasswordrecoveryState extends State<Passwordrecovery> {
                               hintText: 'Re-enter Password',
                               prefixIcon: const Icon(Icons.lock_reset),
                               suffixIcon: IconButton(
-                                icon: Icon(_obscureConfirmPass
-                                    ? Icons.visibility_off
-                                    : Icons.visibility),
+                                icon: Icon(
+                                  _obscureConfirmPass
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                ),
                                 onPressed: () {
                                   setState(() {
                                     _obscureConfirmPass = !_obscureConfirmPass;
@@ -195,20 +175,43 @@ class _PasswordrecoveryState extends State<Passwordrecovery> {
                             borderRadius: BorderRadius.circular(15),
                           ),
                         ),
-                        onPressed: () {
+
+                        onPressed: () async {
                           if (_recoverKey.currentState!.validate()) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Password reset successful!'),
-                                duration: Duration(seconds: 2),
-                              ),
-                            );
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const Signin(),
-                              ),
-                            );
+                            final newPassword = newPassController.text.trim();
+
+                            try {
+                              await Supabase.instance.client.auth.updateUser(
+                                UserAttributes(password: newPassword),
+                              );
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    "Password updated successfully!",
+                                  ),
+                                ),
+                              );
+
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const Signin(),
+                                ),
+                              );
+                            } on AuthException catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(e.message)),
+                              );
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    "Something went wrong. Please try again.",
+                                  ),
+                                ),
+                              );
+                            }
                           }
                         },
                         child: Text(
@@ -235,9 +238,7 @@ class _PasswordrecoveryState extends State<Passwordrecovery> {
                           onTap: () {
                             Navigator.pushReplacement(
                               context,
-                              MaterialPageRoute(
-                                builder: (_) => const Signin(),
-                              ),
+                              MaterialPageRoute(builder: (_) => const Signin()),
                             );
                           },
                           child: Text(
