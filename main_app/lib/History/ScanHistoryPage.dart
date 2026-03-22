@@ -45,27 +45,26 @@ class _ScanHistoryPageState extends State<ScanHistoryPage> {
     });
   }
 
- void setupRealtime() {
+void setupRealtime() {
   final userId = supabase.auth.currentUser?.id;
   if (userId == null) return;
 
   channel = supabase.channel('scan_history_changes')
     .onPostgresChanges(
-      event: PostgresChangeEvent.all,   
+      event: PostgresChangeEvent.all,
       schema: 'public',
       table: 'scan_history',
-      filter: PostgresChangeFilter(
-        type: PostgresChangeFilterType.eq,  
-        column: 'profile_id',
-        value: userId,
-      ),
       callback: (payload) {
-        print("Realtime event received: $payload");
-        loadHistory(); 
+        final row = payload.newRecord ?? payload.oldRecord;
+
+        if (row["profile_id"] == userId) {
+          loadHistory();
+        }
       },
     )
     .subscribe();
 }
+
 
 
   @override

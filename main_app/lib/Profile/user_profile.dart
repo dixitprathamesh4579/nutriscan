@@ -59,6 +59,23 @@ class UserProfilestate extends State<UserProfile> {
     }
   }
 
+  Future<void> clearHistory() async {
+    try {
+      final userId = supabase.auth.currentUser?.id;
+      if (userId == null) return;
+
+      await supabase.from('scan_history').delete().eq('profile_id', userId);
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Scan history cleared")));
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error clearing history: $e")));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -72,33 +89,17 @@ class UserProfilestate extends State<UserProfile> {
         ? 'John Doe'
         : '${profile?['first_name']} ${profile?['last_name']}';
 
-  
-
     final String email = profile?['email'] ?? 'nutriscan08@gmail.com';
     final String avatarUrl =
         profile?['avatar_url'] ??
         'https://res.cloudinary.com/ddwdjlq7j/image/upload/v1762861113/user_v37kf9.png';
-    
+
     final String avatarUrlWithCache = avatarUrl.contains('?')
         ? '$avatarUrl&t=$_avatarCacheKey'
         : '$avatarUrl?t=$_avatarCacheKey';
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        toolbarHeight: screenHeight * 0.07,
-        centerTitle: true,
-        title: Text(
-          "Profile",
-          style: GoogleFonts.poppins(
-            color: Colors.black87,
-            fontWeight: FontWeight.w600,
-            fontSize: screenWidth * 0.05 / textScale,
-          ),
-        ),
-      ),
 
       body: SafeArea(
         child: SingleChildScrollView(
@@ -130,7 +131,7 @@ class UserProfilestate extends State<UserProfile> {
                         color: Colors.black87,
                       ),
                     ),
-                   
+
                     SizedBox(height: screenHeight * 0.01),
                     Text(
                       email,
@@ -224,7 +225,35 @@ class UserProfilestate extends State<UserProfile> {
                   ),
                 ),
                 trailing: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    final confirm = await showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text("Clear Scan History"),
+                        content: const Text(
+                          "Are you sure you want to delete all scan history ?",
+                        ),
+                        actions: [
+                          TextButton(
+                            child: const Text("Cancel"),
+                            onPressed: () => Navigator.pop(context, false),
+                          ),
+                          TextButton(
+                            child: const Text(
+                              "Clear",
+                              style: TextStyle(color: Colors.red),
+                            ),
+                            onPressed: () => Navigator.pop(context, true),
+                          ),
+                        ],
+                      ),
+                    );
+
+                    if (confirm == true) {
+                      await clearHistory();
+                    }
+                  },
+
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.redAccent,
                     foregroundColor: Colors.white,

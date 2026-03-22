@@ -634,7 +634,7 @@ class _OpenFoodState extends State<OpenFood> {
                             );
 
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text("Saved to history ✔")),
+                                SnackBar(content: Text("Saved to history ")),
                               );
                             } catch (e) {
                               if (e is PostgrestException) {

@@ -2,6 +2,8 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_mlkit_image_labeling/google_mlkit_image_labeling.dart';
+
 
 class ProductImageCapturePage extends StatefulWidget {
   final VoidCallback? onSwitch;
@@ -36,20 +38,40 @@ class _ProductImageCapturePageState extends State<ProductImageCapturePage>
     setState(() => isCameraReady = true);
   }
 
-  Future<void> _captureImage() async {
-    if (_cameraController == null || !_cameraController!.value.isInitialized) {
-      return;
-    }
-
-    final XFile image = await _cameraController!.takePicture();
-    if (!mounted) return;
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ProductImageDisplay(imagePath: image.path),
-      ),
-    );
+ Future<void> _captureImage() async {
+  if (_cameraController == null || !_cameraController!.value.isInitialized) {
+    return;
   }
+
+  final XFile image = await _cameraController!.takePicture();
+  if (!mounted) return;
+
+  final labels = await _labelImage(image.path);
+
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => ProductImageDisplay(
+        imagePath: image.path,
+        labels: labels,   // pass labels to next page
+      ),
+    ),
+  );
+}
+
+Future<List<ImageLabel>> _labelImage(String imagePath) async {
+  final inputImage = InputImage.fromFilePath(imagePath);
+
+  final ImageLabelerOptions options =
+      ImageLabelerOptions(confidenceThreshold: 0.5);
+
+  final imageLabeler = ImageLabeler(options: options);
+
+  final labels = await imageLabeler.processImage(inputImage);
+
+  await imageLabeler.close();
+  return labels;
+}
 
   @override
   void dispose() {
@@ -261,25 +283,47 @@ class _ProductImageCapturePageState extends State<ProductImageCapturePage>
 
 class ProductImageDisplay extends StatelessWidget {
   final String imagePath;
-  const ProductImageDisplay({super.key, required this.imagePath});
+  final List<ImageLabel> labels;
+
+  const ProductImageDisplay({
+    super.key,
+    required this.imagePath,
+    required this.labels,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Product Image"),
+        title: const Text("Product Result"),
         backgroundColor: Colors.white,
         elevation: 0,
         foregroundColor: Colors.black,
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(15),
-            child: Image.file(File(imagePath), fit: BoxFit.contain),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: Image.file(File(imagePath), fit: BoxFit.contain),
+            ),
           ),
-        ),
+
+          Expanded(
+            child: ListView.builder(
+              itemCount: labels.length,
+              itemBuilder: (_, i) {
+                final l = labels[i];
+                return ListTile(
+                  title: Text(l.label),
+                  subtitle:
+                      Text("Confidence: ${(l.confidence * 100).toStringAsFixed(1)}%"),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

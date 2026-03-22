@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:main_app/SignUp_and_Login/SignIn.dart';
+import 'package:main_app/forgotPassword_page/PasswordRecovery.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ForgotPass extends StatefulWidget {
@@ -124,12 +125,17 @@ class _ForgotPassState extends State<ForgotPass> {
                                     redirectTo:
                                         'io.supabase.nutriscan://login-callback/',
                                   );
-
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text(
-                                    "Reset link sent to your email",
+                                    "Reset link sent to your email Verify and change Your password",
                                   ),
+                                ),
+                              );
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => Passwordrecovery(),
                                 ),
                               );
                             } on AuthException catch (e) {

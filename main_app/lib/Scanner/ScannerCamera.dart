@@ -18,8 +18,8 @@ class ScannerCamerastate extends State<ScannerCamera> {
   static String? scannedBarcode;
   List<bool> isSelected = [false, true];
 
-  bool cameraRunning = true; // track logical camera state
-  Timer? _timeoutTimer; // for 30-second timeout
+  bool cameraRunning = true; 
+  Timer? _timeoutTimer; 
 
   final MobileScannerController controller = MobileScannerController(
     formats: [
