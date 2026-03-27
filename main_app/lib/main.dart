@@ -5,8 +5,8 @@ import 'package:main_app/Profile/user_profile.dart';
 import 'package:main_app/Progress/ProgressPage.dart';
 import 'package:main_app/Scanned_Output_page.dart/Product_output.dart';
 import 'package:main_app/Scanned_Output_page.dart/open_food_fact_api_call.dart';
-import 'package:main_app/Scanned_Output_page.dart/scan_output.dart';
 import 'package:main_app/Scanner/Product_Image.dart';
+import 'package:main_app/Scanner/Product_image_display.dart';
 import 'package:main_app/Scanner/ScannerCamera.dart';
 import 'package:main_app/SignUp_and_Login/SignIn.dart';
 import 'package:main_app/SignUp_and_Login/Signup.dart';
@@ -66,7 +66,7 @@ class _NutriState extends State<Nutri> {
       title: 'NutriScan',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: Signup(),
+      home: Signin(),
     );
   }
 }
