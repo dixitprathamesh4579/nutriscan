@@ -10,23 +10,14 @@ android {
 
     ndkVersion = "27.0.12077973"
 
-<<<<<<< HEAD
-   compileOptions {
-        isCoreLibraryDesugaringEnabled = true
-=======
     compileOptions {
->>>>>>> a14cc93a437e604b69974e017e0110a7e903729f
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
 
     kotlinOptions {
-<<<<<<< HEAD
-       
-        jvmTarget = "11"
-=======
         jvmTarget = JavaVersion.VERSION_11.toString()
->>>>>>> a14cc93a437e604b69974e017e0110a7e903729f
     }
 
     defaultConfig {
@@ -38,29 +29,25 @@ android {
     }
 
     buildTypes {
-    release {
-        signingConfig = signingConfigs.getByName("debug")
+        release {
+            signingConfig = signingConfigs.getByName("debug")
 
-        isMinifyEnabled = true
-        isShrinkResources = true
+            isMinifyEnabled = true
+            isShrinkResources = true
 
-        proguardFiles(
-            getDefaultProguardFile("proguard-android-optimize.txt"),
-            "proguard-rules.pro"
-        )
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
     }
-}
 }
 
 flutter {
     source = "../.."
 }
+
 dependencies {
     implementation("org.tensorflow:tensorflow-lite-gpu:2.12.0")
-<<<<<<< HEAD
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
-
-
-=======
->>>>>>> a14cc93a437e604b69974e017e0110a7e903729f
 }

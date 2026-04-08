@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-import 'dart:async';
-import 'dart:io';
-=======
->>>>>>> a14cc93a437e604b69974e017e0110a7e903729f
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:main_app/HomePageAll/HomePage.dart';
@@ -10,12 +5,9 @@ import 'package:main_app/SignUp_and_Login/Signup.dart';
 import 'package:main_app/SignUp_and_Login/googleauth.dart';
 import 'package:main_app/forgotPassword_page/forgotpass.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-<<<<<<< HEAD
 import 'dart:io';
 import 'dart:async';
 import 'package:flutter/services.dart';
-=======
->>>>>>> a14cc93a437e604b69974e017e0110a7e903729f
 
 class Signin extends StatefulWidget {
   const Signin({super.key});
@@ -40,10 +32,6 @@ class _SigninState extends State<Signin> {
     final password = passCtrl.text.trim();
 
     setState(() => isLoading = true);
-<<<<<<< HEAD
-
-=======
->>>>>>> a14cc93a437e604b69974e017e0110a7e903729f
     try {
       final response = await supabase.auth.signInWithPassword(
         email: email,
@@ -54,10 +42,6 @@ class _SigninState extends State<Signin> {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(const SnackBar(content: Text('Login successful!')));
-<<<<<<< HEAD
-
-=======
->>>>>>> a14cc93a437e604b69974e017e0110a7e903729f
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => const HomePage()),
@@ -67,23 +51,10 @@ class _SigninState extends State<Signin> {
       }
     } on AuthException catch (e) {
       _showError(e.message);
-<<<<<<< HEAD
-    } on SocketException {
-      _showError('No internet connection. Please try again.');
-    } on TimeoutException {
-      _showError('Request timed out. Please try again.');
-    } catch (e) {
-      _showError('Something went wrong. Please try again.');
-    } finally {
-      if (mounted) {
-        setState(() => isLoading = false);
-      }
-=======
     } catch (e) {
       _showError('Unexpected error: $e');
     } finally {
       setState(() => isLoading = false);
->>>>>>> a14cc93a437e604b69974e017e0110a7e903729f
     }
   }
 
@@ -103,19 +74,14 @@ class _SigninState extends State<Signin> {
       ),
     );
   }
-
-<<<<<<< HEAD
-  Future<bool> hasInternet() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
-    } catch (_) {
-      return false;
-    }
+Future<bool> hasInternet() async {
+  try {
+    final result = await InternetAddress.lookup('google.com');
+    return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
+  } catch (_) {
+    return false;
   }
-
-=======
->>>>>>> a14cc93a437e604b69974e017e0110a7e903729f
+}
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -170,10 +136,6 @@ class _SigninState extends State<Signin> {
                       ),
                     ),
                     SizedBox(height: screenHeight * 0.005),
-<<<<<<< HEAD
-
-=======
->>>>>>> a14cc93a437e604b69974e017e0110a7e903729f
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
@@ -212,10 +174,6 @@ class _SigninState extends State<Signin> {
                               ),
                             ),
                           ),
-<<<<<<< HEAD
-
-=======
->>>>>>> a14cc93a437e604b69974e017e0110a7e903729f
                           SizedBox(height: screenHeight * 0.025),
 
                           TextFormField(
@@ -301,84 +259,69 @@ class _SigninState extends State<Signin> {
                                   borderRadius: BorderRadius.circular(15),
                                 ),
                               ),
-                              onPressed: isLoading
-                                  ? null
-<<<<<<< HEAD
-                                  : () async {
-                                      if (_formKey.currentState!.validate()) {
-                                        try {
-                                          bool connected = await hasInternet();
-                                          if (!connected) {
-                                            ScaffoldMessenger.of(
-                                              context,
-                                            ).showSnackBar(
-                                              const SnackBar(
-                                                content: Text(
-                                                  "No internet connection",
-                                                ),
-                                              ),
-                                            );
-                                            return;
-                                          }
+                           onPressed: isLoading
+    ? null
+    : () async {
+        if (_formKey.currentState!.validate()) {
+          try {
+            // ✅ INTERNET CHECK
+            bool connected = await hasInternet();
+            if (!connected) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("No internet connection"),
+                ),
+              );
+              return;
+            }
 
-                                          await _signIn();
-                                        }
-                                        on SocketException {
-                                          ScaffoldMessenger.of(
-                                            context,
-                                          ).showSnackBar(
-                                            const SnackBar(
-                                              content: Text(
-                                                "No internet connection",
-                                              ),
-                                            ),
-                                          );
-                                        }
-                                        on TimeoutException {
-                                          ScaffoldMessenger.of(
-                                            context,
-                                          ).showSnackBar(
-                                            const SnackBar(
-                                              content: Text(
-                                                "Request timed out",
-                                              ),
-                                            ),
-                                          );
-                                        }
-                                        on AuthException catch (e) {
-                                          ScaffoldMessenger.of(
-                                            context,
-                                          ).showSnackBar(
-                                            SnackBar(content: Text(e.message)),
-                                          );
-                                        }
-                                        on PlatformException {
-                                          ScaffoldMessenger.of(
-                                            context,
-                                          ).showSnackBar(
-                                            const SnackBar(
-                                              content: Text("Operation failed"),
-                                            ),
-                                          );
-                                        }
-                                        catch (_) {
-                                          ScaffoldMessenger.of(
-                                            context,
-                                          ).showSnackBar(
-                                            const SnackBar(
-                                              content: Text(
-                                                "Something went wrong",
-                                              ),
-                                            ),
-                                          );
-                                        }
-=======
-                                  : () {
-                                      if (_formKey.currentState!.validate()) {
-                                        _signIn();
->>>>>>> a14cc93a437e604b69974e017e0110a7e903729f
-                                      }
-                                    },
+            await _signIn();
+          }
+
+          // ✅ NO INTERNET (fallback)
+          on SocketException {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("No internet connection"),
+              ),
+            );
+          }
+
+          // ✅ TIMEOUT
+          on TimeoutException {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Request timed out"),
+              ),
+            );
+          }
+
+          // ✅ AUTH / SUPABASE
+          on AuthException catch (e) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(e.message)),
+            );
+          }
+
+          // ✅ PLATFORM ERROR
+          on PlatformException {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Operation failed"),
+              ),
+            );
+          }
+
+          // ✅ UNKNOWN ERROR
+          catch (_) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Something went wrong"),
+              ),
+            );
+          }
+        }
+      },
                               child: isLoading
                                   ? const CircularProgressIndicator(
                                       color: Colors.white,
@@ -433,85 +376,83 @@ class _SigninState extends State<Signin> {
                           ),
                           side: const BorderSide(color: Colors.grey),
                         ),
-                        onPressed: () async {
-                          try {
-<<<<<<< HEAD
-                            // ✅ INTERNET CHECK
-                            bool connected = await hasInternet();
-                            if (!connected) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text("No internet connection"),
-                                ),
-                              );
-                              return;
-                            }
+                       onPressed: () async {
+  try {
+    // ✅ INTERNET CHECK
+    bool connected = await hasInternet();
+    if (!connected) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("No internet connection"),
+        ),
+      );
+      return;
+    }
 
-                            await loginWithGoogleAndroid(context);
-                          }
-                          // ✅ NO INTERNET (fallback)
-                          on SocketException {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("No internet connection"),
-                              ),
-                            );
-                          }
-                          // ✅ TIMEOUT
-                          on TimeoutException {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Request timed out"),
-                              ),
-                            );
-                          }
-                          // ✅ AUTH / SUPABASE
-                          on AuthException catch (e) {
-                            ScaffoldMessenger.of(
-                              context,
-                            ).showSnackBar(SnackBar(content: Text(e.message)));
-                          }
-                          // ✅ GOOGLE / PLATFORM ERROR (IMPORTANT 🔥)
-                          on PlatformException catch (e) {
-                            if (e.code == 'network_error') {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text("No internet connection"),
-                                ),
-                              );
-                            } else if (e.code == 'sign_in_canceled') {
-                              // ✅ User cancelled Google login (very common)
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text("Sign-in cancelled"),
-                                ),
-                              );
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text("Google sign-in failed"),
-                                ),
-                              );
-                            }
-                          }
-                          // ✅ UNKNOWN ERROR
-                          catch (e) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text("Something went wrong")),
-                            );
+    await loginWithGoogleAndroid(context);
+  }
 
-                            // optional debug
-                            print("Google Sign-In Error: $e");
-                          }
-=======
-                            await loginWithGoogleAndroid(context);
-                          } catch (error) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text("Error: $error")),
-                            );
-                          }
->>>>>>> a14cc93a437e604b69974e017e0110a7e903729f
-                        },
+  // ✅ NO INTERNET (fallback)
+  on SocketException {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("No internet connection"),
+      ),
+    );
+  }
+
+  // ✅ TIMEOUT
+  on TimeoutException {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Request timed out"),
+      ),
+    );
+  }
+
+  // ✅ AUTH / SUPABASE
+  on AuthException catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(e.message)),
+    );
+  }
+
+  // ✅ GOOGLE / PLATFORM ERROR (IMPORTANT 🔥)
+  on PlatformException catch (e) {
+    if (e.code == 'network_error') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("No internet connection"),
+        ),
+      );
+    } else if (e.code == 'sign_in_canceled') {
+      // ✅ User cancelled Google login (very common)
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Sign-in cancelled"),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Google sign-in failed"),
+        ),
+      );
+    }
+  }
+
+  // ✅ UNKNOWN ERROR
+  catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Something went wrong"),
+      ),
+    );
+
+    // optional debug
+    print("Google Sign-In Error: $e");
+  }
+},
                         icon: Image.asset(
                           'assets/images/google.png',
                           height: 18,

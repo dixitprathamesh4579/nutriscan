@@ -13,60 +13,39 @@ import 'package:main_app/SignUp_and_Login/Signup.dart';
 import 'package:main_app/forgotPassword_page/PasswordRecovery.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-<<<<<<< HEAD
 import 'package:main_app/InternetWrapper.dart';
 import 'Profile/notification_service.dart';
-=======
-
->>>>>>> a14cc93a437e604b69974e017e0110a7e903729f
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await dotenv.load(fileName: ".env");
 
   await Supabase.initialize(
     url: dotenv.env['SUPABASE_URL']!,
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
-<<<<<<< HEAD
+
+  // 🔔 Notifications init
   await NotificationService.init();
   await NotificationService.setupTimezone();
+
+  // optional test
   await NotificationService.testNotification();
   await NotificationService.scheduleNotification();
+
   runApp(const Nutri());
 }
 
 class Nutri extends StatefulWidget {
   const Nutri({super.key});
 
-=======
-
-  runApp(Nutri());
-  
-}
-
-
-@override
-Widget build(BuildContext context) {
-  return MaterialApp.router(
-    routerConfig: router,
-    debugShowCheckedModeBanner: false,
-  );
-}
-
-class Nutri extends StatefulWidget {
->>>>>>> a14cc93a437e604b69974e017e0110a7e903729f
   @override
   State<Nutri> createState() => _NutriState();
 }
 
 class _NutriState extends State<Nutri> {
-<<<<<<< HEAD
   @override
-=======
-   @override
->>>>>>> a14cc93a437e604b69974e017e0110a7e903729f
   void initState() {
     super.initState();
 
@@ -74,10 +53,14 @@ class _NutriState extends State<Nutri> {
       final event = data.event;
 
       if (event == AuthChangeEvent.passwordRecovery) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const Passwordrecovery()),
-        );
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const Passwordrecovery(),
+            ),
+          );
+        });
       }
     });
   }
@@ -88,15 +71,10 @@ class _NutriState extends State<Nutri> {
       title: 'NutriScan',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.blue),
-<<<<<<< HEAD
 
-      home: InternetWrapper(child: const Signin()),
+      home: InternetWrapper(
+        child: const Signin(),
+      ),
     );
   }
 }
-=======
-      home: Signin(),
-    );
-  }
-}
->>>>>>> a14cc93a437e604b69974e017e0110a7e903729f

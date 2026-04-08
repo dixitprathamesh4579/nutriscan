@@ -54,7 +54,7 @@ class NotificationService {
       1,
       'Reminder ⏰',
       'Check your nutrition!',
-      now.add(const Duration(seconds: 10)), // 👈 test first
+      now.add(const Duration(seconds: 60)), // 👈 test first
       const NotificationDetails(
         android: AndroidNotificationDetails(
           'channel_id',
