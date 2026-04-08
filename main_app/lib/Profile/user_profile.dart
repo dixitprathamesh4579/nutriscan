@@ -1,0 +1,360 @@
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:main_app/Profile/Edit_profile.dart';
+import 'package:main_app/SignUp_and_Login/googleauth.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+class UserProfile extends StatefulWidget {
+  @override
+  State<UserProfile> createState() => UserProfilestate();
+}
+
+class UserProfilestate extends State<UserProfile> {
+  final SupabaseClient supabase = Supabase.instance.client;
+  Map<String, dynamic>? profile;
+  bool isLoading = true;
+  bool isOn = false;
+  bool isOn2 = false;
+  int _avatarCacheKey = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
+    try {
+      final user = supabase.auth.currentUser;
+      if (user == null) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('User not logged in')));
+        return;
+      }
+
+      final response = await supabase
+          .from('profiles')
+          .select()
+          .eq('id', user.id)
+          .maybeSingle();
+
+      if (response != null) {
+        setState(() {
+          profile = response;
+          isLoading = false;
+          _avatarCacheKey = DateTime.now().millisecondsSinceEpoch;
+        });
+      } else {
+        setState(() => isLoading = false);
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Profile not found')));
+      }
+    } catch (e) {
+      setState(() => isLoading = false);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error fetching profile: $e')));
+    }
+  }
+
+  Future<void> clearHistory() async {
+    try {
+      final userId = supabase.auth.currentUser?.id;
+      if (userId == null) return;
+
+      await supabase.from('scan_history').delete().eq('profile_id', userId);
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Scan history cleared")));
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error clearing history: $e")));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final textScale = MediaQuery.of(context).textScaleFactor;
+
+    final String fullName =
+        '${profile?['first_name'] ?? ''} ${profile?['last_name'] ?? ''}'
+            .trim()
+            .isEmpty
+        ? 'John Doe'
+        : '${profile?['first_name']} ${profile?['last_name']}';
+
+    final String email = profile?['email'] ?? 'nutriscan08@gmail.com';
+    final String avatarUrl =
+        profile?['avatar_url'] ??
+        'https://res.cloudinary.com/ddwdjlq7j/image/upload/v1762861113/user_v37kf9.png';
+
+    final String avatarUrlWithCache = avatarUrl.contains('?')
+        ? '$avatarUrl&t=$_avatarCacheKey'
+        : '$avatarUrl?t=$_avatarCacheKey';
+    return Scaffold(
+      backgroundColor: Colors.white,
+      resizeToAvoidBottomInset: true,
+
+      body: SafeArea(
+        child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          padding: EdgeInsets.symmetric(
+            horizontal: screenWidth * 0.06,
+            vertical: screenHeight * 0.02,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Center(
+                child: Column(
+                  children: [
+                    CircleAvatar(
+                      radius: screenWidth * 0.17,
+                      backgroundColor: Colors.blue.shade50,
+                      backgroundImage: NetworkImage(avatarUrlWithCache),
+                      onBackgroundImageError: (exception, stackTrace) {
+                        debugPrint('Error loading avatar image: $exception');
+                      },
+                    ),
+                    SizedBox(height: screenHeight * 0.02),
+                    Text(
+                      fullName,
+                      style: GoogleFonts.poppins(
+                        fontSize: screenWidth * 0.05 / textScale,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
+                    ),
+
+                    SizedBox(height: screenHeight * 0.01),
+                    Text(
+                      email,
+                      style: GoogleFonts.roboto(
+                        fontSize: screenWidth * 0.04 / textScale,
+                        color: Colors.grey.shade600,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              SizedBox(height: screenHeight * 0.03),
+
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blueAccent,
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.symmetric(
+                    vertical: screenHeight * 0.018,
+                    horizontal: screenWidth * 0.15,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 2,
+                ),
+                icon: Icon(Icons.edit, size: screenWidth * 0.06),
+                label: Text(
+                  "Edit Profile",
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.w600,
+                    fontSize: screenWidth * 0.045 / textScale,
+                  ),
+                ),
+                onPressed: () async {
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => EditProfile()),
+                  );
+
+                  if (result == true) {
+                    _loadProfile();
+                  }
+                },
+              ),
+
+              SizedBox(height: screenHeight * 0.03),
+              Divider(thickness: 1, color: Colors.grey.shade300),
+              SizedBox(height: screenHeight * 0.02),
+
+              Row(
+                children: [
+                  Icon(Icons.settings, color: Colors.blueAccent),
+                  SizedBox(width: screenWidth * 0.03),
+                  Text(
+                    "Settings",
+                    style: GoogleFonts.poppins(
+                      fontSize: screenWidth * 0.045 / textScale,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+
+              SizedBox(height: screenHeight * 0.015),
+
+              _buildSwitchTile(
+                title: "Notifications",
+                value: isOn,
+                onChanged: (value) => setState(() => isOn = value),
+              ),
+
+              _buildSwitchTile(
+                title: "Dark Mode",
+                value: isOn2,
+                onChanged: (value) => setState(() => isOn2 = value),
+              ),
+
+              Divider(thickness: 1, color: Colors.grey.shade300),
+              SizedBox(height: screenHeight * 0.01),
+
+              ListTile(
+                contentPadding: EdgeInsets.symmetric(horizontal: 4),
+                title: Text(
+                  "Clear Scan History",
+                  style: GoogleFonts.poppins(
+                    fontSize: screenWidth * 0.042 / textScale,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                trailing: ElevatedButton(
+                  onPressed: () async {
+                    final confirm = await showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text("Clear Scan History"),
+                        content: const Text(
+                          "Are you sure you want to delete all scan history ?",
+                        ),
+                        actions: [
+                          TextButton(
+                            child: const Text("Cancel"),
+                            onPressed: () => Navigator.pop(context, false),
+                          ),
+                          TextButton(
+                            child: const Text(
+                              "Clear",
+                              style: TextStyle(color: Colors.red),
+                            ),
+                            onPressed: () => Navigator.pop(context, true),
+                          ),
+                        ],
+                      ),
+                    );
+
+                    if (confirm == true) {
+                      await clearHistory();
+                    }
+                  },
+
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.redAccent,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(
+                      vertical: screenHeight * 0.008,
+                      horizontal: screenWidth * 0.05,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: Text(
+                    "Clear",
+                    style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.w600,
+                      fontSize: screenWidth * 0.035 / textScale,
+                    ),
+                  ),
+                ),
+              ),
+
+              Divider(thickness: 1, color: Colors.grey.shade300),
+
+              _buildListTile(
+                title: "About",
+                icon: Icons.info_outline,
+                onTap: () {},
+              ),
+
+              _buildListTile(
+                title: "Help & Support",
+                icon: Icons.help_outline,
+                onTap: () {},
+              ),
+
+              Divider(thickness: 1, color: Colors.grey.shade300),
+
+              ListTile(
+                leading: Icon(Icons.logout, color: Colors.redAccent),
+                title: Text(
+                  "Logout",
+                  style: GoogleFonts.poppins(
+                    color: Colors.redAccent,
+                    fontWeight: FontWeight.w600,
+                    fontSize: screenWidth * 0.045 / textScale,
+                  ),
+                ),
+                onTap: () async {
+                  try {
+                    await logoutUser(context);
+                  } catch (error) {
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text("Error: $error")));
+                  }
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSwitchTile({
+    required String title,
+    required bool value,
+    required Function(bool) onChanged,
+  }) {
+    return SwitchListTile(
+      title: Text(
+        title,
+        style: GoogleFonts.poppins(
+          fontWeight: FontWeight.w500,
+          color: Colors.black87,
+        ),
+      ),
+      activeColor: Colors.blueAccent,
+      activeTrackColor: Colors.blue[200],
+      inactiveThumbColor: Colors.grey,
+      inactiveTrackColor: Colors.grey.shade300,
+      value: value,
+      onChanged: onChanged,
+    );
+  }
+
+  Widget _buildListTile({
+    required String title,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      title: Text(
+        title,
+        style: GoogleFonts.poppins(
+          fontWeight: FontWeight.w500,
+          color: Colors.black87,
+        ),
+      ),
+      trailing: Icon(icon, color: Colors.blueAccent),
+      onTap: onTap,
+    );
+  }
+}
