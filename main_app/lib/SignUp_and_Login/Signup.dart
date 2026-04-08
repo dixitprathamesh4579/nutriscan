@@ -1,13 +1,19 @@
+<<<<<<< HEAD
 import 'dart:async';
 import 'dart:io' show SocketException, InternetAddress;
 
+=======
+>>>>>>> a14cc93a437e604b69974e017e0110a7e903729f
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:main_app/SignUp_and_Login/Authservice_email.dart';
 import 'SignIn.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:main_app/SignUp_and_Login/googleauth.dart';
+<<<<<<< HEAD
 import 'package:flutter/services.dart';
+=======
+>>>>>>> a14cc93a437e604b69974e017e0110a7e903729f
 
 class Signup extends StatefulWidget {
   const Signup({super.key});
@@ -38,6 +44,7 @@ class SignupState extends State<Signup> {
 
   final AuthService _authService = AuthService();
 
+<<<<<<< HEAD
   Future<void> _signUp() async {
     final firstName = fnameCtrl.text.trim();
     final lastName = lnameCtrl.text.trim();
@@ -110,6 +117,51 @@ class SignupState extends State<Signup> {
     }
   }
 
+=======
+ Future<void> _signUp() async {
+  final firstName = fnameCtrl.text.trim();
+  final lastName = lnameCtrl.text.trim();
+  final email = emailCtrl.text.trim();
+  final password = passCtrl.text.trim();
+
+  setState(() => isLoading = true);
+
+  final error = await _authService.signUp(
+    email: email,
+    password: password,
+    firstName: firstName,
+    lastName: lastName,
+  );
+
+  setState(() => isLoading = false);
+
+  if (error == null) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Sign up successful! Confirm your email and log in."),
+      ),
+    );
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const Signin()),
+    );
+  } else {
+    String errorMessage = error;
+
+    if (error.toLowerCase().contains("already") ||
+        error.toLowerCase().contains("exists") ||
+        error.toLowerCase().contains("duplicate") ||
+        error.toLowerCase().contains("foreign key")) {
+      errorMessage = "This email is already registered.Please log in instead.";
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(errorMessage)),
+    );
+  }
+}
+>>>>>>> a14cc93a437e604b69974e017e0110a7e903729f
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -362,9 +414,17 @@ class SignupState extends State<Signup> {
                               ),
                               onPressed: isLoading
                                   ? null
+<<<<<<< HEAD
                                   : () async {
                                       if (_formKey.currentState!.validate()) {
                                         if (!agreeTerms) {
+=======
+                                  : () {
+                                      if (_formKey.currentState!.validate()) {
+                                        if (agreeTerms) {
+                                          _signUp();
+                                        } else {
+>>>>>>> a14cc93a437e604b69974e017e0110a7e903729f
                                           ScaffoldMessenger.of(
                                             context,
                                           ).showSnackBar(
@@ -375,6 +435,7 @@ class SignupState extends State<Signup> {
                                               duration: Duration(seconds: 2),
                                             ),
                                           );
+<<<<<<< HEAD
                                           return;
                                         }
 
@@ -443,6 +504,8 @@ class SignupState extends State<Signup> {
                                               ),
                                             ),
                                           );
+=======
+>>>>>>> a14cc93a437e604b69974e017e0110a7e903729f
                                         }
                                       }
                                     },
@@ -495,6 +558,7 @@ class SignupState extends State<Signup> {
                           side: const BorderSide(color: Colors.grey),
                         ),
                         onPressed: () async {
+<<<<<<< HEAD
                           bool connected = await hasInternet();
 
                           if (!connected) {
@@ -527,6 +591,13 @@ class SignupState extends State<Signup> {
                               const SnackBar(
                                 content: Text("Something went wrong"),
                               ),
+=======
+                          try {
+                            await signUpWithGoogleAndroid(context);
+                          } catch (error) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Error: $error")),
+>>>>>>> a14cc93a437e604b69974e017e0110a7e903729f
                             );
                           }
                         },
