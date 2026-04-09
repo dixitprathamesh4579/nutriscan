@@ -45,89 +45,108 @@ class _ScanHistoryPageState extends State<ScanHistoryPage> {
     });
   }
 
-void setupRealtime() {
-  final userId = supabase.auth.currentUser?.id;
-  if (userId == null) return;
+  // 🔹 PULL TO REFRESH FUNCTION
+  Future<void> _refresh() async {
+    await loadHistory();
+  }
 
-  channel = supabase.channel('scan_history_changes')
-    .onPostgresChanges(
-      event: PostgresChangeEvent.all,
-      schema: 'public',
-      table: 'scan_history',
-      callback: (payload) {
-        final row = payload.newRecord ?? payload.oldRecord;
+  void setupRealtime() {
+    final userId = supabase.auth.currentUser?.id;
+    if (userId == null) return;
 
-        if (row["profile_id"] == userId) {
-          loadHistory();
-        }
-      },
-    )
-    .subscribe();
-}
+    channel = supabase.channel('scan_history_changes')
+      .onPostgresChanges(
+        event: PostgresChangeEvent.all,
+        schema: 'public',
+        table: 'scan_history',
+        callback: (payload) {
+          final row = payload.newRecord ?? payload.oldRecord;
 
-
+          if (row["profile_id"] == userId) {
+            loadHistory();
+          }
+        },
+      )
+      .subscribe();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
- backgroundColor: Colors.white,
+      backgroundColor: Colors.white,
+
       body: loading
           ? const Center(child: CircularProgressIndicator())
+
+          // 🔹 WRAP EMPTY STATE ALSO
           : historyItems.isEmpty
-              ? const Center(child: Text("No history found"))
-              : ListView.builder(
-                  padding: const EdgeInsets.all(12),
-                  itemCount: historyItems.length,
-                  itemBuilder: (context, index) {
-                    final item = historyItems[index];
+              ? RefreshIndicator(
+                  onRefresh: _refresh,
+                  child: ListView(
+                    children: const [
+                      SizedBox(height: 300),
+                      Center(child: Text("No history found")),
+                    ],
+                  ),
+                )
 
-                    return Card(
-                      color: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 2,
-                      margin: const EdgeInsets.only(bottom: 12),
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.all(12),
+              // 🔹 MAIN LIST WITH PULL TO REFRESH
+              : RefreshIndicator(
+                  onRefresh: _refresh,
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(12),
+                    itemCount: historyItems.length,
+                    itemBuilder: (context, index) {
+                      final item = historyItems[index];
 
-                        leading: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: item["image"] != null
-                              ? Image.network(
-                                  item["image"],
-                                  width: 60,
-                                  height: 60,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (_, __, ___) =>
-                                      const Icon(Icons.broken_image),
-                                )
-                              : const Icon(Icons.broken_image, size: 40),
+                      return Card(
+                        color: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
+                        elevation: 2,
+                        margin: const EdgeInsets.only(bottom: 12),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.all(12),
 
-                        title: Text(
-                          item["name"] ?? "Unknown Product",
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 15),
-                        ),
+                          leading: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: item["image"] != null
+                                ? Image.network(
+                                    item["image"],
+                                    width: 60,
+                                    height: 60,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) =>
+                                        const Icon(Icons.broken_image),
+                                  )
+                                : const Icon(Icons.broken_image, size: 40),
+                          ),
 
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text("Brand: ${item["brand"] ?? "Unknown"}"),
-                            const SizedBox(height: 4),
-                            Text(
-                              "Added: ${_formatDate(item["created_at"])}",
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey.shade600,
+                          title: Text(
+                            item["name"] ?? "Unknown Product",
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 15),
+                          ),
+
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Brand: ${item["brand"] ?? "Unknown"}"),
+                              const SizedBox(height: 4),
+                              Text(
+                                "Added: ${_formatDate(item["created_at"])}",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey.shade600,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
     );
   }
