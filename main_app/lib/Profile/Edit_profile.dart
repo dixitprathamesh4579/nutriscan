@@ -217,7 +217,7 @@ class EditProfileState extends State<EditProfile> {
         leading: IconButton(
           onPressed: () => Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => UserProfile()),
+     MaterialPageRoute(builder: (_) => UserProfile()),
           ),
           icon: Icon(Icons.arrow_back_ios_new, color: Colors.black87),
         ),

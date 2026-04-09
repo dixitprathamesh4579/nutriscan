@@ -4,11 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:main_app/HomePageAll/HomePage.dart';
+import 'package:main_app/Scanner/Product_Image.dart';
+import 'package:main_app/Scanner/ScannerCamera.dart';
+import 'package:openfoodfacts/openfoodfacts.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:image/image.dart' as img;
 
 class ProductImageDisplay extends StatefulWidget {
   final String imagePath;
+  
+  
 
   const ProductImageDisplay({super.key, required this.imagePath});
 
@@ -38,7 +43,6 @@ class _ProductImageDisplayState extends State<ProductImageDisplay> {
 
     final labelData = await rootBundle.loadString('assets/labels.txt');
 
-    // ✅ FIX: remove empty labels + trim
     labels = labelData
         .split('\n')
         .map((e) => e.trim())
@@ -115,7 +119,6 @@ class _ProductImageDisplayState extends State<ProductImageDisplay> {
 
       final allProducts = await loadProducts();
 
-      // ✅ FIX: lower confidence threshold
       if (result["confidence"] < 40) {
         error = "⚠️ Low confidence. Try another image.";
       } else if (allProducts.containsKey(label)) {
@@ -127,7 +130,7 @@ class _ProductImageDisplayState extends State<ProductImageDisplay> {
       setState(() => isLoading = false);
     } catch (e) {
       setState(() {
-        error = "⚠️ Error: $e";
+        error = " Error: $e";
         isLoading = false;
       });
     }
@@ -144,7 +147,7 @@ class _ProductImageDisplayState extends State<ProductImageDisplay> {
           onPressed: () {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => HomePage()),
+              MaterialPageRoute(builder: (context) => ProductImageCapturePage()),
             );
           },
           icon: Icon(Icons.arrow_back_ios_new),
@@ -308,7 +311,7 @@ class _ProductImageDisplayState extends State<ProductImageDisplay> {
                             }
 
                             return Container(
-                             width: screenwidth,
+                              width: screenwidth,
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(8),
@@ -345,15 +348,25 @@ class _ProductImageDisplayState extends State<ProductImageDisplay> {
                   const SizedBox(height: 20),
 
                   SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () => Navigator.pop(context),
+                            width: double.infinity,
+                            height: screenheight * 0.06,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                              ),
+                              onPressed: () => Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (_) => ProductImageCapturePage()),
+                      ),
                       child: Text(
-                        'SCAN AGAIN',
+                        "SCAN AGAIN",
                         style: GoogleFonts.poppins(
+                          color: Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: screenwidth * 0.045,
-                          color: Colors.white,
                         ),
                       ),
                     ),
