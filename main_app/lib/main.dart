@@ -26,13 +26,8 @@ void main() async {
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
 
-  // 🔔 Notifications init
   await NotificationService.init();
   await NotificationService.setupTimezone();
-
-  // optional test
-  await NotificationService.testNotification();
-  await NotificationService.scheduleNotification();
 
   runApp(const Nutri());
 }

@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:main_app/Profile/Edit_profile.dart';
 import 'package:main_app/SignUp_and_Login/googleauth.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'notification_service.dart';
 
 class UserProfile extends StatefulWidget {
   @override
@@ -13,8 +14,7 @@ class UserProfilestate extends State<UserProfile> {
   final SupabaseClient supabase = Supabase.instance.client;
   Map<String, dynamic>? profile;
   bool isLoading = true;
-  bool isOn = false;
-  bool isOn2 = false;
+  bool isOn = true;
   int _avatarCacheKey = 0;
 
   @override
@@ -203,13 +203,16 @@ class UserProfilestate extends State<UserProfile> {
               _buildSwitchTile(
                 title: "Notifications",
                 value: isOn,
-                onChanged: (value) => setState(() => isOn = value),
-              ),
+                onChanged: (value) async {
+                  setState(() => isOn = value);
 
-              _buildSwitchTile(
-                title: "Dark Mode",
-                value: isOn2,
-                onChanged: (value) => setState(() => isOn2 = value),
+                  if (value) {
+                    await NotificationService.scheduleDaily(hour: 8, minute: 0);
+                    await NotificationService.scheduleOnce(seconds: 30);
+                  } else {
+                    await NotificationService.cancelAll();
+                  }
+                },
               ),
 
               Divider(thickness: 1, color: Colors.grey.shade300),
