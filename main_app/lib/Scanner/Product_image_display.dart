@@ -12,8 +12,6 @@ import 'package:image/image.dart' as img;
 
 class ProductImageDisplay extends StatefulWidget {
   final String imagePath;
-  
-  
 
   const ProductImageDisplay({super.key, required this.imagePath});
 
@@ -145,10 +143,7 @@ class _ProductImageDisplayState extends State<ProductImageDisplay> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => ProductImageCapturePage()),
-            );
+            Navigator.pop(context);
           },
           icon: Icon(Icons.arrow_back_ios_new),
         ),
@@ -348,19 +343,16 @@ class _ProductImageDisplayState extends State<ProductImageDisplay> {
                   const SizedBox(height: 20),
 
                   SizedBox(
-                            width: double.infinity,
-                            height: screenheight * 0.06,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blue,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                              ),
-                              onPressed: () => Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (_) => ProductImageCapturePage()),
+                    width: double.infinity,
+                    height: screenheight * 0.06,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
                       ),
+                      onPressed: () => Navigator.pop(context),
                       child: Text(
                         "SCAN AGAIN",
                         style: GoogleFonts.poppins(

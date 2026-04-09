@@ -2,6 +2,8 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'Product_image_display.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class ProductImageCapturePage extends StatefulWidget {
 final VoidCallback? onSwitch;
@@ -248,7 +250,7 @@ return Scaffold(
                     ),
                     elevation: 3,
                   ),
-                  onPressed: () {},
+                  onPressed: () => pickFromGallery(context),
                   icon: const Icon(Icons.photo_library_rounded),
                   label: Text(
                     'Choose From Gallery',
@@ -271,3 +273,25 @@ return Scaffold(
 }
 }
 
+Future<void> pickFromGallery(BuildContext context) async {
+  final ImagePicker picker = ImagePicker();
+
+  final XFile? image = await picker.pickImage(
+    source: ImageSource.gallery,
+  );
+
+  if (image != null) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ProductImageDisplay(
+          imagePath: image.path,
+        ),
+      ),
+    );
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("No image selected")),
+    );
+  }
+}

@@ -1,191 +1,371 @@
 {
-  "aloo_matar": {
-    "name": "Aloo Matar",
-    "brand": "Indian Dish",
-    "vegan": "Vegan",
-    "processed": "Home-cooked",
-    "sugar": "Low Sugar",
-    "fat": "Moderate Fat",
-    "ingredients": "Potato, Green peas, Tomato, Spices, Oil",
-
-    "calories": "220 kcal",
-    "protein": "6g",
-    "carbs": "28g",
-    "fiber": "5g",
-
-    "health_tag": "Moderate",
-    "allergens": [],
-    "advice": "Good for regular meals but control oil for better health"
-  },
-
-  "besan_cheela": {
-    "name": "Besan Cheela",
+  "poha": {
+    "name": "Poha",
     "brand": "Indian Dish",
     "vegan": "Vegan",
     "processed": "Minimally Processed",
     "sugar": "Low Sugar",
     "fat": "Low Fat",
-    "ingredients": "Gram flour, Onion, Spices, Water",
-
-    "calories": "150 kcal",
-    "protein": "7g",
-    "carbs": "18g",
-    "fiber": "3g",
-
-    "health_tag": "Healthy",
-    "allergens": [],
-    "advice": "Great high-protein breakfast option"
-  },
-
-  "biryani": {
-    "name": "Biryani",
-    "brand": "Indian Dish",
-    "vegan": "Non-Vegan",
-    "processed": "Moderately Processed",
-    "sugar": "Low Sugar",
-    "fat": "High Fat",
-    "ingredients": "Rice, Meat/Vegetables, Spices, Oil",
-
-    "calories": "350 kcal",
-    "protein": "15g",
-    "carbs": "40g",
-    "fiber": "3g",
-
-    "health_tag": "Unhealthy",
-    "allergens": ["Spices"],
-    "advice": "Consume occasionally due to high fat and calorie content"
-  },
-
-  "chapathi": {
-    "name": "Chapathi",
-    "brand": "Indian Dish",
-    "vegan": "Vegan",
-    "processed": "Home-cooked",
-    "sugar": "Low Sugar",
-    "fat": "Low Fat",
-    "ingredients": "Whole wheat flour, Water",
-
-    "calories": "120 kcal",
-    "protein": "3g",
-    "carbs": "20g",
-    "fiber": "3g",
-
-    "health_tag": "Healthy",
-    "allergens": ["Gluten"],
-    "advice": "Healthy staple food when eaten in moderation"
-  },
-
-  "chole_bature": {
-    "name": "Chole Bature",
-    "brand": "Indian Dish",
-    "vegan": "Vegan",
-    "processed": "Moderately Processed",
-    "sugar": "Low Sugar",
-    "fat": "High Fat",
-    "ingredients": "Chickpeas, Flour, Spices, Oil",
-
-    "calories": "400 kcal",
-    "protein": "12g",
-    "carbs": "45g",
-    "fiber": "6g",
-
-    "health_tag": "Unhealthy",
-    "allergens": ["Gluten"],
-    "advice": "High in oil, best eaten occasionally"
-  },
-
-  "dahl": {
-    "name": "Dahl",
-    "brand": "Indian Dish",
-    "vegan": "Vegan",
-    "processed": "Home-cooked",
-    "sugar": "Low Sugar",
-    "fat": "Low Fat",
-    "ingredients": "Lentils, Spices, Water",
+    "ingredients": "Flattened rice, Onion, Peanuts, Spices",
 
     "calories": "180 kcal",
-    "protein": "9g",
-    "carbs": "22g",
-    "fiber": "6g",
+    "protein": "4g",
+    "carbs": "30g",
+    "fiber": "3g",
 
     "health_tag": "Healthy",
-    "allergens": [],
-    "advice": "Excellent protein source for daily meals"
+    "allergens": ["Peanuts"],
+    "advice": "Light and healthy breakfast option"
   },
 
-  "dhokla": {
-    "name": "Dhokla",
-    "brand": "Indian Dish",
-    "vegan": "Vegan",
-    "processed": "Fermented",
-    "sugar": "Low Sugar",
-    "fat": "Low Fat",
-    "ingredients": "Gram flour, Yogurt, Spices",
-
-    "calories": "160 kcal",
-    "protein": "6g",
-    "carbs": "20g",
-    "fiber": "2g",
-
-    "health_tag": "Healthy",
-    "allergens": ["Dairy"],
-    "advice": "Light and easy to digest snack"
-  },
-
-  "dosa": {
-    "name": "Dosa",
-    "brand": "Indian Dish",
-    "vegan": "Vegan",
-    "processed": "Fermented",
+  "rolls": {
+    "name": "Rolls",
+    "brand": "Indian Fast Food",
+    "vegan": "Non-Vegan",
+    "processed": "Moderately Processed",
     "sugar": "Low Sugar",
     "fat": "Moderate Fat",
-    "ingredients": "Rice, Urad dal, Oil",
-
-    "calories": "200 kcal",
-    "protein": "5g",
-    "carbs": "30g",
-    "fiber": "2g",
-
-    "health_tag": "Moderate",
-    "allergens": [],
-    "advice": "Healthy if less oil is used"
-  },
-
-  "gulab_jamun": {
-    "name": "Gulab Jamun",
-    "brand": "Indian Sweet",
-    "vegan": "Non-Vegan",
-    "processed": "Highly Processed",
-    "sugar": "High Sugar",
-    "fat": "High Fat",
-    "ingredients": "Milk solids, Sugar syrup, Oil",
+    "ingredients": "Flatbread, Vegetables/Meat, Sauces",
 
     "calories": "300 kcal",
+    "protein": "10g",
+    "carbs": "35g",
+    "fiber": "3g",
+
+    "health_tag": "Moderate",
+    "allergens": ["Gluten"],
+    "advice": "Choose whole wheat rolls for healthier option"
+  },
+
+  "samosa": {
+    "name": "Samosa",
+    "brand": "Indian Snack",
+    "vegan": "Vegan",
+    "processed": "Fried",
+    "sugar": "Low Sugar",
+    "fat": "High Fat",
+    "ingredients": "Potato, Flour, Oil, Spices",
+
+    "calories": "250 kcal",
     "protein": "4g",
-    "carbs": "45g",
+    "carbs": "30g",
+    "fiber": "3g",
+
+    "health_tag": "Unhealthy",
+    "allergens": ["Gluten"],
+    "advice": "Deep fried, best consumed occasionally"
+  },
+
+  "vada_pav": {
+    "name": "Vada Pav",
+    "brand": "Indian Street Food",
+    "vegan": "Vegan",
+    "processed": "Fried",
+    "sugar": "Low Sugar",
+    "fat": "High Fat",
+    "ingredients": "Potato fritter, Bread, Chutney",
+
+    "calories": "290 kcal",
+    "protein": "6g",
+    "carbs": "35g",
+    "fiber": "3g",
+
+    "health_tag": "Unhealthy",
+    "allergens": ["Gluten"],
+    "advice": "Tasty but oily, avoid frequent consumption"
+  },
+
+  "jalebi": {
+    "name": "Jalebi",
+    "brand": "Indian Sweet",
+    "vegan": "Vegan",
+    "processed": "Highly Processed",
+    "sugar": "High Sugar",
+    "fat": "Moderate Fat",
+    "ingredients": "Flour, Sugar syrup, Oil",
+
+    "calories": "300 kcal",
+    "protein": "2g",
+    "carbs": "50g",
     "fiber": "1g",
 
     "health_tag": "Unhealthy",
-    "allergens": ["Dairy"],
-    "advice": "High sugar dessert, limit intake"
+    "allergens": ["Gluten"],
+    "advice": "Very high sugar, consume rarely"
   },
 
-  "idli": {
-    "name": "Idli",
+  "kadai_paneer": {
+    "name": "Kadai Paneer",
     "brand": "Indian Dish",
-    "vegan": "Vegan",
-    "processed": "Fermented",
+    "vegan": "Non-Vegan",
+    "processed": "Home-cooked",
     "sugar": "Low Sugar",
-    "fat": "Low Fat",
-    "ingredients": "Rice, Urad dal",
+    "fat": "High Fat",
+    "ingredients": "Paneer, Capsicum, Tomato, Spices",
 
-    "calories": "120 kcal",
-    "protein": "4g",
-    "carbs": "22g",
+    "calories": "320 kcal",
+    "protein": "14g",
+    "carbs": "12g",
+    "fiber": "3g",
+
+    "health_tag": "Moderate",
+    "allergens": ["Dairy"],
+    "advice": "Rich in protein but also high in fat"
+  },
+
+  "naan": {
+    "name": "Naan",
+    "brand": "Indian Bread",
+    "vegan": "Non-Vegan",
+    "processed": "Moderately Processed",
+    "sugar": "Low Sugar",
+    "fat": "Moderate Fat",
+    "ingredients": "Refined flour, Yogurt, Butter",
+
+    "calories": "260 kcal",
+    "protein": "6g",
+    "carbs": "40g",
     "fiber": "2g",
 
-    "health_tag": "Healthy",
+    "health_tag": "Moderate",
+    "allergens": ["Gluten", "Dairy"],
+    "advice": "Prefer whole wheat alternatives if possible"
+  },
+
+  "paani_puri": {
+    "name": "Paani Puri",
+    "brand": "Indian Street Food",
+    "vegan": "Vegan",
+    "processed": "Moderately Processed",
+    "sugar": "Low Sugar",
+    "fat": "Low Fat",
+    "ingredients": "Semolina puri, Spiced water, Potato",
+
+    "calories": "180 kcal",
+    "protein": "4g",
+    "carbs": "30g",
+    "fiber": "3g",
+
+    "health_tag": "Moderate",
+    "allergens": ["Gluten"],
+    "advice": "Hygiene matters, eat from trusted places"
+  },
+
+  "pakoda": {
+    "name": "Pakoda",
+    "brand": "Indian Snack",
+    "vegan": "Vegan",
+    "processed": "Fried",
+    "sugar": "Low Sugar",
+    "fat": "High Fat",
+    "ingredients": "Gram flour, Vegetables, Oil",
+
+    "calories": "280 kcal",
+    "protein": "6g",
+    "carbs": "20g",
+    "fiber": "3g",
+
+    "health_tag": "Unhealthy",
     "allergens": [],
-    "advice": "One of the healthiest breakfast options"
-  }
+    "advice": "Deep fried, limit intake"
+  },
+
+  "pav_bhaji": {
+    "name": "Pav Bhaji",
+    "brand": "Indian Street Food",
+    "vegan": "Non-Vegan",
+    "processed": "Moderately Processed",
+    "sugar": "Low Sugar",
+    "fat": "High Fat",
+    "ingredients": "Mixed vegetables, Butter, Bread",
+
+    "calories": "350 kcal",
+    "protein": "8g",
+    "carbs": "40g",
+    "fiber": "5g",
+
+    "health_tag": "Moderate",
+    "allergens": ["Gluten", "Dairy"],
+    "advice": "High butter content, request less butter for healthier version"
+  },
+  "gulab_jamun": {
+  "name": "Gulab Jamun",
+  "brand": "Indian Sweet",
+  "vegan": "Vegetarian",
+  "processed": "Highly Processed",
+  "sugar": "High Sugar",
+  "fat": "High Fat",
+  "ingredients": "Milk solids, Sugar syrup, Oil",
+
+  "calories": "300 kcal",
+  "protein": "4g",
+  "carbs": "45g",
+  "fiber": "1g",
+
+  "health_tag": "Unhealthy",
+  "allergens": ["Dairy"],
+  "advice": "High sugar dessert, limit intake"
+},
+"idli": {
+  "name": "Idli",
+  "brand": "Indian Dish",
+  "vegan": "Vegan",
+  "processed": "Fermented",
+  "sugar": "Low Sugar",
+  "fat": "Low Fat",
+  "ingredients": "Rice, Urad dal",
+
+  "calories": "120 kcal",
+  "protein": "4g",
+  "carbs": "22g",
+  "fiber": "2g",
+
+  "health_tag": "Healthy",
+  "allergens": [],
+  "advice": "One of the healthiest breakfast options, easy to digest"
+},
+"dosa": {
+  "name": "Dosa",
+  "brand": "Indian Dish",
+  "vegan": "Vegan",
+  "processed": "Fermented",
+  "sugar": "Low Sugar",
+  "fat": "Moderate Fat",
+  "ingredients": "Rice, Urad dal, Oil",
+
+  "calories": "200 kcal",
+  "protein": "5g",
+  "carbs": "30g",
+  "fiber": "2g",
+
+  "health_tag": "Moderate",
+  "allergens": [],
+  "advice": "Healthy if prepared with less oil; pairs well with chutney and sambar"
+},
+"dhokla": {
+  "name": "Dhokla",
+  "brand": "Indian Dish",
+  "vegan": "Vegan",
+  "processed": "Fermented",
+  "sugar": "Low Sugar",
+  "fat": "Low Fat",
+  "ingredients": "Gram flour, Yogurt, Spices",
+
+  "calories": "160 kcal",
+  "protein": "6g",
+  "carbs": "20g",
+  "fiber": "2g",
+
+  "health_tag": "Healthy",
+  "allergens": ["Dairy"],
+  "advice": "Light, steamed snack that is easy to digest and nutritious"
+},
+"dahl": {
+  "name": "Dahl",
+  "brand": "Indian Dish",
+  "vegan": "Vegan",
+  "processed": "Home-cooked",
+  "sugar": "Low Sugar",
+  "fat": "Low Fat",
+  "ingredients": "Lentils, Spices, Water",
+
+  "calories": "180 kcal",
+  "protein": "9g",
+  "carbs": "22g",
+  "fiber": "6g",
+
+  "health_tag": "Healthy",
+  "allergens": [],
+  "advice": "Excellent plant-based protein source, ideal for daily meals"
+},
+"chole_bature": {
+  "name": "Chole Bature",
+  "brand": "Indian Dish",
+  "vegan": "Vegan",
+  "processed": "Moderately Processed",
+  "sugar": "Low Sugar",
+  "fat": "High Fat",
+  "ingredients": "Chickpeas, Refined flour, Spices, Oil",
+
+  "calories": "400 kcal",
+  "protein": "12g",
+  "carbs": "45g",
+  "fiber": "6g",
+
+  "health_tag": "Unhealthy",
+  "allergens": ["Gluten"],
+  "advice": "High in oil and refined carbs, best consumed occasionally"
+},
+"biryani": {
+  "name": "Biryani",
+  "brand": "Indian Dish",
+  "vegan": "Non-Vegan",
+  "processed": "Moderately Processed",
+  "sugar": "Low Sugar",
+  "fat": "High Fat",
+  "ingredients": "Rice, Meat/Vegetables, Spices, Oil",
+
+  "calories": "350 kcal",
+  "protein": "15g",
+  "carbs": "40g",
+  "fiber": "3g",
+
+  "health_tag": "Unhealthy",
+  "allergens": ["Spices"],
+  "advice": "Rich and flavorful dish, consume occasionally due to high fat content"
+},
+"aloo_matar": {
+  "name": "Aloo Matar",
+  "brand": "Indian Dish",
+  "vegan": "Vegan",
+  "processed": "Home-cooked",
+  "sugar": "Low Sugar",
+  "fat": "Moderate Fat",
+  "ingredients": "Potato, Green peas, Tomato, Spices, Oil",
+
+  "calories": "220 kcal",
+  "protein": "6g",
+  "carbs": "28g",
+  "fiber": "5g",
+
+  "health_tag": "Moderate",
+  "allergens": [],
+  "advice": "Nutritious dish, but control oil quantity for a healthier option"
+},
+"besan_cheela": {
+  "name": "Besan Cheela",
+  "brand": "Indian Dish",
+  "vegan": "Vegan",
+  "processed": "Minimally Processed",
+  "sugar": "Low Sugar",
+  "fat": "Low Fat",
+  "ingredients": "Gram flour, Onion, Spices, Water",
+
+  "calories": "150 kcal",
+  "protein": "7g",
+  "carbs": "18g",
+  "fiber": "3g",
+
+  "health_tag": "Healthy",
+  "allergens": [],
+  "advice": "Great high-protein breakfast option, especially for vegetarians"
+},
+"chapathi": {
+  "name": "Chapathi",
+  "brand": "Indian Dish",
+  "vegan": "Vegan",
+  "processed": "Home-cooked",
+  "sugar": "Low Sugar",
+  "fat": "Low Fat",
+  "ingredients": "Whole wheat flour, Water",
+
+  "calories": "120 kcal",
+  "protein": "3g",
+  "carbs": "20g",
+  "fiber": "3g",
+
+  "health_tag": "Healthy",
+  "allergens": ["Gluten"],
+  "advice": "Healthy staple food when eaten in moderation"
+}
 }
