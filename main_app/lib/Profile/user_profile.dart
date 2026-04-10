@@ -14,13 +14,15 @@ class UserProfilestate extends State<UserProfile> {
   final SupabaseClient supabase = Supabase.instance.client;
   Map<String, dynamic>? profile;
   bool isLoading = true;
-  bool isOn = true;
+  bool isOn = false;
   int _avatarCacheKey = 0;
 
   @override
   void initState() {
     super.initState();
     _loadProfile();
+      NotificationService.scheduleDaily(hour: 8, minute: 0);
+
   }
 
   Future<void> _loadProfile() async {
@@ -208,7 +210,7 @@ class UserProfilestate extends State<UserProfile> {
 
                   if (value) {
                     await NotificationService.scheduleDaily(hour: 8, minute: 0);
-                    await NotificationService.scheduleOnce(seconds: 30);
+                    await NotificationService.scheduleOnce(seconds: 5);
                   } else {
                     await NotificationService.cancelAll();
                   }

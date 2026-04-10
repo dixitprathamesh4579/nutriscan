@@ -3,10 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:main_app/HomePageAll/HomePage.dart';
-import 'package:main_app/Scanner/Product_Image.dart';
-import 'package:main_app/Scanner/ScannerCamera.dart';
-import 'package:openfoodfacts/openfoodfacts.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:image/image.dart' as img;
 

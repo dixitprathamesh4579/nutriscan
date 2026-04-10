@@ -1,6 +1,7 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'package:permission_handler/permission_handler.dart';
 
 class NotificationService {
   static final FlutterLocalNotificationsPlugin _notifications =
@@ -11,8 +12,9 @@ class NotificationService {
   static const String _channelDesc = 'Reminds user to check nutrition';
 
   static Future<void> init() async {
-    const androidSettings =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
 
     const settings = InitializationSettings(android: androidSettings);
 
@@ -20,7 +22,8 @@ class NotificationService {
 
     await _notifications
         .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
+          AndroidFlutterLocalNotificationsPlugin
+        >()
         ?.requestNotificationsPermission();
 
     const AndroidNotificationChannel channel = AndroidNotificationChannel(
@@ -32,7 +35,8 @@ class NotificationService {
 
     await _notifications
         .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
+          AndroidFlutterLocalNotificationsPlugin
+        >()
         ?.createNotificationChannel(channel);
   }
 
@@ -41,11 +45,10 @@ class NotificationService {
     tz.setLocalLocation(tz.getLocation('Asia/Kolkata'));
   }
 
-
-
   static Future<void> scheduleOnce({required int seconds}) async {
-    final scheduledTime =
-        tz.TZDateTime.now(tz.local).add(Duration(seconds: seconds));
+    final scheduledTime = tz.TZDateTime.now(
+      tz.local,
+    ).add(Duration(seconds: seconds));
 
     await _notifications.zonedSchedule(
       1,
@@ -53,10 +56,11 @@ class NotificationService {
       'Check your nutrition!',
       scheduledTime,
       _notificationDetails(),
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
     );
+    print("Scheduled(SheduledOnce) at: $scheduledTime");
   }
 
   static Future<void> scheduleDaily({
@@ -65,8 +69,14 @@ class NotificationService {
   }) async {
     final now = tz.TZDateTime.now(tz.local);
 
-    var scheduledTime =
-        tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
+    var scheduledTime = tz.TZDateTime(
+      tz.local,
+      now.year,
+      now.month,
+      now.day,
+      hour,
+      minute,
+    );
 
     // ⏭ If time passed today → schedule tomorrow
     if (scheduledTime.isBefore(now)) {
@@ -79,15 +89,25 @@ class NotificationService {
       'Don’t forget to check your nutrition!',
       scheduledTime,
       _notificationDetails(),
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      matchDateTimeComponents: DateTimeComponents.time, // 🔥 repeat daily
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      matchDateTimeComponents: DateTimeComponents.time,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
     );
+    print("Scheduled(SheduleDaily) at: $scheduledTime");
   }
 
   static Future<void> cancel(int id) async {
     await _notifications.cancel(id);
+  }
+
+  static Future<void> showNow() async {
+    await _notifications.show(
+      99,
+      'Test Notification',
+      'This should appear instantly',
+      _notificationDetails(),
+    );
   }
 
   static Future<void> cancelAll() async {
@@ -104,5 +124,15 @@ class NotificationService {
         priority: Priority.high,
       ),
     );
+  }
+}
+
+Future<void> requestNotificationPermission() async {
+  var status = await Permission.notification.request();
+
+  if (status.isDenied) {
+    print(" Notification permission denied");
+  } else {
+    print(" Notification permission granted");
   }
 }

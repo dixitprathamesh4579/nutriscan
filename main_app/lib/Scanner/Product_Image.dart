@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'Product_image_display.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 
 class ProductImageCapturePage extends StatefulWidget {
 final VoidCallback? onSwitch;

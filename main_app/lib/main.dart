@@ -28,8 +28,10 @@ void main() async {
 
   await NotificationService.init();
   await NotificationService.setupTimezone();
+  await requestNotificationPermission();
+  await NotificationService.showNow();
 
-  runApp(const Nutri());
+  runApp  (const Nutri());
 }
 
 class Nutri extends StatefulWidget {
