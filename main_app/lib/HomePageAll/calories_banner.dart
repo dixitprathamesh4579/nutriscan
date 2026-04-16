@@ -21,6 +21,17 @@ class CaloriesState extends State<Calories> {
     fetchTarget();
   }
 
+  @override
+  void didUpdateWidget(covariant Calories oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.totalCalories != widget.totalCalories) {
+      setState(() {
+        // rebuild UI when value changes
+      });
+    }
+  }
+
   Future<void> fetchTarget() async {
     final supabase = Supabase.instance.client;
     final user = supabase.auth.currentUser;
@@ -84,6 +95,10 @@ class CaloriesState extends State<Calories> {
     );
   }
 
+  Future<void> refreshTarget() async {
+    await fetchTarget();
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -123,12 +138,14 @@ class CaloriesState extends State<Calories> {
                 "Total Calories",
                 style: GoogleFonts.poppins(
                   fontSize: screenWidth * 0.06 / textScale,
-                  color:  mainTextColor,
+                  color: mainTextColor,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               GestureDetector(
-                onTap: showTargetDialog,
+                onTap: () async {
+                  await refreshTarget(); 
+                },
                 child: const Icon(Icons.refresh, color: Colors.white, size: 26),
               ),
             ],

@@ -60,7 +60,7 @@ class _ScanHistoryPageState extends State<ScanHistoryPage> {
         schema: 'public',
         table: 'scan_history',
         callback: (payload) {
-          final row = payload.newRecord ?? payload.oldRecord;
+          final row = payload.newRecord;
 
           if (row["profile_id"] == userId) {
             loadHistory();

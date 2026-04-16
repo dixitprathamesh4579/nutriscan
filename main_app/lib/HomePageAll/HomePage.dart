@@ -47,11 +47,11 @@ class HomePageState extends State<HomePage> {
         .maybeSingle();
 
     setState(() {
-      totalCalories = result?["total_calories"] ?? 0.0;
-      totalFat = result?["total_fat"] ?? 0.0;
-      totalCarbs = result?["total_carbs"] ?? 0.0;
-      totalSugar = result?["total_sugar"] ?? 0.0;
-      totalProtein = result?["total_protein"] ?? 0.0;
+      totalCalories = (result?["total_calories"] ?? 0).toDouble();
+      totalFat = (result?["total_fat"] ?? 0).toDouble();
+      totalCarbs = (result?["total_carbs"] ?? 0).toDouble();
+      totalSugar = (result?["total_sugar"] ?? 0).toDouble();
+      totalProtein = (result?["total_protein"] ?? 0).toDouble();
     });
   }
 
@@ -102,7 +102,7 @@ class HomePageState extends State<HomePage> {
       ),
 
       ProgressPage(),
-      ScanPageSwitcher(),
+      SizedBox(), // 👈 EMPTY (we will handle scan manually)
       ScanHistoryPage(),
       UserProfile(),
     ];
@@ -140,8 +140,20 @@ class HomePageState extends State<HomePage> {
         child: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
           currentIndex: _currentIndex,
-          onTap: (index) {
-            setState(() => _currentIndex = index);
+          onTap: (index) async {
+            if (index == 2) {
+              // 🔥 HANDLE SCAN HERE
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => ScanPageSwitcher()),
+              );
+
+              if (result == true) {
+                await loadDailyTotals(selectedDate); // 🔥 REFRESH UI
+              }
+            } else {
+              setState(() => _currentIndex = index);
+            }
           },
           selectedItemColor: Colors.blue,
           unselectedItemColor: Colors.grey,
