@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:image/image.dart' as img;
+import 'package:http/http.dart' as http;
 
 class ProductImageDisplay extends StatefulWidget {
   final String imagePath;
@@ -24,6 +26,7 @@ class _ProductImageDisplayState extends State<ProductImageDisplay> {
 
   bool isLoading = true;
   String error = "";
+  static const String visionApiKey = "AIzaSyCH1qU8YKAnFqlwkQ2ZGTkuivL4e-w9jGM";
 
   @override
   void initState() {
@@ -31,6 +34,99 @@ class _ProductImageDisplayState extends State<ProductImageDisplay> {
     runPrediction();
   }
 
+  Future<bool> isFoodImageViaVision(String imagePath) async {
+  try {
+    final imageBytes = await File(imagePath).readAsBytes();
+    final base64Image = base64Encode(imageBytes);
+
+    final url = Uri.parse(
+      "https://vision.googleapis.com/v1/images:annotate?key=$visionApiKey",
+    );
+
+    final body = jsonEncode({
+      "requests": [
+        {
+          "image": {
+            "content": base64Image
+          },
+          "features": [
+            {
+              "type": "LABEL_DETECTION",
+              "maxResults": 15
+            }
+          ]
+        }
+      ]
+    });
+
+    final response = await http.post(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: body,
+    );
+    print(response.body);
+
+    if (response.statusCode != 200) {
+      return false;
+    }
+
+    final data = jsonDecode(response.body);
+
+    final labels =
+        data["responses"][0]["labelAnnotations"] ?? [];
+
+    List<String> foodKeywords = [
+      "food",
+      "dish",
+      "meal",
+      "snack",
+      "bread",
+      "fruit",
+      "vegetable",
+      "rice",
+      "dessert",
+      "drink",
+      "beverage",
+      "milk",
+      "juice",
+      "pizza",
+      "burger",
+      "cake",
+      "chapati",
+      "roti",
+      "idli",
+      "dosa",
+      "recipe",
+      "cuisine",
+      "lunch",
+      "dinner",
+      "breakfast",
+      "plate",
+      "flatbread",
+      "produce"
+    ];
+
+    for (var item in labels) {
+      String label =
+          item["description"].toString().toLowerCase();
+
+      double score =
+          (item["score"] ?? 0).toDouble();
+
+      for (String keyword in foodKeywords) {
+        if (label.contains(keyword) && score > 0.60) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  } catch (e) {
+    return false;
+  }
+}
   // 🔹 Load Model + Labels
   Future<void> loadModel() async {
     _interpreter = await Interpreter.fromAsset('assets/food_model.tflite');
@@ -45,90 +141,126 @@ class _ProductImageDisplayState extends State<ProductImageDisplay> {
   }
 
   // 🔹 Prediction Logic
-  Future<Map<String, dynamic>> predict(String imagePath) async {
-    final imageFile = File(imagePath);
-    img.Image? image = img.decodeImage(imageFile.readAsBytesSync());
+ Future<Map<String, dynamic>> predict(String imagePath) async {
+  final imageFile = File(imagePath);
+  img.Image? image = img.decodeImage(
+    imageFile.readAsBytesSync(),
+  );
 
-    if (image == null) {
-      return {"error": "Image not readable"};
-    }
-
-    img.Image resized = img.copyResize(image, width: 224, height: 224);
-
-    var input = List.generate(
-      1,
-      (i) => List.generate(
-        224,
-        (y) => List.generate(224, (x) {
-          final pixel = resized.getPixel(x, y);
-          return [pixel.r / 255.0, pixel.g / 255.0, pixel.b / 255.0];
-        }),
-      ),
-    );
-
-    var output = List.generate(1, (i) => List.filled(labels.length, 0.0));
-
-    _interpreter.run(input, output);
-
-    int maxIndex = 0;
-    double maxConfidence = 0;
-
-    for (int i = 0; i < output[0].length; i++) {
-      if (output[0][i] > maxConfidence) {
-        maxConfidence = output[0][i];
-        maxIndex = i;
-      }
-    }
-
-    return {"label": labels[maxIndex], "confidence": maxConfidence * 100};
+  if (image == null) {
+    return {"error": "Image not readable"};
   }
 
-  // 🔹 Load JSON Data
-  Future<Map<String, dynamic>> loadProducts() async {
-    final jsonString = await rootBundle.loadString(
-      'assets/food_product_details.json',
-    );
-    return json.decode(jsonString);
+  img.Image resized = img.copyResize(
+    image,
+    width: 224,
+    height: 224,
+  );
+
+  var input = List.generate(
+    1,
+    (i) => List.generate(
+      224,
+      (y) => List.generate(224, (x) {
+        final pixel = resized.getPixel(x, y);
+        return [
+          pixel.r / 255.0,
+          pixel.g / 255.0,
+          pixel.b / 255.0
+        ];
+      }),
+    ),
+  );
+
+  var output = List.generate(
+    1,
+    (i) => List.filled(labels.length, 0.0),
+  );
+
+  _interpreter.run(input, output);
+
+  final scores = output[0];
+
+  int maxIndex = 0;
+  double maxConfidence = 0;
+
+  for (int i = 0; i < scores.length; i++) {
+    if (scores[i] > maxConfidence) {
+      maxConfidence = scores[i];
+      maxIndex = i;
+    }
   }
 
+  return {
+    "label": labels[maxIndex],
+    "confidence": maxConfidence * 100,
+  };
+}Future<Map<String, dynamic>> loadProducts() async {
+  final jsonString = await rootBundle.loadString(
+    'assets/food_product_details.json',
+  );
+
+  final Map<String, dynamic> data =
+      json.decode(jsonString);
+
+  return data;
+}
   // 🔹 Run Everything
-  Future<void> runPrediction() async {
-    try {
-      await loadModel();
+ Future<void> runPrediction() async {
+  try {
+    final isFood =
+        await isFoodImageViaVision(widget.imagePath);
 
-      final result = await predict(widget.imagePath);
-      predictionResult = result;
-
-      if (result.containsKey("error")) {
-        error = result["error"];
-        setState(() => isLoading = false);
-        return;
-      }
-
-      String label = result["label"]
-          .toString()
-          .toLowerCase()
-          .replaceAll(" ", "_")
-          .trim();
-
-      final allProducts = await loadProducts();
-
-      if (result["confidence"] < 40) {
-        error = "⚠️ Low confidence. Try another image.";
-      } else if (allProducts.containsKey(label)) {
-        productData = allProducts[label];
-      } else {
-        error = "❌ No data found for: $label";
-      }
-
-      setState(() => isLoading = false);
-    } catch (e) {
+    if (!isFood) {
       setState(() {
-        error = " Error: $e";
+        error =
+            "⚠️ Not a food item. Please scan food only.";
         isLoading = false;
       });
+      return;
     }
+
+    await loadModel();
+
+    final result = await predict(widget.imagePath);
+    predictionResult = result;
+
+    if (result.containsKey("error")) {
+      setState(() {
+        error = result["error"];
+        isLoading = false;
+      });
+      return;
+    }
+
+    String label = result["label"]
+        .toString()
+        .toLowerCase()
+        .replaceAll(" ", "_")
+        .trim();
+
+    final allProducts = await loadProducts();
+
+    if (!allProducts.containsKey(label)) {
+      setState(() {
+        error = "❌ No data found for ${result["label"]}";
+        isLoading = false;
+      });
+      return;
+    }
+
+    productData = allProducts[label];
+
+    setState(() {
+      isLoading = false;
+    });
+  } catch (e) {
+    setState(() {
+      error = "Error: $e";
+      isLoading = false;
+    });
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -265,6 +397,7 @@ class _ProductImageDisplayState extends State<ProductImageDisplay> {
                       ),
                     ),
                   ),
+
                   Text(
                     "Ingradients Used",
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
@@ -471,10 +604,7 @@ class _ProductImageDisplayState extends State<ProductImageDisplay> {
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: Colors.green, // ✅ health theme color
-          width: 1.2,
-        ),
+        border: Border.all(color: Colors.green, width: 1.2),
       ),
       child: SingleChildScrollView(
         child: Text(

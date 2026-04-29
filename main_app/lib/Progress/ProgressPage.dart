@@ -189,7 +189,7 @@ class _ProgressPageState extends State<ProgressPage> {
 
                   const SizedBox(height: 24),
 
-                  /// ✅ CHANGED HERE
+                  /// CHANGED HERE
                   _header("Weekly Nutrient Ratio"),
                   const SizedBox(height: 12),
                   ChartCard(

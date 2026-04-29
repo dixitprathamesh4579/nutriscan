@@ -10,7 +10,7 @@ import 'package:main_app/Scanner/Product_image_display.dart';
 import 'package:main_app/Scanner/ScannerCamera.dart';
 import 'package:main_app/SignUp_and_Login/SignIn.dart';
 import 'package:main_app/SignUp_and_Login/Signup.dart';
-import 'package:main_app/forgotPassword_page/PasswordRecovery.dart';
+import 'package:main_app/forgotPassword_page/PasswordRecovery.dart';  
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:main_app/InternetWrapper.dart';

@@ -102,7 +102,7 @@ class HomePageState extends State<HomePage> {
       ),
 
       ProgressPage(),
-      SizedBox(), // 👈 EMPTY (we will handle scan manually)
+      SizedBox(), 
       ScanHistoryPage(),
       UserProfile(),
     ];
@@ -142,14 +142,13 @@ class HomePageState extends State<HomePage> {
           currentIndex: _currentIndex,
           onTap: (index) async {
             if (index == 2) {
-              // 🔥 HANDLE SCAN HERE
               final result = await Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => ScanPageSwitcher()),
               );
 
               if (result == true) {
-                await loadDailyTotals(selectedDate); // 🔥 REFRESH UI
+                await loadDailyTotals(selectedDate); 
               }
             } else {
               setState(() => _currentIndex = index);

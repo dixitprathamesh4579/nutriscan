@@ -20,8 +20,8 @@ class _ScanPageSwitcherState extends State<ScanPageSwitcher> {
 
   @override
   Widget build(BuildContext context) {
-    return showBarcodeScanner
-        ? ScannerCamera(onSwitch: () => switchPage(false))
-        : ProductImageCapturePage(onSwitch: () => switchPage(true));
+    return showBarcodeScanner  
+        ? ProductImageCapturePage(onSwitch: () => switchPage(false))
+        : ScannerCamera(onSwitch: () => switchPage(true));
   }
 }
