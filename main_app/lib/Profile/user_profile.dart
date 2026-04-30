@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:main_app/Profile/Aboutus.dart';
 import 'package:main_app/Profile/Edit_profile.dart';
+import 'package:main_app/Profile/help_support.dart';
 import 'package:main_app/SignUp_and_Login/googleauth.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'notification_service.dart';
@@ -285,13 +287,24 @@ class UserProfilestate extends State<UserProfile> {
               _buildListTile(
                 title: "About",
                 icon: Icons.info_outline,
-                onTap: () {},
+             
+                 onTap: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => AboutNutriScanPage()),
+            );
+          },
               ),
 
               _buildListTile(
                 title: "Help & Support",
                 icon: Icons.help_outline,
-                onTap: () {},
+                 onTap: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HelpSupportPage()),
+            );
+          },
               ),
 
               Divider(thickness: 1, color: Colors.grey.shade300),
