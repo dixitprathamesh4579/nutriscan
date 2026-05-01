@@ -9,6 +9,7 @@ import 'dart:io';
 import 'dart:async';
 import 'package:flutter/services.dart';
 
+
 class Signin extends StatefulWidget {
   const Signin({super.key});
 
@@ -24,7 +25,7 @@ class _SigninState extends State<Signin> {
   final supabase = Supabase.instance.client;
 
   bool obscurePassword = true;
-  bool rememberMe = false;
+  bool rememberMe = true;
   bool isLoading = false;
 
   Future<void> _signIn() async {

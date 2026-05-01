@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:main_app/Profile/user_profile.dart';
+import 'package:main_app/HomePageAll/HomePage.dart';
 import 'package:main_app/SignUp_and_Login/googleauth.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -217,7 +217,7 @@ class EditProfileState extends State<EditProfile> {
         leading: IconButton(
           onPressed: () => Navigator.pushReplacement(
             context,
-     MaterialPageRoute(builder: (_) => UserProfile()),
+     MaterialPageRoute(builder: (_) => HomePage()),
           ),
           icon: Icon(Icons.arrow_back_ios_new, color: Colors.black87),
         ),

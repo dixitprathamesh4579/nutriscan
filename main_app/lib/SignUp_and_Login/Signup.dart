@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:main_app/SignUp_and_Login/Authservice_email.dart';
+import 'package:main_app/SignUp_and_Login/TermsOfServices.dart';
 import 'SignIn.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:main_app/SignUp_and_Login/googleauth.dart';
@@ -302,7 +303,15 @@ class SignupState extends State<Signup> {
                                       style: GoogleFonts.poppins(fontSize: 13),
                                     ),
                                     GestureDetector(
-                                      onTap: () {},
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) =>
+                                                const TermsOfServicePage(),
+                                          ),
+                                        );
+                                      },
                                       child: Text(
                                         "Terms of Service",
                                         style: GoogleFonts.poppins(

@@ -178,19 +178,17 @@ Future<void> loginWithGoogleAndroid(BuildContext context) async {
   }
 }
 
-
-
 Future<void> logoutUser(BuildContext context) async {
+  final supabase = Supabase.instance.client;
+
   try {
     await supabase.auth.signOut();
 
-    final googleSignIn = GoogleSignIn(
-      clientId: webClientId,
-      scopes: ['email', 'profile'],
-    );
+    final googleSignIn = GoogleSignIn();
 
     try {
-      if (await googleSignIn.isSignedIn()) {
+      final isSignedIn = await googleSignIn.isSignedIn();
+      if (isSignedIn) {
         await googleSignIn.signOut();
         await googleSignIn.disconnect();
       }
@@ -198,17 +196,23 @@ Future<void> logoutUser(BuildContext context) async {
       debugPrint('Google sign-out warning: $e');
     }
 
+    if (!context.mounted) return;
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const Signin()),
+      (route) => false,
+    );
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Logged out successfully')),
     );
 
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => const Signin()),
-      (route) => false,
-    );
   } catch (e) {
     debugPrint('Logout error: $e');
+
+    if (!context.mounted) return;
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Error during logout: $e')),
     );
