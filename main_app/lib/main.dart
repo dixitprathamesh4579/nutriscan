@@ -17,12 +17,10 @@ void main() async {
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
 
-  await NotificationService.init();
-  await NotificationService.setupTimezone();
-  await requestNotificationPermission();
-  await NotificationService.showNow();
+await NotificationService.init();
+await NotificationService.setupTimezone();
 
-  runApp  (const Nutri());
+  runApp(const Nutri());
 }
 
 class Nutri extends StatefulWidget {
@@ -45,15 +43,12 @@ class _NutriState extends State<Nutri> {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (_) => const Passwordrecovery(),
-            ),
+            MaterialPageRoute(builder: (_) => const Passwordrecovery()),
           );
         });
       }
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -63,21 +58,16 @@ class _NutriState extends State<Nutri> {
       theme: ThemeData(primarySwatch: Colors.blue),
 
       home: Builder(
-      builder: (context) {
-        final session =
-            Supabase.instance.client.auth.currentSession;
+        builder: (context) {
+          final session = Supabase.instance.client.auth.currentSession;
 
-        if (session != null) {
-          return InternetWrapper(
-            child: const HomePage(), 
-          );
-        } else {
-          return InternetWrapper(
-            child: const Signin(),
-          );
-        }
-      },
-    ),
-  );
+          if (session != null) {
+            return InternetWrapper(child: const HomePage());
+          } else {
+            return InternetWrapper(child: const Signin());
+          }
+        },
+      ),
+    );
   }
 }

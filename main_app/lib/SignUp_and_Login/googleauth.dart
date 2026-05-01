@@ -3,10 +3,11 @@ import 'package:main_app/SignUp_and_Login/SignIn.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 
 final supabase = Supabase.instance.client;
-const webClientId =
-    '619329217313-osmjsl1lie4hnehki99k4qc5tu4th4m2.apps.googleusercontent.com';
+String webClientId = dotenv.env['WebclientID']??"";
 
 Future<void> signUpWithGoogleAndroid(BuildContext context) async {
   try {
@@ -94,7 +95,7 @@ try {
   } catch (e) {
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(SnackBar(content: Text('Error during Google sign-up $e')));
+    ).showSnackBar(SnackBar(content: Text('Error during Google sign-up')));
   }
 }
 
@@ -174,7 +175,7 @@ Future<void> loginWithGoogleAndroid(BuildContext context) async {
     debugPrint('Error during Google Login: $e');
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(SnackBar(content: Text('Error during Google Login: $e')));
+    ).showSnackBar(SnackBar(content: Text('Error during Google Login')));
   }
 }
 
@@ -193,7 +194,7 @@ Future<void> logoutUser(BuildContext context) async {
         await googleSignIn.disconnect();
       }
     } catch (e) {
-      debugPrint('Google sign-out warning: $e');
+      debugPrint('Google sign-out warning');
     }
 
     if (!context.mounted) return;
@@ -209,12 +210,12 @@ Future<void> logoutUser(BuildContext context) async {
     );
 
   } catch (e) {
-    debugPrint('Logout error: $e');
+    debugPrint('Logout error ');
 
     if (!context.mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error during logout: $e')),
+      SnackBar(content: Text('Error during logout. Please try again.')),
     );
   }
 }

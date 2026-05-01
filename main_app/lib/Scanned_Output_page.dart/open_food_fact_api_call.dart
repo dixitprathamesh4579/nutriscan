@@ -191,7 +191,7 @@ class _OpenFoodState extends State<OpenFood> {
   }
 
   Map<String, double> getTotalNutrition() {
-    double weight = getProductWeight(); 
+    double weight = getProductWeight();
 
     final nutr = product?["nutriments"];
 
@@ -388,288 +388,6 @@ class _OpenFoodState extends State<OpenFood> {
           })
           .eq("id", existing["id"]);
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final screenheight = MediaQuery.of(context).size.height;
-    final screenwidth = MediaQuery.of(context).size.width;
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => HomePage()),
-            );
-          },
-          icon: Icon(Icons.arrow_back_ios_new),
-        ),
-        backgroundColor: Colors.white,
-        toolbarHeight: 30,
-      ),
-      backgroundColor: Colors.white,
-      resizeToAvoidBottomInset: true,
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : product == null
-          ? const Center(
-              child: Text(
-                'Product Not Found',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            )
-          : LayoutBuilder(
-              builder: (context, constraints) {
-                return SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (product!["image_url"] != null)
-                        Container(
-                          width: double.infinity,
-                          height: screenheight * 0.28,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 8,
-                                offset: Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          clipBehavior: Clip.antiAlias,
-                          child: Center(
-                            child: AspectRatio(
-                              aspectRatio: 1.2,
-                              child: Image.network(
-                                product!['image_url'],
-                                fit: BoxFit.contain,
-                                alignment: Alignment.center,
-                                loadingBuilder:
-                                    (context, child, loadingProgress) {
-                                      if (loadingProgress == null) return child;
-                                      return const Center(
-                                        child: CircularProgressIndicator(),
-                                      );
-                                    },
-                                errorBuilder: (_, __, ___) => const Icon(
-                                  Icons.broken_image,
-                                  size: 60,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-
-                      SizedBox(height: screenheight * 0.01),
-                      Row(
-                        children: [
-                          SizedBox(width: screenwidth * 0.03),
-                          Expanded(
-                            child: Text(
-                              product!["product_name"] ?? "No Name",
-                              style: GoogleFonts.poppins(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: screenwidth * 0.02),
-                          Text(
-                            "Brand :  ${product!["brands"] ?? "Unknown"}",
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      Card(
-                        elevation: 0,
-                        color: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _infoRow("Vegan Status", vegStatus()),
-                              _infoRow(
-                                "Processed Level",
-                                getProcessedLevel(),
-                                color: getProcessedLevel().contains("Processed")
-                                    ? Colors.red
-                                    : Colors.green,
-                              ),
-                              _infoRow(
-                                "Sugar Level",
-                                getSugarLevel(),
-                                color: getLevelColor(getSugarLevel()),
-                              ),
-                              _infoRow(
-                                "Fat Level",
-                                getFatLevel(),
-                                color: getLevelColor(getFatLevel()),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      harmfulIngredientsWidget(),
-                      additivesWidget(),
-                      allergensWidget(),
-
-                      Text(
-                        "Ingradients Used",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                        ),
-                      ),
-
-                      ingredientsWidget(),
-
-                      SizedBox(height: screenheight * 0.01),
-
-                      Text(
-                        "Nutritional Level Per 100g",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                        ),
-                      ),
-                      NutritionalItemsWidget(),
-                      SizedBox(height: screenheight * 0.01),
-                      Text(
-                        "Alternatives",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                        ),
-                      ),
-                      alternativeProductsWidget(),
-                      SizedBox(height: screenheight * 0.015),
-                      SizedBox(
-                        width: double.infinity,
-                        height: screenheight * 0.06,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                          ),
-                          onPressed: () async {
-                            final supabase = Supabase.instance.client;
-                            final userId = supabase.auth.currentUser?.id;
-
-                            if (userId == null) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text("You must be logged in"),
-                                ),
-                              );
-                              return;
-                            }
-
-                            try {
-                              final nutr = product?["nutriments"];
-
-                              double calories100 = parseNutri(
-                                nutr?["energy-kcal_100g"],
-                              );
-                              double fat100 = parseNutri(nutr?["fat_100g"]);
-                              double carbs100 = parseNutri(
-                                nutr?["carbohydrates_100g"],
-                              );
-                              double sugar100 = parseNutri(
-                                nutr?["sugars_100g"],
-                              );
-                              double protein100 = parseNutri(
-                                nutr?["proteins_100g"],
-                              );
-
-                              double weight = getProductWeight(); 
-
-                              double totalCalories =
-                                  (calories100 / 100) * weight;
-                              double totalFat = (fat100 / 100) * weight;
-                              double totalCarbs = (carbs100 / 100) * weight;
-                              double totalSugar = (sugar100 / 100) * weight;
-                              double totalProtein = (protein100 / 100) * weight;
- 
-                              await supabase.from('scan_history').insert({
-                                "profile_id": userId,
-                                "name": product?["product_name"] ?? "Unknown",
-                                "brand": product?["brands"] ?? "Unknown",
-                                "image": product?["image_url"] ?? "",
-                                "ingredients":
-                                    product?["ingredients_text"] ?? "",
-                                "harmful_ingredients": riskyIngredients,
-                                "additives": additivesList,
-                                "calories": totalCalories,
-                                "fat": totalFat,
-                                "carbs": totalCarbs,
-                                "sugar": totalSugar,
-                                "protein": totalProtein,
-                                "weight": weight,
-                                "date": todayDate(),
-                              });
-                                await updateDailyTotals(
-                              userId: userId,
-                              date: todayDate(),
-                              calories: totalCalories,
-                              fat: totalFat,
-                              carbs: totalCarbs,
-                              sugar: totalSugar,
-                              protein: totalProtein,
-                            );
-
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text("Saved to history ")),
-                              );
-                            } catch (e) {
-                              if (e is PostgrestException) {
-                                print("Supabase Postgrest Error: ${e.message}");
-                              } else {
-                                print("Unknown Save Error: $e");
-                              }
-
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    "Failed to save: ${e.toString()}",
-                                  ),
-                                ),
-                              );
-                            }
-                          
-                          },
-
-                          child: Text(
-                            'SAVE',
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.bold,
-                              fontSize: screenwidth * 0.045,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-    );
   }
 
   Widget _infoRow(String title, dynamic value, {Color? color}) {
@@ -1022,6 +740,289 @@ class _OpenFoodState extends State<OpenFood> {
           ],
         ),
       ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screenheight = MediaQuery.of(context).size.height;
+    final screenwidth = MediaQuery.of(context).size.width;
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HomePage()),
+            );
+          },
+          icon: Icon(Icons.arrow_back_ios_new),
+        ),
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+
+        toolbarHeight: 30,
+      ),
+      backgroundColor: Colors.white,
+      resizeToAvoidBottomInset: true,
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : product == null
+          ? const Center(
+              child: Text(
+                'Product Not Found',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            )
+          : LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (product!["image_url"] != null)
+                        Container(
+                          width: double.infinity,
+                          height: screenheight * 0.28,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16),
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 8,
+                                offset: Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          clipBehavior: Clip.antiAlias,
+                          child: Center(
+                            child: AspectRatio(
+                              aspectRatio: 1.2,
+                              child: Image.network(
+                                product!['image_url'],
+                                fit: BoxFit.contain,
+                                alignment: Alignment.center,
+                                loadingBuilder:
+                                    (context, child, loadingProgress) {
+                                      if (loadingProgress == null) return child;
+                                      return const Center(
+                                        child: CircularProgressIndicator(),
+                                      );
+                                    },
+                                errorBuilder: (_, __, ___) => const Icon(
+                                  Icons.broken_image,
+                                  size: 60,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+
+                      SizedBox(height: screenheight * 0.01),
+                      Row(
+                        children: [
+                          SizedBox(width: screenwidth * 0.03),
+                          Expanded(
+                            child: Text(
+                              product!["product_name"] ?? "No Name",
+                              style: GoogleFonts.poppins(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: screenwidth * 0.02),
+                          Text(
+                            "Brand :  ${product!["brands"] ?? "Unknown"}",
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      Card(
+                        elevation: 0,
+                        color: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _infoRow("Vegan Status", vegStatus()),
+                              _infoRow(
+                                "Processed Level",
+                                getProcessedLevel(),
+                                color: getProcessedLevel().contains("Processed")
+                                    ? Colors.red
+                                    : Colors.green,
+                              ),
+                              _infoRow(
+                                "Sugar Level",
+                                getSugarLevel(),
+                                color: getLevelColor(getSugarLevel()),
+                              ),
+                              _infoRow(
+                                "Fat Level",
+                                getFatLevel(),
+                                color: getLevelColor(getFatLevel()),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      harmfulIngredientsWidget(),
+                      additivesWidget(),
+                      allergensWidget(),
+
+                      Text(
+                        "Ingradients Used",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+
+                      ingredientsWidget(),
+
+                      SizedBox(height: screenheight * 0.01),
+
+                      Text(
+                        "Nutritional Level Per 100g",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                      NutritionalItemsWidget(),
+                      SizedBox(height: screenheight * 0.01),
+                      Text(
+                        "Alternatives",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                      alternativeProductsWidget(),
+                      SizedBox(height: screenheight * 0.015),
+                      SizedBox(
+                        width: double.infinity,
+                        height: screenheight * 0.06,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                          ),
+                          onPressed: () async {
+                            final supabase = Supabase.instance.client;
+                            final userId = supabase.auth.currentUser?.id;
+
+                            if (userId == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text("You must be logged in"),
+                                ),
+                              );
+                              return;
+                            }
+
+                            try {
+                              final nutr = product?["nutriments"];
+
+                              double calories100 = parseNutri(
+                                nutr?["energy-kcal_100g"],
+                              );
+                              double fat100 = parseNutri(nutr?["fat_100g"]);
+                              double carbs100 = parseNutri(
+                                nutr?["carbohydrates_100g"],
+                              );
+                              double sugar100 = parseNutri(
+                                nutr?["sugars_100g"],
+                              );
+                              double protein100 = parseNutri(
+                                nutr?["proteins_100g"],
+                              );
+
+                              double weight = getProductWeight();
+
+                              double totalCalories =
+                                  (calories100 / 100) * weight;
+                              double totalFat = (fat100 / 100) * weight;
+                              double totalCarbs = (carbs100 / 100) * weight;
+                              double totalSugar = (sugar100 / 100) * weight;
+                              double totalProtein = (protein100 / 100) * weight;
+
+                              await supabase.from('scan_history').insert({
+                                "profile_id": userId,
+                                "name": product?["product_name"] ?? "Unknown",
+                                "brand": product?["brands"] ?? "Unknown",
+                                "image": product?["image_url"] ?? "",
+                                "ingredients":
+                                    product?["ingredients_text"] ?? "",
+                                "harmful_ingredients": riskyIngredients,
+                                "additives": additivesList,
+                                "calories": totalCalories,
+                                "fat": totalFat,
+                                "carbs": totalCarbs,
+                                "sugar": totalSugar,
+                                "protein": totalProtein,
+                                "weight": weight,
+                                "date": todayDate(),
+                              });
+                              await updateDailyTotals(
+                                userId: userId,
+                                date: todayDate(),
+                                calories: totalCalories,
+                                fat: totalFat,
+                                carbs: totalCarbs,
+                                sugar: totalSugar,
+                                protein: totalProtein,
+                              );
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("Saved to history ")),
+                              );
+                            } catch (e) {
+                              if (e is PostgrestException) {
+                                print("Supabase Postgrest Error: ${e.message}");
+                              } else {
+                                print("Unknown Save Error: $e");
+                              }
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    "Failed to save: ${e.toString()}",
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+
+                          child: Text(
+                            'SAVE',
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                              fontSize: screenwidth * 0.045,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
     );
   }
 }

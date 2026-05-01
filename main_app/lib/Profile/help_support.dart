@@ -8,12 +8,13 @@ class HelpSupportPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-         leading: IconButton(
+        leading: IconButton(
           onPressed: () {
-            Navigator.pushReplacement(
+            Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => HomePage()),
+              MaterialPageRoute(builder: (_) => HomePage()),
             );
           },
           icon: Icon(Icons.arrow_back_ios_new),
@@ -21,6 +22,7 @@ class HelpSupportPage extends StatelessWidget {
         title: const Text("Help & Support"),
         centerTitle: true,
         backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -127,6 +129,7 @@ class HelpSupportPage extends StatelessWidget {
   // 🔹 FAQ Widget
   Widget _buildFAQ(String question, String answer) {
     return Card(
+      color: Colors.white,
       elevation: 2,
       margin: const EdgeInsets.symmetric(vertical: 6),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -145,6 +148,7 @@ class HelpSupportPage extends StatelessWidget {
   // 🔹 Contact Tile
   Widget _buildContactTile(IconData icon, String title, String subtitle) {
     return Card(
+      color: Colors.white,
       elevation: 2,
       margin: const EdgeInsets.symmetric(vertical: 6),
       child: ListTile(

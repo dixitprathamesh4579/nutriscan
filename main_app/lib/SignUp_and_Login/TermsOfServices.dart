@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:main_app/SignUp_and_Login/SignIn.dart';
 
 class TermsOfServicePage extends StatelessWidget {
   const TermsOfServicePage({super.key});
@@ -10,8 +11,18 @@ class TermsOfServicePage extends StatelessWidget {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text("Terms of Service"),
-        centerTitle: true,
         backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        centerTitle: true,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Signin()),
+            );
+          },
+          icon: Icon(Icons.arrow_back_ios_new),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

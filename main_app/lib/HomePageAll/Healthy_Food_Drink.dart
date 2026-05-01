@@ -75,16 +75,17 @@ class HealthyFoodPage extends StatelessWidget {
         title: const Text("Healthy Food / Drinks"),
         backgroundColor: Colors.white,
         centerTitle: true,
+        surfaceTintColor: Colors.transparent,
+
         leading: IconButton(
           onPressed: () {
-            Navigator.pushReplacement(
+            Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => HomePage()),
             );
           },
           icon: Icon(Icons.arrow_back_ios_new),
         ),
-       
       ),
       body: ListView.builder(
         padding: const EdgeInsets.all(16),
@@ -162,9 +163,7 @@ class HealthyFoodPage extends StatelessWidget {
               color: Colors.green,
             ),
           ),
-          Expanded(
-            child: Text(value),
-          ),
+          Expanded(child: Text(value)),
         ],
       ),
     );

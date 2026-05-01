@@ -1,75 +1,119 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
-import 'package:permission_handler/permission_handler.dart';
 
 class NotificationService {
   static final FlutterLocalNotificationsPlugin _notifications =
       FlutterLocalNotificationsPlugin();
 
-  static const String _channelId = 'nutrition_channel';
-  static const String _channelName = 'Nutrition Reminder';
-  static const String _channelDesc = 'Reminds user to check nutrition';
+  static const _channelId = 'nutrition_channel';
+  static const _channelName = 'Nutrition Reminder';
+  static const _channelDesc = 'Reminds user to check nutrition';
 
+  /// 🔹 Initialize notifications
   static Future<void> init() async {
-    const androidSettings = AndroidInitializationSettings(
-      '@mipmap/ic_launcher',
-    );
+    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    const settings = InitializationSettings(android: androidSettings);
+    const settings = InitializationSettings(
+      android: androidSettings,
+    );
 
     await _notifications.initialize(settings);
 
-    await _notifications
-        .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >()
-        ?.requestNotificationsPermission();
-
-    const AndroidNotificationChannel channel = AndroidNotificationChannel(
+    // Create channel (Android)
+    const channel = AndroidNotificationChannel(
       _channelId,
       _channelName,
       description: _channelDesc,
-      importance: Importance.max,
+      importance: Importance.high,
     );
 
     await _notifications
         .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >()
+            AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
   }
 
+  /// 🔹 Setup timezone (call once in main)
   static Future<void> setupTimezone() async {
     tz.initializeTimeZones();
     tz.setLocalLocation(tz.getLocation('Asia/Kolkata'));
   }
 
-  static Future<void> scheduleOnce({required int seconds}) async {
-    final scheduledTime = tz.TZDateTime.now(
-      tz.local,
-    ).add(Duration(seconds: seconds));
+  /// 🔹 Show instant notification
+  static Future<void> showNow() async {
+    await _notifications.show(
+      0,
+      'Reminder ⏰',
+      'Check your nutrition!',
+      _details(),
+    );
+  }
+
+  /// 🔹 Schedule one-time notification
+  static Future<void> scheduleOnce(Duration delay) async {
+    final scheduledTime = tz.TZDateTime.now(tz.local).add(delay);
 
     await _notifications.zonedSchedule(
       1,
       'Reminder ⏰',
       'Check your nutrition!',
       scheduledTime,
-      _notificationDetails(),
+      _details(),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
     );
-    print("Scheduled(SheduledOnce) at: $scheduledTime");
   }
 
+  /// 🔹 Schedule daily notification
   static Future<void> scheduleDaily({
     required int hour,
     required int minute,
   }) async {
+    final scheduledTime = _nextInstance(hour, minute);
+
+    await _notifications.zonedSchedule(
+      2,
+      'Daily Reminder 🥗',
+      'Don’t forget to check your nutrition!',
+      scheduledTime,
+      _details(),
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      matchDateTimeComponents: DateTimeComponents.time,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+    );
+  }
+
+  /// 🔹 Cancel specific notification
+  static Future<void> cancel(int id) async {
+    await _notifications.cancel(id);
+  }
+
+  /// 🔹 Cancel all notifications
+  static Future<void> cancelAll() async {
+    await _notifications.cancelAll();
+  }
+
+  /// 🔹 Notification style
+  static NotificationDetails _details() {
+    return const NotificationDetails(
+      android: AndroidNotificationDetails(
+        _channelId,
+        _channelName,
+        channelDescription: _channelDesc,
+        importance: Importance.high,
+        priority: Priority.high,
+      ),
+    );
+  }
+
+  /// 🔹 Helper: get next scheduled time
+  static tz.TZDateTime _nextInstance(int hour, int minute) {
     final now = tz.TZDateTime.now(tz.local);
 
-    var scheduledTime = tz.TZDateTime(
+    var scheduled = tz.TZDateTime(
       tz.local,
       now.year,
       now.month,
@@ -78,61 +122,10 @@ class NotificationService {
       minute,
     );
 
-    // ⏭ If time passed today → schedule tomorrow
-    if (scheduledTime.isBefore(now)) {
-      scheduledTime = scheduledTime.add(const Duration(days: 1));
+    if (scheduled.isBefore(now)) {
+      scheduled = scheduled.add(const Duration(days: 1));
     }
 
-    await _notifications.zonedSchedule(
-      2,
-      'Daily Reminder 🥗',
-      'Don’t forget to check your nutrition!',
-      scheduledTime,
-      _notificationDetails(),
-      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-      matchDateTimeComponents: DateTimeComponents.time,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
-    );
-    print("Scheduled(SheduleDaily) at: $scheduledTime");
-  }
-
-  static Future<void> cancel(int id) async {
-    await _notifications.cancel(id);
-  }
-
-  static Future<void> showNow() async {
-    await _notifications.show(
-      99,
-      'Test Notification',
-      'This should appear instantly',
-      _notificationDetails(),
-    );
-  }
-
-  static Future<void> cancelAll() async {
-    await _notifications.cancelAll();
-  }
-
-  static NotificationDetails _notificationDetails() {
-    return const NotificationDetails(
-      android: AndroidNotificationDetails(
-        _channelId,
-        _channelName,
-        channelDescription: _channelDesc,
-        importance: Importance.max,
-        priority: Priority.high,
-      ),
-    );
-  }
-}
-
-Future<void> requestNotificationPermission() async {
-  var status = await Permission.notification.request();
-
-  if (status.isDenied) {
-    print(" Notification permission denied");
-  } else {
-    print(" Notification permission granted");
+    return scheduled;
   }
 }

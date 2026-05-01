@@ -16,7 +16,7 @@ class UserProfilestate extends State<UserProfile> {
   final SupabaseClient supabase = Supabase.instance.client;
   Map<String, dynamic>? profile;
   bool isLoading = true;
-  bool isOn = false;
+  bool isOn = true;
   int _avatarCacheKey = 0;
 
   @override
@@ -212,7 +212,6 @@ class UserProfilestate extends State<UserProfile> {
 
                   if (value) {
                     await NotificationService.scheduleDaily(hour: 8, minute: 0);
-                    await NotificationService.scheduleOnce(seconds: 5);
                   } else {
                     await NotificationService.cancelAll();
                   }

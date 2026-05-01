@@ -212,6 +212,7 @@ class EditProfileState extends State<EditProfile> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
         toolbarHeight: screenHeight * 0.06,
         elevation: 0,
         leading: IconButton(

@@ -18,8 +18,8 @@ class ScannerCamerastate extends State<ScannerCamera> {
   static String? scannedBarcode;
   List<bool> isSelected = [false, true];
 
-  bool cameraRunning = true; 
-  Timer? _timeoutTimer; 
+  bool cameraRunning = true;
+  Timer? _timeoutTimer;
 
   final MobileScannerController controller = MobileScannerController(
     formats: [
@@ -36,7 +36,7 @@ class ScannerCamerastate extends State<ScannerCamera> {
   @override
   void initState() {
     super.initState();
-    
+
     _startTimeout();
   }
 
@@ -229,7 +229,8 @@ class ScannerCamerastate extends State<ScannerCamera> {
 
                                   _timeoutTimer?.cancel();
 
-                                  final List<Barcode> barcodes = capture.barcodes;
+                                  final List<Barcode> barcodes =
+                                      capture.barcodes;
                                   for (final barcode in barcodes) {
                                     setState(() {
                                       scannedBarcode = barcode.rawValue;

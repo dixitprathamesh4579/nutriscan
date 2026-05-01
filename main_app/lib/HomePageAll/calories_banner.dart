@@ -63,42 +63,55 @@ class CaloriesState extends State<Calories> {
     setState(() => target = newTarget);
   }
 
-  void showTargetDialog() {
-    final controller = TextEditingController();
+void showTargetDialog() {
+  final controller = TextEditingController(
+    text: target?.toStringAsFixed(0) ?? "",
+  );
 
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Update Calorie Target"),
-        content: TextField(
-          controller: controller,
-          keyboardType: TextInputType.number,
-          decoration: const InputDecoration(labelText: "Target (Kcal)"),
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text("Update Calorie Target"),
+      content: TextField(
+        controller: controller,
+        keyboardType: TextInputType.number,
+        decoration: const InputDecoration(
+          labelText: "Target (Kcal)",
+          border: OutlineInputBorder(),
         ),
-        actions: [
-          TextButton(
-            child: const Text("Cancel"),
-            onPressed: () => Navigator.pop(context),
-          ),
-          TextButton(
-            child: const Text("Save"),
-            onPressed: () async {
-              final value = double.tryParse(controller.text);
-              if (value != null) {
-                await saveNewTarget(value);
-              }
-              Navigator.pop(context);
-            },
-          ),
-        ],
       ),
-    );
-  }
+      actions: [
+        TextButton(
+          child: const Text("Cancel"),
+          onPressed: () => Navigator.pop(context),
+        ),
+        ElevatedButton(
+          child: const Text("Save"),
+          onPressed: () async {
+            final value = double.tryParse(controller.text);
 
-  Future<void> refreshTarget() async {
-    await fetchTarget();
-  }
+            if (value == null || value <= 0) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Enter valid number")),
+              );
+              return;
+            }
 
+            await saveNewTarget(value);
+
+            if (!context.mounted) return;
+
+            Navigator.pop(context);
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Target updated")),
+            );
+          },
+        ),
+      ],
+    ),
+  );
+}
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -144,9 +157,9 @@ class CaloriesState extends State<Calories> {
               ),
               GestureDetector(
                 onTap: () async {
-                  await refreshTarget(); 
+                   showTargetDialog(); 
                 },
-                child: const Icon(Icons.refresh, color: Colors.white, size: 26),
+                child: const Icon(Icons.edit, color: Colors.white, size: 26),
               ),
             ],
           ),

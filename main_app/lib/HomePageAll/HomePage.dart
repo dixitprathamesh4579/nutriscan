@@ -114,6 +114,7 @@ class HomePageState extends State<HomePage> {
         backgroundColor: Colors.white,
         toolbarHeight: h * 0.07,
         elevation: 0,
+        surfaceTintColor: Colors.transparent,
         leading: Padding(
           padding: EdgeInsets.all(w * 0.015),
           child: Image.asset(

@@ -45,7 +45,6 @@ class _ScanHistoryPageState extends State<ScanHistoryPage> {
     });
   }
 
-  // 🔹 PULL TO REFRESH FUNCTION
   Future<void> _refresh() async {
     await loadHistory();
   }

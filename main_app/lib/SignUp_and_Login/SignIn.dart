@@ -9,7 +9,6 @@ import 'dart:io';
 import 'dart:async';
 import 'package:flutter/services.dart';
 
-
 class Signin extends StatefulWidget {
   const Signin({super.key});
 
@@ -466,9 +465,12 @@ class _SigninState extends State<Signin> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            Navigator.push(
+                            Navigator.pushAndRemoveUntil(
                               context,
-                              MaterialPageRoute(builder: (_) => const Signup()),
+                              MaterialPageRoute(
+                                builder: (_) => const Signup(),
+                              ),
+                              (route) => false,
                             );
                           },
                           child: Text(

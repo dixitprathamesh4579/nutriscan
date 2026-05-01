@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:main_app/HomePageAll/HomePage.dart';
+import 'package:main_app/Scanner/Product_Image.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:image/image.dart' as img;
 import 'package:http/http.dart' as http;
@@ -118,7 +120,7 @@ class _ProductImageDisplayState extends State<ProductImageDisplay> {
     }
   }
 
-  // 🔹 Load Model + Labels
+  //  Load Model + Labels
   Future<void> loadModel() async {
     _interpreter = await Interpreter.fromAsset('assets/food_model.tflite');
 
@@ -131,7 +133,7 @@ class _ProductImageDisplayState extends State<ProductImageDisplay> {
         .toList();
   }
 
-  // 🔹 Prediction Logic
+  //  Prediction Logic
   Future<Map<String, dynamic>> predict(String imagePath) async {
     final imageFile = File(imagePath);
     img.Image? image = img.decodeImage(imageFile.readAsBytesSync());
@@ -182,7 +184,7 @@ class _ProductImageDisplayState extends State<ProductImageDisplay> {
     return data;
   }
 
-  // 🔹 Run Everything
+  //  Run Everything
   Future<void> runPrediction() async {
     try {
       final isFood = await isFoodImageViaVision(widget.imagePath);
@@ -237,6 +239,123 @@ class _ProductImageDisplayState extends State<ProductImageDisplay> {
     }
   }
 
+  // UI Helpers
+  Widget infoRow(String title, String value, Color color) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(title),
+          Text(
+            value,
+            style: TextStyle(fontWeight: FontWeight.bold, color: color),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget sectionBox({
+    required String title,
+    required Color color,
+    required Widget child,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        border: Border.all(color: color.withOpacity(0.3)),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(fontWeight: FontWeight.bold, color: color),
+          ),
+          const SizedBox(height: 10),
+          child,
+        ],
+      ),
+    );
+  }
+
+  Widget ingredientsWidget() {
+    final screenwidth = MediaQuery.of(context).size.width;
+    final screenheight = MediaQuery.of(context).size.height;
+
+    var raw = productData?["ingredients"];
+    List ingredientsList = [];
+
+    if (raw is List) {
+      ingredientsList = raw;
+    } else if (raw is String) {
+      ingredientsList = raw.split(",");
+    }
+
+    if (ingredientsList.isEmpty) {
+      return const Text("No ingredients available");
+    }
+
+    return Container(
+      width: screenwidth * 0.9,
+      height: screenheight * 0.1,
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: const Color.fromARGB(255, 116, 116, 116)),
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: ingredientsList
+              .map<Widget>(
+                (e) => Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 2),
+                  child: Text(
+                    "• ${e.toString().trim()}",
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              )
+              .toList(),
+        ),
+      ),
+    );
+  }
+
+  Widget healthAdviceWidget() {
+    final screenwidth = MediaQuery.of(context).size.width;
+    final screenheight = MediaQuery.of(context).size.height;
+
+    String advice = productData?["advice"] ?? "";
+
+    if (advice.isEmpty) {
+      return const Text("No health advice available");
+    }
+
+    return Container(
+      width: screenwidth * 0.9,
+      height: screenheight * 0.1,
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.green, width: 1.2),
+      ),
+      child: SingleChildScrollView(
+        child: Text(
+          advice,
+          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenheight = MediaQuery.of(context).size.height;
@@ -246,14 +365,20 @@ class _ProductImageDisplayState extends State<ProductImageDisplay> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => HomePage()),
+            );
           },
           icon: Icon(Icons.arrow_back_ios_new),
         ),
         backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+
         toolbarHeight: 30,
       ),
       backgroundColor: Colors.white,
+
       resizeToAvoidBottomInset: true,
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -456,7 +581,13 @@ class _ProductImageDisplayState extends State<ProductImageDisplay> {
                           borderRadius: BorderRadius.circular(15),
                         ),
                       ),
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () => Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ProductImageCapturePage(),
+                        ),
+                      ),
+
                       child: Text(
                         "SCAN AGAIN",
                         style: GoogleFonts.poppins(
@@ -470,123 +601,6 @@ class _ProductImageDisplayState extends State<ProductImageDisplay> {
                 ],
               ),
             ),
-    );
-  }
-
-  // 🔹 UI Helpers
-  Widget infoRow(String title, String value, Color color) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(title),
-          Text(
-            value,
-            style: TextStyle(fontWeight: FontWeight.bold, color: color),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget sectionBox({
-    required String title,
-    required Color color,
-    required Widget child,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade50,
-        border: Border.all(color: color.withOpacity(0.3)),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: TextStyle(fontWeight: FontWeight.bold, color: color),
-          ),
-          const SizedBox(height: 10),
-          child,
-        ],
-      ),
-    );
-  }
-
-  Widget ingredientsWidget() {
-    final screenwidth = MediaQuery.of(context).size.width;
-    final screenheight = MediaQuery.of(context).size.height;
-
-    var raw = productData?["ingredients"];
-    List ingredientsList = [];
-
-    if (raw is List) {
-      ingredientsList = raw;
-    } else if (raw is String) {
-      ingredientsList = raw.split(",");
-    }
-
-    if (ingredientsList.isEmpty) {
-      return const Text("No ingredients available");
-    }
-
-    return Container(
-      width: screenwidth * 0.9,
-      height: screenheight * 0.1,
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color.fromARGB(255, 116, 116, 116)),
-      ),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: ingredientsList
-              .map<Widget>(
-                (e) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 2),
-                  child: Text(
-                    "• ${e.toString().trim()}",
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              )
-              .toList(),
-        ),
-      ),
-    );
-  }
-
-  Widget healthAdviceWidget() {
-    final screenwidth = MediaQuery.of(context).size.width;
-    final screenheight = MediaQuery.of(context).size.height;
-
-    String advice = productData?["advice"] ?? "";
-
-    if (advice.isEmpty) {
-      return const Text("No health advice available");
-    }
-
-    return Container(
-      width: screenwidth * 0.9,
-      height: screenheight * 0.1,
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.green, width: 1.2),
-      ),
-      child: SingleChildScrollView(
-        child: Text(
-          advice,
-          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-        ),
-      ),
     );
   }
 }

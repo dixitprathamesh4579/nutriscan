@@ -16,7 +16,7 @@ class Healthydf extends StatelessWidget {
       height: h * 0.10,
       child: ElevatedButton(
         onPressed: () {
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const HealthyFoodbanner()),
           );
