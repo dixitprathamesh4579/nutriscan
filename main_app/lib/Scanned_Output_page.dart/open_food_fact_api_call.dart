@@ -753,7 +753,7 @@ class _OpenFoodState extends State<OpenFood> {
           onPressed: () {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => HomePage()),
+              MaterialPageRoute(builder: (context) => HomePage(initialIndex: 0,)),
             );
           },
           icon: Icon(Icons.arrow_back_ios_new),

@@ -70,7 +70,15 @@ class HealthyFoodPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PopScope(
+      canPop: false, // ❌ block default back
+      onPopInvoked: (didPop) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => HomePage(initialIndex: 0,)),
+        );
+      },
+      child: Scaffold(
       appBar: AppBar(
         title: const Text("Healthy Food / Drinks"),
         backgroundColor: Colors.white,
@@ -79,9 +87,12 @@ class HealthyFoodPage extends StatelessWidget {
 
         leading: IconButton(
           onPressed: () {
-            Navigator.push(
+            Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) => HomePage()),
+              MaterialPageRoute(
+                builder: (_) => const HomePage(initialIndex: 0),
+              ),
+              (route) => false,
             );
           },
           icon: Icon(Icons.arrow_back_ios_new),
@@ -146,6 +157,7 @@ class HealthyFoodPage extends StatelessWidget {
             ),
           );
         },
+      ),
       ),
     );
   }

@@ -12,7 +12,8 @@ import 'package:main_app/Scanner/ScanPageSwitcher.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+   final int initialIndex;
+  const HomePage({super.key, required this.initialIndex});
   @override
   State<HomePage> createState() => HomePageState();
 }
@@ -32,6 +33,7 @@ class HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     loadDailyTotals(selectedDate);
+    _currentIndex = widget.initialIndex;
   }
 
   Future<void> loadDailyTotals(String date) async {

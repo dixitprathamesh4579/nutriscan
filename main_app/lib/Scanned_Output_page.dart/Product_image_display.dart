@@ -367,7 +367,7 @@ class _ProductImageDisplayState extends State<ProductImageDisplay> {
           onPressed: () {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (_) => HomePage()),
+              MaterialPageRoute(builder: (_) => HomePage(initialIndex: 1,)),
             );
           },
           icon: Icon(Icons.arrow_back_ios_new),

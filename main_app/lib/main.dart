@@ -62,7 +62,7 @@ class _NutriState extends State<Nutri> {
           final session = Supabase.instance.client.auth.currentSession;
 
           if (session != null) {
-            return InternetWrapper(child: const HomePage());
+            return InternetWrapper(child: const HomePage(initialIndex: 0,));
           } else {
             return InternetWrapper(child: const Signin());
           }

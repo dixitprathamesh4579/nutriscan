@@ -44,7 +44,7 @@ class _SigninState extends State<Signin> {
         ).showSnackBar(const SnackBar(content: Text('Login successful!')));
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => const HomePage()),
+          MaterialPageRoute(builder: (_) => const HomePage(initialIndex: 0,)),
         );
       } else {
         _showError('Invalid email or password');

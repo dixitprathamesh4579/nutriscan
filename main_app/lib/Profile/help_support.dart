@@ -7,14 +7,22 @@ class HelpSupportPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PopScope(
+      canPop: false, // ❌ block default back
+      onPopInvoked: (didPop) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => HomePage(initialIndex: 4,)),
+        );
+      },
+      child: Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (_) => HomePage()),
+              MaterialPageRoute(builder: (_) => HomePage(initialIndex: 4,)),
             );
           },
           icon: Icon(Icons.arrow_back_ios_new),
@@ -122,6 +130,7 @@ class HelpSupportPage extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }

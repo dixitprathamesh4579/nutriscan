@@ -1,20 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:main_app/HomePageAll/HomePage.dart';
-import 'package:main_app/Profile/user_profile.dart';
 
 class AboutNutriScanPage extends StatelessWidget {
   const AboutNutriScanPage({super.key});
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+     return PopScope(
+      canPop: false, 
+      onPopInvoked: (didPop) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => HomePage(initialIndex: 4,)),
+        );
+      },
+      child: Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (_) => HomePage()),
+              MaterialPageRoute(builder: (_) => HomePage(initialIndex: 4,)),
             );
           },
           icon: Icon(Icons.arrow_back_ios_new),
@@ -134,7 +141,8 @@ class AboutNutriScanPage extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ),
+     );
   }
 
   // 🔹 Reusable Card Widget

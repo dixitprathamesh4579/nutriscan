@@ -168,7 +168,7 @@ Future<void> loginWithGoogleAndroid(BuildContext context) async {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
+        MaterialPageRoute(builder: (context) => const HomePage(initialIndex: 0,)),
       );
     }
   } catch (e) {
